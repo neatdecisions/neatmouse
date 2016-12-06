@@ -1,0 +1,262 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{CC76D00F-9B8E-4203-BB11-D47201DCE859}</ProjectGuid>
+    <ProjectName>NeatMouse</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140_xp</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140_xp</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IntDir>Debug\</IntDir>
+    <OutDir>Debug\</OutDir>
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>..\third_party\wtl\include;..\third_party\cdpi\include;neatcommon\include;logic\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IntDir>Release\</IntDir>
+    <OutDir>Release\</OutDir>
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>..\third_party\wtl\include;..\third_party\cdpi\include;neatcommon\include;logic\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <MinimalRebuild>true</MinimalRebuild>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Comctl32.lib;version.lib;Shell32.lib;gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>gdiplus.dll</DelayLoadDLLs>
+    </Link>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <HeaderFileName>NeatMouseWtl.h</HeaderFileName>
+      <InterfaceIdentifierFileName>NeatMouseWtl_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>NeatMouseWtl_p.c</ProxyFileName>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)/NeatMouseWtl.tlb</TypeLibraryName>
+      <DllDataFileName>
+      </DllDataFileName>
+    </Midl>
+    <Manifest>
+      <AdditionalManifestFiles>DeclareDPIAware.manifest</AdditionalManifestFiles>
+    </Manifest>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>Comctl32.lib;version.lib;Shell32.lib;gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>gdiplus.dll</DelayLoadDLLs>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </Link>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <HeaderFileName>NeatMouseWtl.h</HeaderFileName>
+      <InterfaceIdentifierFileName>NeatMouseWtl_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>NeatMouseWtl_p.c</ProxyFileName>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)/NeatMouseWtl.tlb</TypeLibraryName>
+      <DllDataFileName>
+      </DllDataFileName>
+    </Midl>
+    <Manifest>
+      <AdditionalManifestFiles>DeclareDPIAware.manifest</AdditionalManifestFiles>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="AboutDlg.cpp" />
+    <ClCompile Include="CursorOverlay.cpp" />
+    <ClCompile Include="EmulationNotifier.cpp" />
+    <ClCompile Include="logic\src\logic\HookThread.cpp" />
+    <ClCompile Include="logic\src\logic\KeyboardUtils.cpp" />
+    <ClCompile Include="logic\src\logic\MainSingleton.cpp" />
+    <ClCompile Include="logic\src\logic\MouseActioner.cpp" />
+    <ClCompile Include="logic\src\logic\MouseParams.cpp" />
+    <ClCompile Include="logic\src\logic\MouseUtils.cpp" />
+    <ClCompile Include="logic\src\logic\OptionsHolder.cpp" />
+    <ClCompile Include="logic\src\logic\RampUpCursorMover.cpp" />
+    <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="neatcommon\src\system\AutorunManager.cpp" />
+    <ClCompile Include="neatcommon\src\system\Helpers.cpp" />
+    <ClCompile Include="neatcommon\src\system\IniFiles.cpp" />
+    <ClCompile Include="neatcommon\src\system\localization.cpp" />
+    <ClCompile Include="neatcommon\src\ui\ButtonST.cpp" />
+    <ClCompile Include="neatcommon\src\ui\CustomizedControls.cpp" />
+    <ClCompile Include="neatcommon\src\ui\InputBox.cpp" />
+    <ClCompile Include="NeatMouse.cpp" />
+    <ClCompile Include="NeatMouseWtlView.cpp" />
+    <ClCompile Include="NeatToolbar.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AboutDlg.h" />
+    <ClInclude Include="CursorOverlay.h" />
+    <ClInclude Include="EmulationNotifier.h" />
+    <ClInclude Include="logic\include\logic\HookThread.h" />
+    <ClInclude Include="logic\include\logic\IEmulationNotifier.h" />
+    <ClInclude Include="logic\include\logic\KeyboardUtils.h" />
+    <ClInclude Include="logic\include\logic\MainSingleton.h" />
+    <ClInclude Include="logic\include\logic\MouseActioner.h" />
+    <ClInclude Include="logic\include\logic\MouseEntities.h" />
+    <ClInclude Include="logic\include\logic\MouseParams.h" />
+    <ClInclude Include="logic\include\logic\MouseUtils.h" />
+    <ClInclude Include="logic\include\logic\OptionsHolder.h" />
+    <ClInclude Include="logic\include\logic\RampUpCursorMover.h" />
+    <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="neatcommon\include\neatcommon\system\AutorunManager.h" />
+    <ClInclude Include="neatcommon\include\neatcommon\system\Helpers.h" />
+    <ClInclude Include="neatcommon\include\neatcommon\system\IniFiles.h" />
+    <ClInclude Include="neatcommon\include\neatcommon\system\localization.h" />
+    <ClInclude Include="neatcommon\include\neatcommon\ui\ButtonST.h" />
+    <ClInclude Include="neatcommon\include\neatcommon\ui\CCtlColor.h" />
+    <ClInclude Include="neatcommon\include\neatcommon\ui\CustomizedControls.h" />
+    <ClInclude Include="neatcommon\include\neatcommon\ui\InputBox.h" />
+    <ClInclude Include="NeatMouseWtlView.h" />
+    <ClInclude Include="NeatToolbar.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="stdafx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="NeatMouseWtl.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\ico\cross-small-bright.ico" />
+    <None Include="res\ico\cross-small.ico" />
+    <None Include="res\ico\mouse.ico" />
+    <None Include="res\langs\English.lng" />
+    <None Include="res\langs\French.lng" />
+    <None Include="res\langs\German.lng" />
+    <None Include="res\langs\Greek.lng" />
+    <None Include="res\langs\Italian.lng" />
+    <None Include="res\langs\Polish.lng" />
+    <None Include="res\langs\Romanian.lng" />
+    <None Include="res\langs\Russian.lng" />
+    <None Include="res\langs\Ukrainian.lng" />
+    <None Include="res\loader.fig" />
+    <None Include="res\png\cross-script.png" />
+    <None Include="res\png\disk.png" />
+    <None Include="res\png\equalizer--plus.png" />
+    <None Include="res\png\gear--plus.png" />
+    <None Include="res\png\information.png" />
+    <None Include="res\png\lang\de.png" />
+    <None Include="res\png\lang\fr.png" />
+    <None Include="res\png\lang\gb.png" />
+    <None Include="res\png\lang\gr.png" />
+    <None Include="res\png\lang\it.png" />
+    <None Include="res\png\lang\pl.png" />
+    <None Include="res\png\lang\ro.png" />
+    <None Include="res\png\lang\ru.png" />
+    <None Include="res\png\lang\ua.png" />
+    <None Include="res\png\logo.png" />
+    <None Include="res\png\main\cursor-alt.png" />
+    <None Include="res\png\main\cursor-lifebuoy.png" />
+    <None Include="res\png\main\cursor.png" />
+    <None Include="res\png\main\eye.png" />
+    <None Include="res\png\main\keyboard--plus.png" />
+    <None Include="res\png\main\mouse--arrow-down.png" />
+    <None Include="res\png\main\mouse--arrow-left.png" />
+    <None Include="res\png\main\mouse--arrow-up.png" />
+    <None Include="res\png\main\mouse--arrow.png" />
+    <None Include="res\png\main\mouse--scroll-down.png" />
+    <None Include="res\png\main\mouse--scroll-up.png" />
+    <None Include="res\png\main\mouse-left-down.png" />
+    <None Include="res\png\main\mouse-left-up.png" />
+    <None Include="res\png\main\mouse-right-down.png" />
+    <None Include="res\png\main\mouse-right-up.png" />
+    <None Include="res\png\main\mouse-select-right.png" />
+    <None Include="res\png\main\mouse-select-wheel.png" />
+    <None Include="res\png\main\mouse-select.png" />
+    <None Include="res\png\main\rocket-fly.png" />
+    <None Include="res\png\main\switch.png" />
+    <None Include="res\png\neatmouse16.png" />
+    <None Include="res\png\plus.png" />
+    <None Include="res\png\question.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="DeclareDPIAware.manifest">
+      <SubType>Designer</SubType>
+    </Manifest>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\png\GitHub-Mark-16px.png" />
+    <Image Include="res\png\main\plug-connect.png" />
+    <Image Include="res\png\main\plug-disconnect.png" />
+    <Image Include="res\png\open-source.png" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,371 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{cc16c37c-1140-4bae-9986-3f472ee3fb93}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{72fd1e2b-ad29-4220-9961-59e1be7fa69e}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{ac273f53-8dd1-4163-be4d-508e6a32c244}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;jpg;jpeg;jpe;manifest</Extensions>
+    </Filter>
+    <Filter Include="logic">
+      <UniqueIdentifier>{2d46e6cf-2d53-4419-8a55-181782064eea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\png">
+      <UniqueIdentifier>{91d76622-05a6-4715-a23c-cecf0ab09b68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\lang">
+      <UniqueIdentifier>{2c0d57f3-cccc-4ca6-8fce-123f2f88b6d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\ico">
+      <UniqueIdentifier>{aa57845b-3e72-4708-bddc-cbec1d3a20e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External Sources">
+      <UniqueIdentifier>{ea43ed83-e078-40a3-95f5-bb84863d3ca7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="neatcommon">
+      <UniqueIdentifier>{997b4f74-4bd9-4654-b1a9-5a51d6e42380}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="neatcommon\ui">
+      <UniqueIdentifier>{7054a728-f88a-4f62-998a-cb833cec0cb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="neatcommon\system">
+      <UniqueIdentifier>{25c01df2-17c2-479e-a161-ba2346fd69d6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NeatToolbar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AboutDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NeatMouseWtlView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CursorOverlay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="neatcommon\src\system\AutorunManager.cpp">
+      <Filter>neatcommon\system</Filter>
+    </ClCompile>
+    <ClCompile Include="neatcommon\src\system\Helpers.cpp">
+      <Filter>neatcommon\system</Filter>
+    </ClCompile>
+    <ClCompile Include="neatcommon\src\system\IniFiles.cpp">
+      <Filter>neatcommon\system</Filter>
+    </ClCompile>
+    <ClCompile Include="neatcommon\src\system\localization.cpp">
+      <Filter>neatcommon\system</Filter>
+    </ClCompile>
+    <ClCompile Include="neatcommon\src\ui\CustomizedControls.cpp">
+      <Filter>neatcommon\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="neatcommon\src\ui\InputBox.cpp">
+      <Filter>neatcommon\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="neatcommon\src\ui\ButtonST.cpp">
+      <Filter>neatcommon\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="logic\src\logic\HookThread.cpp">
+      <Filter>logic</Filter>
+    </ClCompile>
+    <ClCompile Include="logic\src\logic\KeyboardUtils.cpp">
+      <Filter>logic</Filter>
+    </ClCompile>
+    <ClCompile Include="logic\src\logic\MouseActioner.cpp">
+      <Filter>logic</Filter>
+    </ClCompile>
+    <ClCompile Include="logic\src\logic\MouseUtils.cpp">
+      <Filter>logic</Filter>
+    </ClCompile>
+    <ClCompile Include="logic\src\logic\RampUpCursorMover.cpp">
+      <Filter>logic</Filter>
+    </ClCompile>
+    <ClCompile Include="logic\src\logic\MainSingleton.cpp">
+      <Filter>logic</Filter>
+    </ClCompile>
+    <ClCompile Include="logic\src\logic\MouseParams.cpp">
+      <Filter>logic</Filter>
+    </ClCompile>
+    <ClCompile Include="logic\src\logic\OptionsHolder.cpp">
+      <Filter>logic</Filter>
+    </ClCompile>
+    <ClCompile Include="EmulationNotifier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NeatMouse.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NeatMouseWtlView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AboutDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NeatToolbar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CursorOverlay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="neatcommon\include\neatcommon\system\AutorunManager.h">
+      <Filter>neatcommon\system</Filter>
+    </ClInclude>
+    <ClInclude Include="neatcommon\include\neatcommon\system\Helpers.h">
+      <Filter>neatcommon\system</Filter>
+    </ClInclude>
+    <ClInclude Include="neatcommon\include\neatcommon\system\IniFiles.h">
+      <Filter>neatcommon\system</Filter>
+    </ClInclude>
+    <ClInclude Include="neatcommon\include\neatcommon\system\localization.h">
+      <Filter>neatcommon\system</Filter>
+    </ClInclude>
+    <ClInclude Include="neatcommon\include\neatcommon\ui\CCtlColor.h">
+      <Filter>neatcommon\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="neatcommon\include\neatcommon\ui\CustomizedControls.h">
+      <Filter>neatcommon\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="neatcommon\include\neatcommon\ui\InputBox.h">
+      <Filter>neatcommon\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="neatcommon\include\neatcommon\ui\ButtonST.h">
+      <Filter>neatcommon\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="logic\include\logic\HookThread.h">
+      <Filter>logic</Filter>
+    </ClInclude>
+    <ClInclude Include="logic\include\logic\KeyboardUtils.h">
+      <Filter>logic</Filter>
+    </ClInclude>
+    <ClInclude Include="logic\include\logic\MouseActioner.h">
+      <Filter>logic</Filter>
+    </ClInclude>
+    <ClInclude Include="logic\include\logic\MouseUtils.h">
+      <Filter>logic</Filter>
+    </ClInclude>
+    <ClInclude Include="logic\include\logic\RampUpCursorMover.h">
+      <Filter>logic</Filter>
+    </ClInclude>
+    <ClInclude Include="logic\include\logic\MainSingleton.h">
+      <Filter>logic</Filter>
+    </ClInclude>
+    <ClInclude Include="logic\include\logic\MouseEntities.h">
+      <Filter>logic</Filter>
+    </ClInclude>
+    <ClInclude Include="logic\include\logic\MouseParams.h">
+      <Filter>logic</Filter>
+    </ClInclude>
+    <ClInclude Include="logic\include\logic\OptionsHolder.h">
+      <Filter>logic</Filter>
+    </ClInclude>
+    <ClInclude Include="logic\include\logic\IEmulationNotifier.h">
+      <Filter>logic</Filter>
+    </ClInclude>
+    <ClInclude Include="EmulationNotifier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="NeatMouseWtl.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\ico\mouse.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\png\disk.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\cross-script.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\lang\de.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\lang\fr.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\lang\gb.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\plus.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\question.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\lang\ru.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\langs\English.lng">
+      <Filter>Resource Files\lang</Filter>
+    </None>
+    <None Include="res\langs\Russian.lng">
+      <Filter>Resource Files\lang</Filter>
+    </None>
+    <None Include="res\langs\French.lng">
+      <Filter>Resource Files\lang</Filter>
+    </None>
+    <None Include="res\langs\German.lng">
+      <Filter>Resource Files\lang</Filter>
+    </None>
+    <None Include="res\ico\cross-small.ico">
+      <Filter>Resource Files\ico</Filter>
+    </None>
+    <None Include="res\ico\cross-small-bright.ico">
+      <Filter>Resource Files\ico</Filter>
+    </None>
+    <None Include="res\png\main\cursor-alt.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\main\keyboard--plus.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\main\cursor.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\information.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\logo.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\main\switch.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\main\mouse--arrow-down.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\main\mouse--arrow-left.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\main\mouse--arrow-up.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\main\mouse--arrow.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\main\mouse--scroll-down.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\main\mouse--scroll-up.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\main\mouse-left-down.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\main\mouse-left-up.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\main\mouse-right-down.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\main\mouse-right-up.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\main\mouse-select-right.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\main\mouse-select-wheel.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\main\mouse-select.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\neatmouse16.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\langs\Italian.lng">
+      <Filter>Resource Files\lang</Filter>
+    </None>
+    <None Include="res\loader.fig">
+      <Filter>Resource Files\lang</Filter>
+    </None>
+    <None Include="res\langs\Ukrainian.lng">
+      <Filter>Resource Files\lang</Filter>
+    </None>
+    <None Include="res\langs\Polish.lng">
+      <Filter>Resource Files\lang</Filter>
+    </None>
+    <None Include="res\png\lang\it.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\lang\pl.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\lang\ua.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\langs\Greek.lng">
+      <Filter>Resource Files\lang</Filter>
+    </None>
+    <None Include="res\png\lang\gr.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\langs\Romanian.lng">
+      <Filter>Resource Files\lang</Filter>
+    </None>
+    <None Include="res\png\lang\ro.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\main\cursor-lifebuoy.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\equalizer--plus.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\main\eye.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\gear--plus.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+    <None Include="res\png\main\rocket-fly.png">
+      <Filter>Resource Files\png</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="DeclareDPIAware.manifest">
+      <Filter>Resource Files</Filter>
+    </Manifest>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\png\main\plug-connect.png">
+      <Filter>Resource Files\png</Filter>
+    </Image>
+    <Image Include="res\png\main\plug-disconnect.png">
+      <Filter>Resource Files\png</Filter>
+    </Image>
+    <Image Include="res\png\open-source.png">
+      <Filter>Resource Files\png</Filter>
+    </Image>
+    <Image Include="res\png\GitHub-Mark-16px.png">
+      <Filter>Resource Files\png</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
