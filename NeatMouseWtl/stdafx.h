@@ -34,7 +34,7 @@
 
 #define NEAT_TRAY_CALLBACK					WM_USER + 1000
 
-#define LINK_SITE   L"http://neatdecisions.com"
+#define LINK_SITE   L"https://neatdecisions.com"
 #define LINK_GITHUB L"https://github.com/neatdecisions/neatmouse"
 
 #include <atlbase.h>
