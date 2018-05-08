@@ -1,5 +1,6 @@
-.vs
-NeatMouseWtl/Debug
-NeatMouseWtl/Release
+.vs/
+\[misc\]/Output/
+NeatMouseWtl/Debug/
+NeatMouseWtl/Release/
 NeatMouseWtl/NeatMouseWtl.aps
 NeatMouseWtl/NeatMouseWtl.vcxproj.user
