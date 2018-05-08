@@ -35,12 +35,12 @@ CNeatMouseWtlView::SetToolbar(CNeatToolbar * pToolbar)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-WTL::CString 
+CString 
 CNeatMouseWtlView::GetHotkeyName(UINT mods, UINT vk)
 {
 	if ((mods == 0) || (vk == 0)) return L"";
 
-	WTL::CString res;
+	CString res;
 	if (mods & MOD_CONTROL) res += L"Ctrl + ";
 	if (mods & MOD_ALT) res += L"Alt + ";
 	if (mods & MOD_SHIFT) res += L"Shift + ";
@@ -507,7 +507,7 @@ CNeatMouseWtlView::OnEditChange(UINT /*code*/, UINT id, HWND hwnd, BOOL & bHandl
 	if ((id != IDC_EDIT_SPEED) && (id != IDC_EDIT_ALT_SPEED))
 		return 0;
 
-	WTL::CString s;
+	CString s;
 	int n = ::GetWindowTextLength(hwnd);
 	::GetWindowText(hwnd, s.GetBuffer(n), n + 1);
 

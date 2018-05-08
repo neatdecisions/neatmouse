@@ -219,7 +219,7 @@ CMainFrame::OnCreate(LPCREATESTRUCT /*lpcs*/)
 		neatcommon::system::ProductInfo info;
 		neatcommon::system::GetProductVersion(info);
 
-		WTL::CString s;
+		CString s;
 		s.Format(_T("NeatMouse %d.%02d.%03d"),
 			info.major,
 			info.minor,

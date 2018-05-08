@@ -37,8 +37,8 @@ public:
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
 
-	CInputBox(const WTL::CString & caption, const WTL::CString & prompt, const WTL::CString & ok, const WTL::CString & cancel);
-	WTL::CString getText() const;
+	CInputBox(const CString & caption, const CString & prompt, const CString & ok, const CString & cancel);
+	CString getText() const;
 
 private:
 	typedef CIndirectDialogImpl<CInputBox, CMemDlgTemplate> PARENT;
@@ -48,12 +48,12 @@ private:
 	static const WORD ID_EDIT = 3;
 	static const WORD ID_STATIC = 4;
 
-	const WTL::CString m_caption;
-	const WTL::CString m_prompt;
-	const WTL::CString m_ok;
-	const WTL::CString m_cancel;
+	const CString m_caption;
+	const CString m_prompt;
+	const CString m_ok;
+	const CString m_cancel;
 
-	WTL::CString _text;
+	CString _text;
 
 	LRESULT OnButtonOk(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnButtonCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

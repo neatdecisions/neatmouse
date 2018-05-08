@@ -363,7 +363,7 @@ CMenuBitmapsManager::Draw(LPDRAWITEMSTRUCT lpdis)
 
 //---------------------------------------------------------------------------------------------------------------------
 void 
-CAutosizeStatic::SetText(const WTL::CString & s)
+CAutosizeStatic::SetText(const CString & s)
 {
 	//DCHandle dc = GetDC();
 	CClientDC dc(*this);

@@ -330,8 +330,8 @@ CNeatToolbar::CreatePresetsCombobox()
 		
 	CRect labelRect = rc;
 		
-	WTL::CSize sz = getGUIFontSize();
-	WTL::CString s = _T("Preset:"); 
+	CSize sz = getGUIFontSize();
+	CString s = _T("Preset:"); 
 	labelRect.right = rc.left + sz.cx * s.GetLength();
 	labelRect.top = rc.top + (rc.bottom - rc.top - sz.cy) / 2;
 		

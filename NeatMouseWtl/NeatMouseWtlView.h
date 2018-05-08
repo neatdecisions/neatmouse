@@ -82,7 +82,7 @@ protected:
 	void ToggleAdvancedItems();
 	void SwapItems(int item1, int item2);
 
-	WTL::CString GetHotkeyName(UINT mods, UINT vk);
+	CString GetHotkeyName(UINT mods, UINT vk);
 
 	neatcommon::ui::CButtonST btnDel[BTN_DEL_COUNT];
 	neatcommon::ui::CButtonST btnDelHotkey;

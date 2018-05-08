@@ -73,7 +73,7 @@ CAboutDlg::OnInitDialog(HWND, LRESULT)
 	neatcommon::system::ProductInfo info;
 	neatcommon::system::GetProductVersion(info);
 
-	WTL::CString s(_T("NeatMouse"));
+	CString s(_T("NeatMouse"));
 	
 	titleFont.CreateFont(gMetrics.PointsToPixels(24), 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, OEM_CHARSET, 0, 0, DEFAULT_QUALITY, FF_ROMAN, _T("Verdana"));
 	programName.Attach(GetDlgItem(IDC_STATIC_PROGRAMNAME));
@@ -96,12 +96,12 @@ CAboutDlg::OnInitDialog(HWND, LRESULT)
 	
 	visitLink.SetHyperLinkExtendedStyle(HLINK_UNDERLINEHOVER);
 	visitLink.SubclassWindow(GetDlgItem(IDC_STATIC_VISIT));
-	visitLink.SetHyperLink(WTL::CString(LINK_SITE));
+	visitLink.SetHyperLink(CString(LINK_SITE));
 
 	link.SetHyperLinkExtendedStyle(HLINK_UNDERLINEHOVER);
 	link.SubclassWindow(GetDlgItem(IDC_STATIC_UPDATE));
 		
-	link.SetHyperLink(WTL::CString(LINK_GITHUB));
+	link.SetHyperLink(CString(LINK_GITHUB));
 	link.SetLabel(_("about.github"));
 	
 	someIcons.Attach(GetDlgItem(IDC_STATIC_SOMEICONS));

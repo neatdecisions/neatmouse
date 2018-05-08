@@ -80,7 +80,7 @@ protected:
 class CAutosizeStatic : public CStatic
 {
 public:
-	void SetText(const WTL::CString & s);
+	void SetText(const CString & s);
 };
 
 

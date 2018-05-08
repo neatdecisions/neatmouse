@@ -16,14 +16,14 @@ namespace ui {
 
 //---------------------------------------------------------------------------------------------------------------------
 CInputBox::CInputBox(
-	const WTL::CString & caption, const WTL::CString & prompt, 
-	const WTL::CString & ok, const WTL::CString & cancel) :
+	const CString & caption, const CString & prompt, 
+	const CString & ok, const CString & cancel) :
 	m_caption(caption), m_prompt(prompt), m_ok(ok), m_cancel(cancel)
 {}
 
 	
 //---------------------------------------------------------------------------------------------------------------------
-WTL::CString CInputBox::getText() const 
+CString CInputBox::getText() const 
 { 
 	return _text; 
 }
