@@ -82,13 +82,6 @@ LocalizeSection::Clear()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LocalizeSection::~LocalizeSection()
-{
-	Clear();
-}
-
-
-//---------------------------------------------------------------------------------------------------------------------
 const std::wstring &
 LocalizeSection::GetValue(const std::string & value) const
 {
@@ -108,10 +101,7 @@ const LocalizeSection::Ptr
 LocalizeSection::GetSection(const std::string & section) const
 {
 	std::map<std::string, LocalizeSection::Ptr>::const_iterator it = sections.find(section);
-	if (it != sections.end())
-		return it->second;
-	else
-		return LocalizeSection::Ptr(0);
+	return (it != sections.end()) ? it->second : LocalizeSection::Ptr();
 }
 
 
@@ -120,10 +110,7 @@ LocalizeSection::Ptr
 LocalizeSection::GetSection(const std::string & section)
 {
 	std::map<std::string, LocalizeSection::Ptr>::iterator it = sections.find(section);
-	if (it != sections.end())
-		return it->second;
-	else
-		return LocalizeSection::Ptr(0);
+	return (it != sections.end()) ? it->second : LocalizeSection::Ptr();
 }
 
 
@@ -131,8 +118,8 @@ LocalizeSection::GetSection(const std::string & section)
 LocalizeSection::Ptr
 LocalizeSection::AddSection(const std::string & name)
 {
-	LocalizeSection::Ptr res = LocalizeSection::Ptr(new LocalizeSection());
-	sections.insert(std::make_pair(name, res));
+	LocalizeSection::Ptr res = std::make_shared<LocalizeSection>();
+	sections.emplace(name, res);
 	return res;
 }
 
@@ -141,7 +128,7 @@ LocalizeSection::AddSection(const std::string & name)
 void 
 LocalizeSection::SetValue(const std::string & name, const std::wstring & value)
 {
-	values.insert(std::pair<std::string, std::wstring>(name, value));
+	values.emplace(name, value);
 }
 
 
@@ -151,7 +138,7 @@ LocalizeSection::SetValue(const std::string & name, const std::wstring & value)
 //=====================================================================================================================
 
 //---------------------------------------------------------------------------------------------------------------------
-CLocalizer::CLocalizer() : defaultString(L"{}"), section(std::make_shared<LocalizeSection>(LocalizeSection()))
+CLocalizer::CLocalizer() : defaultString(L"{}"), section(std::make_shared<LocalizeSection>())
 {}
 
 
@@ -165,8 +152,7 @@ CLocalizer::SetValue(const std::string & path, const std::wstring & value)
 	{
 		LocalizeSection::Ptr previousSection = currentSection;
 		currentSection = currentSection->GetSection(splits[i]);
-		if (!currentSection)
-			currentSection = previousSection->AddSection(splits[i]);
+		if (!currentSection) currentSection = previousSection->AddSection(splits[i]);
 	}
 	return currentSection->SetValue(splits[splits.size() - 1], value);
 }
@@ -217,7 +203,7 @@ CLocalizer::load(UINT resourceId, const std::wstring & iResourceType)
 	HRSRC hrsrc = FindResource(0, MAKEINTRESOURCE(resourceId), iResourceType.c_str());
 	if (hrsrc)
 	{
-		DWORD sz = SizeofResource(0, hrsrc);
+		const DWORD sz = SizeofResource(0, hrsrc);
 		HGLOBAL hResourceLoaded = LoadResource(NULL, hrsrc);
 		if (hResourceLoaded != NULL)
 		{

@@ -1,5 +1,5 @@
 ﻿//
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2019 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
 // The use and distribution terms for this software are covered by the 
@@ -23,7 +23,7 @@ class CFormatter
 public:
 	explicit CFormatter(const std::wstring & fmtString) : fmtString(fmtString) {}
 
-	template <class T>	
+	template <class T>
 	CFormatter & operator % (const T & t)
 	{
 		std::wstringstream s;
@@ -46,10 +46,9 @@ protected:
 class LocalizeSection
 {
 public:
-	typedef std::shared_ptr<LocalizeSection> Ptr;
+	using Ptr = std::shared_ptr<LocalizeSection>;
 	LocalizeSection();
 	void Clear();
-	~LocalizeSection();
 	const std::wstring & GetValue(const std::string & value) const;
 	const Ptr GetSection(const std::string & section) const;
 	Ptr GetSection(const std::string & section);
