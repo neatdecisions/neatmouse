@@ -1,5 +1,5 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2019 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
 // The use and distribution terms for this software are covered by the 
@@ -41,24 +41,23 @@ public:
 
 	void NotifyEnabling(bool enabled);
 	void UpdateCursor();
-	void SetEmulationNotifier(IEmulationNotifier::Ptr notifier);
+	void SetEmulationNotifier(const IEmulationNotifier::Ptr & notifier);
 
 	const std::vector<neatcommon::system::LocaleUiDescriptor> & GetLocales() const;
 	const neatcommon::system::LocaleUiDescriptor & GetFallbackLocale() const;
 private:
 	IEmulationNotifier::Ptr emulationNotifier;
 	MouseActioner mouseActioner;
-	HWND hwndMainWindow;
+	HWND hwndMainWindow = NULL;
 	COptionsHolder optionsHolder;
-	MouseParams::Ptr mouseParams;
+	MouseParams::Ptr mouseParams = nullptr;
 	MouseParams initialMouseParams;
-	std::wstring ParamsPath;
+	std::wstring paramsPath;
 	std::vector<neatcommon::system::LocaleUiDescriptor> locales;
 	neatcommon::system::CLocalizer localizer;
 	neatcommon::ui::CImageManager imageManager;
-	HANDLE mutex;
+	HANDLE mutex = NULL;
 
-	MainSingleton();
 	~MainSingleton();
 };
 

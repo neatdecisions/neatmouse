@@ -1,5 +1,5 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2019 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
 // The use and distribution terms for this software are covered by the 
@@ -80,11 +80,6 @@ MainSingleton::GetFallbackLocale() const
 
 
 //---------------------------------------------------------------------------------------------------------------------
-MainSingleton::MainSingleton() : mouseParams(nullptr), mutex(NULL)
-{}
-
-
-//---------------------------------------------------------------------------------------------------------------------
 MainSingleton::~MainSingleton() 
 {
 	if (GetMouseParams() != nullptr)
@@ -107,13 +102,13 @@ MainSingleton::Init(const std::vector<neatcommon::system::LocaleUiDescriptor> & 
 	TCHAR szPath[MAX_PATH];
 	bool optionsLoaded = false;
 
-	DWORD n = GetModuleFileName(NULL, szPath, _countof(szPath) - 1);
-	
-	if (n >= 0)
+	const DWORD n = GetModuleFileName(NULL, szPath, _countof(szPath) - 1);
+
+	if (n > 0)
 	{
 		szPath[n] = _T('\0');
 		std::wstring folderPath(szPath);
-		size_t pos = folderPath.find_last_of(L'\\');
+		const size_t pos = folderPath.find_last_of(L'\\');
 		if (pos != folderPath.npos)
 		{
 			folderPath = folderPath.substr(0, pos);
@@ -122,14 +117,14 @@ MainSingleton::Init(const std::vector<neatcommon::system::LocaleUiDescriptor> & 
 				folderPath.append(_T("\\settings"));
 				CreateDirectory(folderPath.c_str(), NULL);
 				optionsHolder.SetOptionsFolder(folderPath);
-				ParamsPath = folderPath + _T("\\settings.ini");
-				optionsHolder.Load(ParamsPath);
+				paramsPath = folderPath + _T("\\settings.ini");
+				optionsHolder.Load(paramsPath);
 				optionsLoaded = true;
 			}
 		}
 	}
 
-	if ((!optionsLoaded) && (S_OK == ::SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, SHGFP_TYPE_CURRENT, szPath)))
+	if (!optionsLoaded && (S_OK == ::SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, SHGFP_TYPE_CURRENT, szPath)))
 	{
 		std::wstring s(szPath);
 		s = s + _T("\\Neat Decisions");
@@ -137,22 +132,26 @@ MainSingleton::Init(const std::vector<neatcommon::system::LocaleUiDescriptor> & 
 		s = s + _T("\\NeatMouse");
 		CreateDirectory(s.c_str(), NULL);
 		optionsHolder.SetOptionsFolder(s);
-		ParamsPath = s + _T("\\settings.ini");
-		optionsHolder.Load(ParamsPath);
+		paramsPath = s + _T("\\settings.ini");
+		optionsHolder.Load(paramsPath);
 	}
 
 	for (size_t i = 0; i < optionsHolder.GetSettingsCount(); i++)
 	{
 		if (neatcommon::system::GetFileName(optionsHolder.GetSettings(i)->FileName) == optionsHolder.GetDefaultSettingsFileName())
+		{
 			SetMouseParams(optionsHolder.GetSettings(i));
-	}	
+		}
+	}
 
 	if ((mouseParams == nullptr) && (optionsHolder.GetSettingsCount() > 0))
+	{
 		SetMouseParams(optionsHolder.GetSettings(0));
+	}
 
 	assert(mouseParams != nullptr);
 
-	this->selectLocale(optionsHolder.GetLanguageCode());
+	selectLocale(optionsHolder.GetLanguageCode());
 
 	SetLastError(0);
 	mutex = CreateMutex(NULL, FALSE, _T("NeatMouse"));
@@ -218,7 +217,7 @@ MainSingleton::GetInitialMouseParams() const
 
 //---------------------------------------------------------------------------------------------------------------------
 void 
-MainSingleton::SetEmulationNotifier(IEmulationNotifier::Ptr notifier)
+MainSingleton::SetEmulationNotifier(const IEmulationNotifier::Ptr & notifier)
 {
 	emulationNotifier = notifier;
 }
