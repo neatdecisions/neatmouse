@@ -125,7 +125,7 @@ std::size_t COptionsHolder::GetSettingsCount() const
 MouseParams::Ptr COptionsHolder::GetSettings(std::size_t i)
 {
 	if (i >= options.size()) return MouseParams::Ptr(nullptr);
-	return options.at(i);
+	return options[i];
 }
 
 
@@ -196,7 +196,7 @@ MouseParams::Ptr COptionsHolder::CreateNewSettings(const std::wstring & proposed
 	std::wstring name = proposedName;
 	int n = 0;
 
-	while (options.end() != std::find_if(options.begin(), options.end(), [&name](MouseParams::Ptr & params) { return params->Name == name; }))
+	while (std::any_of(options.begin(), options.end(), [&name](MouseParams::Ptr & params) { return params->Name == name; }))
 	{
 		name = proposedName + _T(" (") + std::to_wstring(++n) + _T(")");
 	}
