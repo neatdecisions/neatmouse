@@ -1,5 +1,5 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2019 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
 // The use and distribution terms for this software are covered by the 
@@ -215,7 +215,7 @@ KeyboardUtils::VirtualKey_t KeyboardUtils::ScanCodeToVirtualKey(ScanCode_t sc)
 //---------------------------------------------------------------------------------------------------------------------
 std::wstring KeyboardUtils::GetKeyName(VirtualKey_t vk, ScanCode_t sc)
 {
-	static const std::wstring kDefaultName(L"");
+	static const std::wstring kDefaultName;
 	if ( (vk == 0) && (sc == 0) ) return kDefaultName;
 
 	if (vk == 0) vk = ScanCodeToVirtualKey(sc);
@@ -282,7 +282,7 @@ KeyboardUtils::VirtualKey_t KeyboardUtils::TransformNumpadWithShift(VirtualKey_t
 	auto it = numpadKeyMap.find(sc);
 	if (it != numpadKeyMap.end())
 	{
-		const std::pair<KeyboardUtils::VirtualKey_t, KeyboardUtils::ScanCode_t> & aVkPair = it->second;
+		const auto & aVkPair = it->second;
 		if ( isNumLockOn && (aVkPair.first == vk) )
 		{
 			vk = aVkPair.second;
