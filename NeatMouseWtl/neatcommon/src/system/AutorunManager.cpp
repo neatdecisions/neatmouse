@@ -1,5 +1,5 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2019 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
 // The use and distribution terms for this software are covered by the 
@@ -16,7 +16,9 @@
 namespace neatcommon {
 namespace system {
 
-const unsigned int kExecutablePathBufSize = 16383;
+namespace {
+	constexpr unsigned int kExecutablePathBufSize = 16383;
+}
 
 
 //---------------------------------------------------------------------------------------------------------------------
