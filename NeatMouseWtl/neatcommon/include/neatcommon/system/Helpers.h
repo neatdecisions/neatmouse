@@ -1,5 +1,5 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2019 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
 // The use and distribution terms for this software are covered by the 
@@ -19,16 +19,6 @@ bool wstring2string(const std::wstring & wVal, std::string & outValue);
 bool string2wstring(const std::string & value, std::wstring & outValue);
 bool wstring2utf8string(const std::wstring & value, std::string & outValue);
 
-
-//-----------------------------------------------------------------------------
-template < class T > 
-inline std::wstring to_string ( const T & t )
-{
-	std::wstringstream ss;
-	ss << t;
-	std::wstring res( ss.str() );
-	return res;
-}
 
 //----------------------------------------------------------------------------
 template < class T > 
@@ -52,10 +42,10 @@ inline T from_string_def( const std::wstring & s, T def )
 //----------------------------------------------------------------------------
 struct ProductInfo
 {
-	unsigned short int major;
-	unsigned short int minor;
-	unsigned short int build1;
-	unsigned short int build2;
+	unsigned short int major = 0;
+	unsigned short int minor = 0;
+	unsigned short int build1 = 0;
+	unsigned short int build2 = 0;
 
 	std::string ToMultibyte()
 	{

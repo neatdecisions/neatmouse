@@ -1,5 +1,5 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2019 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
 // The use and distribution terms for this software are covered by the 
@@ -198,7 +198,7 @@ MouseParams::Ptr COptionsHolder::CreateNewSettings(const std::wstring & proposed
 
 	while (options.end() != std::find_if(options.begin(), options.end(), [&name](MouseParams::Ptr & params) { return params->Name == name; }))
 	{
-		name = proposedName + _T(" (") + neatcommon::system::to_string<int>(++n) + _T(")");
+		name = proposedName + _T(" (") + std::to_wstring(++n) + _T(")");
 	}
 
 	mouseParams->Name = name;
@@ -221,7 +221,7 @@ MouseParams::Ptr COptionsHolder::CreateNewSettings(const std::wstring & proposed
 	int i = 1;
 	while (::GetFileAttributes(finalName.c_str()) != DWORD(-1))
 	{
-		finalName = optionsFolder + L"\\" + fname + L" (" + neatcommon::system::to_string<int>(i++) + L").nmp";
+		finalName = optionsFolder + L"\\" + fname + L" (" + std::to_wstring(i++) + L").nmp";
 	}
 
 	mouseParams->Save(finalName);

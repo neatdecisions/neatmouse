@@ -1,5 +1,5 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2019 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
 // The use and distribution terms for this software are covered by the 
@@ -563,10 +563,10 @@ CNeatMouseWtlView::PopulateControls()
 {
 	const logic::MouseParams::Ptr mp = logic::MainSingleton::Instance().GetMouseParams();
 		
-	std::wstring s = neatcommon::system::to_string(mp->delta);
+	std::wstring s = std::to_wstring(mp->delta);
 
 	GetDlgItem(IDC_EDIT_SPEED).SetWindowText(s.c_str());
-	s = neatcommon::system::to_string(mp->adelta);
+	s = std::to_wstring(mp->adelta);
 	GetDlgItem(IDC_EDIT_ALT_SPEED).SetWindowText(s.c_str());
 
 	GetDlgItem(IDC_EDIT_BTN_LEFT).SetWindowText(logic::KeyboardUtils::GetKeyName(mp->VKPressLB, 0).c_str());

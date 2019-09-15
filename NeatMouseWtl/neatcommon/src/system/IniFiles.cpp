@@ -1,5 +1,5 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2019 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
 // The use and distribution terms for this software are covered by the 
@@ -91,14 +91,14 @@ void MyIniFile::writeBoolValue(const std::wstring & section, const std::wstring 
 //---------------------------------------------------------------------------------------------------------------------
 void MyIniFile::writeUIntValue(const std::wstring & section, const std::wstring & name, unsigned int value)
 {
-	writeStringValue(section, name, to_string<unsigned int>(value));
+	writeStringValue(section, name, std::to_wstring(value));
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
 void MyIniFile::writeIntValue(const std::wstring & section, const std::wstring & name, int value)
 {
-	writeStringValue(section, name, to_string<int>(value));
+	writeStringValue(section, name, std::to_wstring(value));
 }
 
 
@@ -106,7 +106,7 @@ void MyIniFile::writeIntValue(const std::wstring & section, const std::wstring &
 void 
 MyIniFile::writeFileTimeValue(const std::wstring & section, const std::wstring & name, const FILETIME & value)
 {
-	const std::wstring & s = to_string<DWORD>(value.dwHighDateTime) + L':' + to_string<DWORD>(value.dwLowDateTime);
+	const std::wstring & s = std::to_wstring(value.dwHighDateTime) + L':' + std::to_wstring(value.dwLowDateTime);
 	writeStringValue(section, name, s);
 }
 
@@ -117,14 +117,14 @@ MyIniFile::writeFloatValue(const std::wstring & section, const std::wstring & na
 {
 	float intpart, fractpart;
 	fractpart = modf(value, &intpart);
-  std::wstring v1 = to_string(intpart);
+	std::wstring v1 = std::to_wstring(intpart);
 	size_t t = v1.find_first_not_of(L"0123456789");
 	if (t != v1.npos)
 	{
 		v1.erase(v1.begin() + t);
 	}
 
-	std::wstring v2 = to_string(fractpart);
+	std::wstring v2 = std::to_wstring(fractpart);
 	t = v2.find_last_not_of(L"0123456789");
 
 	if (t != v1.npos)
@@ -142,7 +142,7 @@ MyIniFile::writeFloatValue(const std::wstring & section, const std::wstring & na
 float 
 MyIniFile::readFloatValue(const std::wstring & section, const std::wstring & name, const float defaultValue)
 {
-	const std::wstring & s = readStringValue(section, name, to_string(defaultValue));
+	const std::wstring & s = readStringValue(section, name, std::to_wstring(defaultValue));
 	size_t t = s.find(L".");
 	float intpart = 0;
 	float fracpart = 0;
