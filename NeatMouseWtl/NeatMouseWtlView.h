@@ -1,5 +1,5 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2019 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
 // The use and distribution terms for this software are covered by the 
@@ -12,11 +12,10 @@
 #include "NeatToolbar.h"
 #include "resource.h"
 #include "neatcommon/ui/ButtonST.h"
+#include <array>
 
 
 namespace neatmouse {
-
-#define BTN_DEL_COUNT 13
 
 class CNeatMouseWtlView : public CDialogImpl<CNeatMouseWtlView>
 {
@@ -25,7 +24,6 @@ public:
 	
 	BOOL PreTranslateMessage(MSG* pMsg);
 
-	CNeatMouseWtlView();
 	void SetToolbar(CNeatToolbar * tb);
 	int CheckIfChangesSaved();
 	void PopulateControls();
@@ -56,11 +54,7 @@ protected:
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
 
-	CNeatToolbar * tb;
-	std::map<UINT, HBITMAP> icons;
-
 	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	
 	LRESULT OnEditChange(UINT code, UINT id, HWND hwnd, BOOL & bHandled);
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	void OnMinimizeOnStartupCheck(UINT uCode, int nID, HWND hwndCtrl);
@@ -84,9 +78,13 @@ protected:
 
 	CString GetHotkeyName(UINT mods, UINT vk);
 
-	neatcommon::ui::CButtonST btnDel[BTN_DEL_COUNT];
-	neatcommon::ui::CButtonST btnDelHotkey;
-	int checkBoxPadding;
+	void UpdateToolbarButtons();
+
+	CNeatToolbar* m_tb = nullptr;
+	std::map<UINT, HBITMAP> m_icons;
+	std::array<neatcommon::ui::CButtonST, 13> m_btnDel{};
+	neatcommon::ui::CButtonST m_btnDelHotkey;
+	int m_checkBoxPadding = 0;
 };	
 
 } // namespace neatmouse

@@ -18,19 +18,17 @@
 namespace neatmouse {
 
 
-#define ACTIVATION_HOTKEY_ID 1
-	
+namespace {
+	constexpr int ACTIVATION_HOTKEY_ID = 1;
+}
 
-//---------------------------------------------------------------------------------------------------------------------
-CNeatMouseWtlView::CNeatMouseWtlView() : tb(nullptr), checkBoxPadding(0)
-{}
 
 
 //---------------------------------------------------------------------------------------------------------------------
 void 
 CNeatMouseWtlView::SetToolbar(CNeatToolbar * pToolbar)
 {
-	this->tb = pToolbar;
+	m_tb = pToolbar;
 }
 
 
@@ -59,7 +57,7 @@ CNeatMouseWtlView::PreTranslateMessage(MSG* pMsg)
 	{
 		if (pMsg->message == WM_KEYUP || pMsg->message == WM_SYSKEYUP)
 		{
-			if (tb != nullptr) tb->RedrawMe();
+			if (m_tb != nullptr) m_tb->RedrawMe();
 		}
 
 		if (pMsg->message == WM_KEYDOWN || pMsg->message == WM_SYSKEYDOWN)
@@ -70,12 +68,12 @@ CNeatMouseWtlView::PreTranslateMessage(MSG* pMsg)
 				VK_SHIFT, VK_CONTROL, VK_MENU, VK_NUMLOCK, VK_SCROLL, VK_CAPITAL, VK_CANCEL, VK_TAB, 
 				VK_LSHIFT, VK_RSHIFT, VK_LMENU, VK_RMENU, VK_LCONTROL, VK_RCONTROL, VK_LWIN, VK_RWIN
 			};
-			
+
 			TCHAR buf[128];
 			do
 			{
 				if (bannedKeys.find(pMsg->wParam) != bannedKeys.end()) break;
-									
+
 				USHORT scanCode = (pMsg->lParam >> 16) & 0xFF;
 				int vk = pMsg->wParam;
 
@@ -85,7 +83,7 @@ CNeatMouseWtlView::PreTranslateMessage(MSG* pMsg)
 				}
 
 				if (logic::MainSingleton::Instance().GetMouseParams()->BindingExists(vk)) break;
-			
+
 				if (pMsg->hwnd == GetDlgItem(IDC_EDIT_HOTKEY))
 				{
 					if (!logic::MainSingleton::Instance().GetMouseParams()->UseHotkey())
@@ -118,10 +116,8 @@ CNeatMouseWtlView::PreTranslateMessage(MSG* pMsg)
 					if (EnableHotkey(mods, pMsg->wParam))
 					{
 						logic::MainSingleton::Instance().GetMouseParams()->VKHotkey = pMsg->wParam;
-						
 						logic::MainSingleton::Instance().GetMouseParams()->modHotkey = mods;
 						::SetWindowText(GetDlgItem(IDC_EDIT_HOTKEY), GetHotkeyName(mods, pMsg->wParam));
-						
 					} else
 					{
 						if (!EnableHotkey(
@@ -136,16 +132,14 @@ CNeatMouseWtlView::PreTranslateMessage(MSG* pMsg)
 					}
 
 					SynchronizeCombos();
-
-					if (tb != nullptr) tb->UpdateButtonStates();
-
+					UpdateToolbarButtons();
 					break;
 				}
 
 				// list of the edit boxes which can accept input
-				static const std::vector<DWORD> hwnds
+				static const std::array<DWORD, 13> hwnds
 				{
-					IDC_EDIT_BTN_LEFT, 
+					IDC_EDIT_BTN_LEFT,
 					IDC_EDIT_BTN_RIGHT,
 					IDC_EDIT_BTN_MIDDLE,
 					IDC_EDIT_UP,
@@ -220,7 +214,7 @@ CNeatMouseWtlView::PreTranslateMessage(MSG* pMsg)
 						break;
 					}
 
-					if (tb != nullptr) tb->UpdateButtonStates();
+					UpdateToolbarButtons();
 					return TRUE;
 				}
 			} while (false);
@@ -248,7 +242,7 @@ CNeatMouseWtlView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	PAINTSTRUCT ps;
 	HDC hDC = BeginPaint(&ps);
 
-	for (const std::map<UINT, HBITMAP>::value_type & aIcon : icons)
+	for (const auto & aIcon : m_icons)
 	{
 		CWindow wnd = GetDlgItem(aIcon.first);
 		if (wnd.IsWindowVisible())
@@ -272,7 +266,7 @@ CNeatMouseWtlView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 //---------------------------------------------------------------------------------------------------------------------
 void
-CNeatMouseWtlView::OnDestroy()	
+CNeatMouseWtlView::OnDestroy()
 {
 	DisableHotkey();
 }
@@ -285,7 +279,7 @@ CNeatMouseWtlView::OnMinimizeOnStartupCheck(UINT /*uCode*/, int /*nID*/, HWND /*
 	CButton checkBox(GetDlgItem(IDC_CHECK_MINIMIZE));
 	logic::MainSingleton::Instance().GetMouseParams()->minimizeOnStartup = checkBox.GetCheck() == BST_CHECKED;
 	checkBox.Detach();
-	if (tb != nullptr) tb->UpdateButtonStates();
+	UpdateToolbarButtons();
 }
 
 
@@ -296,7 +290,7 @@ CNeatMouseWtlView::OnActivateOnStartupCheck(UINT /*uCode*/, int /*nID*/, HWND /*
 	CButton checkBox(GetDlgItem(IDC_CHECK_AUTOACTIVATE));
 	logic::MainSingleton::Instance().GetMouseParams()->activateOnStartup = checkBox.GetCheck() == BST_CHECKED;
 	checkBox.Detach();
-	if (tb != nullptr) tb->UpdateButtonStates();
+	UpdateToolbarButtons();
 }
 
 
@@ -307,7 +301,7 @@ CNeatMouseWtlView::OnCursorCheck(UINT /*uCode*/, int /*nID*/, HWND /*hwndCtrl*/)
 	CButton checkBox(GetDlgItem(IDC_CHECK_CURSOR));
 	logic::MainSingleton::Instance().GetMouseParams()->changeCursor = checkBox.GetCheck() == BST_CHECKED;
 	checkBox.Detach();
-	if (tb != nullptr) tb->UpdateButtonStates();
+	UpdateToolbarButtons();
 	logic::MainSingleton::Instance().UpdateCursor();
 }
 
@@ -319,7 +313,7 @@ CNeatMouseWtlView::OnShowNotificationsCheck(UINT /*uCode*/, int /*nID*/, HWND /*
 	CButton checkBox(GetDlgItem(IDC_CHECK_NOTIFICATIONS));
 	logic::MainSingleton::Instance().GetMouseParams()->showNotifications = checkBox.GetCheck() == BST_CHECKED;
 	checkBox.Detach();
-	if (tb != nullptr) tb->UpdateButtonStates();
+	UpdateToolbarButtons();
 }
 
 
@@ -332,7 +326,7 @@ CNeatMouseWtlView::OnDelHotkeyClick(UINT /*uCode*/, int /*nID*/, HWND /*hwndCtrl
 	logic::MainSingleton::Instance().GetMouseParams()->modHotkey = 0;
 	DisableHotkey();
 	SynchronizeCombos();
-	if (tb != nullptr) tb->UpdateButtonStates();
+	UpdateToolbarButtons();
 }
 
 
@@ -399,7 +393,7 @@ CNeatMouseWtlView::OnDelBtnClick(UINT /*uCode*/, int nID, HWND /*hwndCtrl*/)
 		return;
 	}
 
-	if (tb != nullptr) tb->UpdateButtonStates();
+	UpdateToolbarButtons();
 }
 
 
@@ -437,7 +431,7 @@ CNeatMouseWtlView::OnComboSelChange(UINT /*uCode*/, int nID, HWND hwndCtrl)
 			if (logic::MainSingleton::Instance().GetMouseParams()->UseHotkey())
 			{
 				::ShowWindow(GetDlgItem(IDC_EDIT_HOTKEY), SW_SHOW);
-				btnDelHotkey.ShowWindow(SW_SHOW);
+				m_btnDelHotkey.ShowWindow(SW_SHOW);
 
 				if (logic::MainSingleton::Instance().GetMouseParams()->isModifierTaken(logic::MainSingleton::Instance().GetMouseParams()->modHotkey) ||
 					 !EnableHotkey(logic::MainSingleton::Instance().GetMouseParams()->modHotkey, logic::MainSingleton::Instance().GetMouseParams()->VKHotkey))
@@ -449,7 +443,7 @@ CNeatMouseWtlView::OnComboSelChange(UINT /*uCode*/, int nID, HWND hwndCtrl)
 			} else
 			{
 				::ShowWindow(GetDlgItem(IDC_EDIT_HOTKEY), SW_HIDE);
-				btnDelHotkey.ShowWindow(SW_HIDE);
+				m_btnDelHotkey.ShowWindow(SW_HIDE);
 				DisableHotkey();
 			}
 			cb.Detach();
@@ -491,10 +485,7 @@ CNeatMouseWtlView::OnComboSelChange(UINT /*uCode*/, int nID, HWND hwndCtrl)
 		return;
 	}
 
-	if (tb != nullptr)
-	{
-		tb->UpdateButtonStates();
-	}
+	UpdateToolbarButtons();
 }
 
 
@@ -504,8 +495,7 @@ CNeatMouseWtlView::OnEditChange(UINT /*code*/, UINT id, HWND hwnd, BOOL & bHandl
 {
 	bHandled = false;
 
-	if ((id != IDC_EDIT_SPEED) && (id != IDC_EDIT_ALT_SPEED))
-		return 0;
+	if ((id != IDC_EDIT_SPEED) && (id != IDC_EDIT_ALT_SPEED)) return 0;
 
 	CString s;
 	int n = ::GetWindowTextLength(hwnd);
@@ -521,7 +511,7 @@ CNeatMouseWtlView::OnEditChange(UINT /*code*/, UINT id, HWND hwnd, BOOL & bHandl
 		break;
 	}
 
-	if (tb != nullptr) tb->UpdateButtonStates();
+	UpdateToolbarButtons();
 
 	return 0;
 }
@@ -541,14 +531,14 @@ CNeatMouseWtlView::CheckIfChangesSaved()
 		{
 			case IDYES:
 				logic::MainSingleton::Instance().AcceptMouseParams();
-				tb->UpdateButtonStates();
+				UpdateToolbarButtons();
 				return IDYES;
 			case IDCANCEL:
-				tb->UpdateButtonStates();
+				UpdateToolbarButtons();
 				return IDCANCEL;
 			default:
 				logic::MainSingleton::Instance().RevertMouseParams();
-				tb->UpdateButtonStates();
+				UpdateToolbarButtons();
 				return IDNO;
 		}
 	}
@@ -685,7 +675,7 @@ CNeatMouseWtlView::FillModifierCombobox(
 		{
 			std::wstring itemLabel = logic::KeyboardUtils::GetKeyName(key, 0);
 			if (itemLabel.empty()) itemLabel = _("main.combo-item-none");
-			comboBox.SetItemData(	comboBox.AddString(itemLabel.c_str()), key );
+			comboBox.SetItemData( comboBox.AddString(itemLabel.c_str()), key );
 			if (key == valueToSet) neededValueFound = true;
 		}
 	}
@@ -707,18 +697,18 @@ CNeatMouseWtlView::FillModifierCombobox(
 void 
 CNeatMouseWtlView::SynchronizeCombos()
 {
-	// controlingl comboboxes which are used to select modifier keys
+	// controlling comboboxes which are used to select modifier keys
 	// make sure that if a modifier has been in one of the comboboxes, it doesn't 
 	// show up in the others
 
 	// keys which should be shown in the comboboxes by default, i.e. when
 	// there's not hotkey specified and all comboboxes have [None] value selected
-	static const DWORD kDefaultValue = 0; // [None] value
+	constexpr DWORD kDefaultValue = 0; // [None] value
 	static const std::vector<DWORD> keys = { 
 		kDefaultValue, VK_LCONTROL, VK_LMENU, VK_LSHIFT, VK_RCONTROL, VK_RMENU, VK_RSHIFT };
 	
 	// list of the comboboxes to process, with their values retrieved from the settings
-	typedef std::vector< std::pair<CComboBox, DWORD> > ComboboxDescriptor_t;
+	using ComboboxDescriptor_t = std::vector< std::pair<CComboBox, DWORD> >;
 	ComboboxDescriptor_t comboBoxes = {
 		std::make_pair( CComboBox(GetDlgItem(IDC_COMBO_ALT_MOD)), logic::MainSingleton::Instance().GetMouseParams()->VKAccelerated),
 		std::make_pair( CComboBox(GetDlgItem(IDC_COMBO_UNBIND)), logic::MainSingleton::Instance().GetMouseParams()->VKActivationMod),
@@ -848,7 +838,6 @@ CNeatMouseWtlView::localize()
 
 	CRect layoutRect;
 
-
 	// checkbox "Minimize" (row "On startup")
 	CWindow wnd;
 	wnd.Attach(GetDlgItem(IDC_CHECK_MINIMIZE));
@@ -925,44 +914,47 @@ CNeatMouseWtlView::localize()
 LRESULT 
 CNeatMouseWtlView::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	for (size_t i = 0; i < BTN_DEL_COUNT; i++)
-	{		
-		btnDel[i].SubclassWindow(GetDlgItem(IDC_BTN_DEL1 + i));
-		btnDel[i].SetParent(this->m_hWnd);
-		btnDel[i].SetIcon(IDI_CROSSB, IDI_CROSS);
-		btnDel[i].ResizeClient(16, 16);
-		btnDel[i].SetWindowText(_T(""));
-		btnDel[i].SetTooltipText(L"");
-		btnDel[i].DrawBorder(false);
+	int n = IDC_BTN_DEL1;
+	for (auto & btn: m_btnDel)
+	{
+		btn.SubclassWindow(GetDlgItem(n++));
+		btn.SetParent(this->m_hWnd);
+		btn.SetIcon(IDI_CROSSB, IDI_CROSS);
+		btn.ResizeClient(16, 16);
+		btn.SetWindowText(_T(""));
+		btn.SetTooltipText(L"");
+		btn.DrawBorder(false);
 	}
 
-	btnDelHotkey.SubclassWindow(GetDlgItem(IDC_DEL_HOTKEY));
-	btnDelHotkey.SetIcon(IDI_CROSSB, IDI_CROSS);
-	btnDelHotkey.ResizeClient(16, 16);
-	btnDelHotkey.SetWindowText(_T(""));
-	btnDelHotkey.SetTooltipText(L"");
-	btnDelHotkey.DrawBorder(false);	
-	
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_ACTIVATION, SafeLoadPng(IDB_PNG_PLUG_CONNECT)));
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_SPEED, SafeLoadPng(IDB_PNG_M_SPEED)));
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_ALT_SPEED, SafeLoadPng(IDB_PNG_M_ALT_SPEED)));
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_BTN_LEFT, SafeLoadPng(IDB_PNG_M_BTN_LEFT)));
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_BTN_RIGHT, SafeLoadPng(IDB_PNG_M_BTN_RIGHT)));
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_BTN_MIDDLE, SafeLoadPng(IDB_PNG_M_BTN_MIDDLE)));
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_UP, SafeLoadPng(IDB_PNG_M_UP)));
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_DOWN, SafeLoadPng(IDB_PNG_M_DOWN)));
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_LEFT, SafeLoadPng(IDB_PNG_M_LEFT)));
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_RIGHT, SafeLoadPng(IDB_PNG_M_RIGHT)));
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_LEFTUP, SafeLoadPng(IDB_PNG_M_LEFTUP)));
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_RIGHTDOWN, SafeLoadPng(IDB_PNG_M_RIGHTDOWN)));
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_LEFTDOWN, SafeLoadPng(IDB_PNG_M_LEFTDOWN)));
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_RIGHTUP, SafeLoadPng(IDB_PNG_M_RIGHTUP)));
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_SCROLL_UP, SafeLoadPng(IDB_PNG_M_SCROLL_UP)));
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_SCROLL_DOWN, SafeLoadPng(IDB_PNG_M_SCROLL_DOWN)));
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_ONSTARTUP, SafeLoadPng(IDB_PNG_ROCKET)));
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_SHOW, SafeLoadPng(IDB_PNG_EYE)));
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_UNBIND, SafeLoadPng(IDB_PNG_M_ALT_MOD)));
-	icons.insert(std::pair<UINT, HBITMAP>(IDC_STATIC_STICKYKEYS, SafeLoadPng(IDB_PNG_CURSORLIFEBUOY)));
+	m_btnDelHotkey.SubclassWindow(GetDlgItem(IDC_DEL_HOTKEY));
+	m_btnDelHotkey.SetIcon(IDI_CROSSB, IDI_CROSS);
+	m_btnDelHotkey.ResizeClient(16, 16);
+	m_btnDelHotkey.SetWindowText(_T(""));
+	m_btnDelHotkey.SetTooltipText(L"");
+	m_btnDelHotkey.DrawBorder(false);
+
+	m_icons = {
+		{ IDC_STATIC_ACTIVATION, SafeLoadPng(IDB_PNG_PLUG_CONNECT) },
+		{ IDC_STATIC_SPEED, SafeLoadPng(IDB_PNG_M_SPEED) },
+		{ IDC_STATIC_ALT_SPEED, SafeLoadPng(IDB_PNG_M_ALT_SPEED) },
+		{ IDC_STATIC_BTN_LEFT, SafeLoadPng(IDB_PNG_M_BTN_LEFT) },
+		{ IDC_STATIC_BTN_RIGHT, SafeLoadPng(IDB_PNG_M_BTN_RIGHT) },
+		{ IDC_STATIC_BTN_MIDDLE, SafeLoadPng(IDB_PNG_M_BTN_MIDDLE) },
+		{ IDC_STATIC_UP, SafeLoadPng(IDB_PNG_M_UP) },
+		{ IDC_STATIC_DOWN, SafeLoadPng(IDB_PNG_M_DOWN) },
+		{ IDC_STATIC_LEFT, SafeLoadPng(IDB_PNG_M_LEFT) },
+		{ IDC_STATIC_RIGHT, SafeLoadPng(IDB_PNG_M_RIGHT) },
+		{ IDC_STATIC_LEFTUP, SafeLoadPng(IDB_PNG_M_LEFTUP) },
+		{ IDC_STATIC_RIGHTDOWN, SafeLoadPng(IDB_PNG_M_RIGHTDOWN) },
+		{ IDC_STATIC_LEFTDOWN, SafeLoadPng(IDB_PNG_M_LEFTDOWN) },
+		{ IDC_STATIC_RIGHTUP, SafeLoadPng(IDB_PNG_M_RIGHTUP) },
+		{ IDC_STATIC_SCROLL_UP, SafeLoadPng(IDB_PNG_M_SCROLL_UP) },
+		{ IDC_STATIC_SCROLL_DOWN, SafeLoadPng(IDB_PNG_M_SCROLL_DOWN) },
+		{ IDC_STATIC_ONSTARTUP, SafeLoadPng(IDB_PNG_ROCKET) },
+		{ IDC_STATIC_SHOW, SafeLoadPng(IDB_PNG_EYE) },
+		{ IDC_STATIC_UNBIND, SafeLoadPng(IDB_PNG_M_ALT_MOD) },
+		{ IDC_STATIC_STICKYKEYS, SafeLoadPng(IDB_PNG_CURSORLIFEBUOY) }
+	};
 
 	SynchronizeCombos();
 
@@ -979,7 +971,7 @@ CNeatMouseWtlView::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 		CWindow wnd = GetDlgItem(IDC_CHECK_DUMMY);
 		CRect r;
 		wnd.GetClientRect(&r);
-		this->checkBoxPadding = r.Width();
+		m_checkBoxPadding = r.Width();
 	}
 
 	localize();
@@ -1004,12 +996,12 @@ CNeatMouseWtlView::enableAdvancedMode()
 	CRect lastGroupRect;
 	GetDlgItem(IDC_GROUP_MISC).GetWindowRect(&lastGroupRect);
 	ScreenToClient(&lastGroupRect);
-	this->ResizeClient(lastGroupRect.Width() + lastGroupRect.left * 2, lastGroupRect.top + lastGroupRect.Height() + 11);
+	ResizeClient(lastGroupRect.Width() + lastGroupRect.left * 2, lastGroupRect.top + lastGroupRect.Height() + 11);
 
 	GetDlgItem(IDC_GROUP_KEYBINDINGS).SetWindowText(_("main.gb-movement"));
 
 	showAdvancedControls(true);
-	this->RedrawWindow();
+	RedrawWindow();
 }
 	
 
@@ -1022,13 +1014,13 @@ CNeatMouseWtlView::disableAdvancedMode()
 	CRect lastGroupRect;
 	GetDlgItem(IDC_GROUP_KEYBINDINGS).GetWindowRect(&lastGroupRect);
 	ScreenToClient(&lastGroupRect);
-	this->ResizeClient(lastGroupRect.Width() + lastGroupRect.left * 2, lastGroupRect.top + lastGroupRect.Height() + 11);
+	ResizeClient(lastGroupRect.Width() + lastGroupRect.left * 2, lastGroupRect.top + lastGroupRect.Height() + 11);
 
 	GetDlgItem(IDC_GROUP_KEYBINDINGS).SetWindowText(_("main.gb-quicksettings"));
 
 	showAdvancedControls(false);
 
-	this->RedrawWindow();	
+	RedrawWindow();
 }
 
 
@@ -1036,7 +1028,7 @@ CNeatMouseWtlView::disableAdvancedMode()
 void 
 CNeatMouseWtlView::showAdvancedControls(bool show)
 {
-	static const std::vector<UINT> itemsToHide
+	static const std::array<UINT, 17> itemsToHide
 	{
 		IDC_STATIC_LEFTUP,
 		IDC_STATIC_LEFTDOWN,
@@ -1078,7 +1070,7 @@ CNeatMouseWtlView::AutosizeCheckbox(CWindow & wnd)
 	dc.SelectFont(f);
 	CRect r;
 	wnd.GetClientRect(&r);
-	wnd.SetWindowPos(HWND_BOTTOM, 0, 0, sz.cx + checkBoxPadding, r.Height(), SWP_NOMOVE);
+	wnd.SetWindowPos(HWND_BOTTOM, 0, 0, sz.cx + m_checkBoxPadding, r.Height(), SWP_NOMOVE);
 }
 
 
@@ -1114,5 +1106,13 @@ CNeatMouseWtlView::ToggleAdvancedItems()
 	SwapItems(IDC_BTN_DEL2, IDC_BTN_DEL11);
 	SwapItems(IDC_BTN_DEL3, IDC_BTN_DEL12);
 }
+
+
+//---------------------------------------------------------------------------------------------------------------------
+void CNeatMouseWtlView::UpdateToolbarButtons()
+{
+	if (m_tb != nullptr) m_tb->UpdateButtonStates();
+}
+
 
 } // namespace neatmouse
