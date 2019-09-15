@@ -1,5 +1,5 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2019 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
 // The use and distribution terms for this software are covered by the 
@@ -200,7 +200,7 @@ CLocalizer::loadFromIniFile(MyIniFile & iniFile)
 	iniFile.enumerateSections(sections);
 	for (const std::wstring & s : sections)
 	{
-		for (const IniValueMap::value_type & aValue: iniFile.getSection(s))
+		for (const auto & aValue: iniFile.getSection(s))
 		{
 			std::string ss;
 			wstring2string(s + L"." + aValue.first, ss);

@@ -23,7 +23,7 @@ namespace system {
 void 
 MyIniFile::enumerateSections(std::vector<std::wstring> & sections)
 {
-	for (const IniSectionMap::value_type aSection : values)
+	for (const IniSectionMap::value_type & aSection : values)
 	{
 		sections.push_back(aSection.first);
 	}
@@ -31,18 +31,19 @@ MyIniFile::enumerateSections(std::vector<std::wstring> & sections)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-const IniValueMap & 
+const MyIniFile::IniValueMap &
 MyIniFile::getSection(const std::wstring & section)
 {
 	IniSectionMap::iterator it = values.find(section);
 	if (it != values.end())
+	{
 		return it->second;
+	}
 	else
 	{
-		values.insert(std::pair<std::wstring, IniValueMap>(section, IniValueMap()));
+		values.emplace(section, IniValueMap());
 		it = values.find(section);
-		if (it == values.end())
-			throw std::exception();
+		if (it == values.end()) throw std::exception();
 		return it->second;
 	}	
 }
@@ -69,14 +70,18 @@ MyIniFile::writeStringValue(const std::wstring & section, const std::wstring & n
 	{
 		IniValueMap::iterator it1 = it->second.find(name);
 		if (it1 != it->second.end())
+		{
 			it1->second = value;
+		}
 		else
-			it->second.insert(std::make_pair(name, value));
+		{
+			it->second.emplace(name, value);
+		}
 	} else
 	{
 		IniValueMap t;
-		t.insert(std::make_pair(name, value));
-		values.insert(std::make_pair(section, t));
+		t.emplace(name, value);
+		values.emplace(section, t);
 	}
 }
 
@@ -103,75 +108,12 @@ void MyIniFile::writeIntValue(const std::wstring & section, const std::wstring &
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
-MyIniFile::writeFileTimeValue(const std::wstring & section, const std::wstring & name, const FILETIME & value)
-{
-	const std::wstring & s = std::to_wstring(value.dwHighDateTime) + L':' + std::to_wstring(value.dwLowDateTime);
-	writeStringValue(section, name, s);
-}
-
-
-//---------------------------------------------------------------------------------------------------------------------
-void 
-MyIniFile::writeFloatValue(const std::wstring & section, const std::wstring & name, const float value)
-{
-	float intpart, fractpart;
-	fractpart = modf(value, &intpart);
-	std::wstring v1 = std::to_wstring(intpart);
-	size_t t = v1.find_first_not_of(L"0123456789");
-	if (t != v1.npos)
-	{
-		v1.erase(v1.begin() + t);
-	}
-
-	std::wstring v2 = std::to_wstring(fractpart);
-	t = v2.find_last_not_of(L"0123456789");
-
-	if (t != v1.npos)
-	{
-		v2.erase(0, t);
-		v1.append(L".");
-		v1.append(v2);
-	}
-		
-	writeStringValue(section, name, v1);
-}
-
-	
-//---------------------------------------------------------------------------------------------------------------------
-float 
-MyIniFile::readFloatValue(const std::wstring & section, const std::wstring & name, const float defaultValue)
-{
-	const std::wstring & s = readStringValue(section, name, std::to_wstring(defaultValue));
-	size_t t = s.find(L".");
-	float intpart = 0;
-	float fracpart = 0;
-	if (t != s.npos)
-	{
-		intpart = static_cast<float>(from_string_def<int>(s.substr(0, t - 1), 0));
-		fracpart = static_cast<float>(from_string_def<int>(s.substr(t + 1), 0));
-
-	} else
-		intpart = static_cast<float>(from_string_def<int>(s, 0));
-
-	while (fracpart > 1)
-		fracpart /= 10;
-
-	return intpart + fracpart;
-
-}
-
-
-//---------------------------------------------------------------------------------------------------------------------
 std::string
 MyIniFile::readUtf8Value(const std::wstring & section, const std::wstring & name, const std::string & defaultValue)
 {
 	const std::wstring & wVal = readStringValue(section, name);
 	std::string res;
-	if (wstring2string(wVal, res))
-		return res;
-	else
-		return defaultValue;
+	return (wstring2string(wVal, res)) ? res : defaultValue;
 }
 
 
@@ -180,11 +122,9 @@ std::wstring
 MyIniFile::readStringValue(const std::wstring & section, const std::wstring & name, const std::wstring & defaultValue)
 {
 	IniSectionMap::const_iterator it = values.find(section);
-	if (it == values.end())
-		return defaultValue;
+	if (it == values.end()) return defaultValue;
 	IniValueMap::const_iterator it1 = it->second.find(name);
-	if (it1 == it->second.end())
-		return defaultValue;
+	if (it1 == it->second.end()) return defaultValue;
 	return it1->second;
 }
 
@@ -193,8 +133,7 @@ MyIniFile::readStringValue(const std::wstring & section, const std::wstring & na
 bool 
 MyIniFile::readBoolValue(const std::wstring & section, const std::wstring & name, bool defaultValue)
 {
-	int iValue = readUIntValue(section, name, 2);
-	switch (iValue)
+	switch (readUIntValue(section, name, 2))
 	{
 	case 0:
 		return false;
@@ -221,28 +160,6 @@ MyIniFile::readIntValue(const std::wstring & section, const std::wstring & name,
 {
 	const std::wstring & sValue = readStringValue(section, name);
 	return from_string_def<int>(sValue, defaultValue);
-}
-
-
-//---------------------------------------------------------------------------------------------------------------------
-FILETIME 
-MyIniFile::readFileTimeValue(const std::wstring & section, const std::wstring & name, const FILETIME & defaultValue)
-{
-	const std::wstring & sValue = readStringValue(section, name);
-	const size_t delimPos = sValue.find(L':');
-	if (delimPos == std::string::npos)
-	{
-		return defaultValue;
-	}
-	else
-	{
-		const std::wstring & sHi = sValue.substr(0, delimPos);
-		const std::wstring & sLo = sValue.substr(delimPos + 1);
-		FILETIME ft;
-		ft.dwHighDateTime = from_string_def<DWORD>(sHi, 0);
-		ft.dwLowDateTime = from_string_def<DWORD>(sLo, 0);
-		return ft;
-	}
 }
 
 
@@ -282,7 +199,7 @@ MyIniFile::parseLine(const std::wstring & line, std::wstring & currentSection)
 	// left trim
 	while( (!s.empty()) && (s.at(0) == L' ' || s.at(0) == L'\t'))
 		s.erase(0, 1);
-			
+
 	bool isSection = s.empty() ? false : s.at(0) == '[';
 
 	// right trim
@@ -351,7 +268,7 @@ MyIniFile::load(const std::wstring & fileName)
 
 	fread(BOM, sizeof(char), 2, fileHandle);
 
-	std::wstring currentSection = L"";
+	std::wstring currentSection;
 
 	while (fgetws(line, 1024, fileHandle))
 	{
