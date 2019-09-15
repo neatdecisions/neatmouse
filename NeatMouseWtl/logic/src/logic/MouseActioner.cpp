@@ -1,5 +1,5 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2019 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
 // The use and distribution terms for this software are covered by the 
@@ -53,7 +53,7 @@ MouseActioner::checkModifierButtonDown(int vk, int modifier, bool isKeyUp, bool 
 		if (isNumlockSpecial && ((modifier == VK_LSHIFT) || (modifier == VK_RSHIFT)))
 		{
 			oValue = (( (_lastShift == kLeft) && (modifier == VK_LSHIFT)) ||
-				( (_lastShift == kRight) && (modifier == VK_RSHIFT)));
+			          ( (_lastShift == kRight) && (modifier == VK_RSHIFT)));
 		}
 	}
 	return false;
@@ -72,9 +72,9 @@ MouseActioner::preprocessKey(const KBDLLHOOKSTRUCT & event)
 		sc |= 0x100;
 		vk = -vk;
 	}
-	static const KeyboardUtils::ScanCode_t SC_RSHIFT = 0x136;
-	static const KeyboardUtils::ScanCode_t SC_RCONTROL = 0x11D;
-	static const KeyboardUtils::ScanCode_t SC_RALT = 0x138;
+	constexpr KeyboardUtils::ScanCode_t SC_RSHIFT = 0x136;
+	constexpr KeyboardUtils::ScanCode_t SC_RCONTROL = 0x11D;
+	constexpr KeyboardUtils::ScanCode_t SC_RALT = 0x138;
 
 	switch (abs(vk))
 	{
@@ -96,7 +96,7 @@ MouseActioner::preprocessKey(const KBDLLHOOKSTRUCT & event)
 	{
 		isNumlockSpecialHandling = true;
 		vk = vk1;
-	}	
+	}
 
 	return std::make_pair(vk, isNumlockSpecialHandling);
 }
@@ -115,7 +115,7 @@ MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 
 	// if we're processing "Key Up" event and the key is our enabler (one of the locks), reset everything and return
 	if (isKeyUp && 
-		  (static_cast<logic::KeyboardUtils::VirtualKey_t>(event.vkCode) == MainSingleton::Instance().GetMouseParams()->VKEnabler))
+	    (static_cast<logic::KeyboardUtils::VirtualKey_t>(event.vkCode) == MainSingleton::Instance().GetMouseParams()->VKEnabler))
 	{
 		_isEmulationActivated = (GetKeyState(MainSingleton::Instance().GetMouseParams()->VKEnabler) & 1);
 		MainSingleton::Instance().NotifyEnabling(_isEmulationActivated);
@@ -153,8 +153,8 @@ MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 		// if Activation Modifier is a Shift and we're working with the numerical keyboard, isNumlockSpecialHandling will indicate
 		// that Shift is pressed - there is no other way of deducing it here since Windows send Shift's Key Up in this case
 		if (isNumlockSpecialHandling && 
-			  ( ( (mouseParams.VKActivationMod == VK_RSHIFT) && (_lastShift == kRight) ) || 
-			    ( (mouseParams.VKActivationMod == VK_LSHIFT) && (_lastShift == kLeft) ) ) )
+		    ( ( (mouseParams.VKActivationMod == VK_RSHIFT) && (_lastShift == kRight) ) || 
+		      ( (mouseParams.VKActivationMod == VK_LSHIFT) && (_lastShift == kLeft) ) ) )
 		{
 			_isActivationButtonPressed = true;
 		}
@@ -212,28 +212,28 @@ MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 		}
 	}
 
-	KeyboardButtonsStatus oldStatus = _keyboardStatus;
-	bool result = isKeyUp ? processKeyUp(vk) : processKeyDown(vk);
+	const KeyboardButtonsStatus oldStatus = _keyboardStatus;
+	const bool result = isKeyUp ? processKeyUp(vk) : processKeyDown(vk);
 
 	// figure out the movement vector
 	LONG _d = _isAlternativeSpeedButtonPressed ? mouseParams.adelta : mouseParams.delta;
-	LONG dx = 
+	LONG dx =
 		((_keyboardStatus.isLeftPressed || _keyboardStatus.isLeftUpPressed || _keyboardStatus.isLeftDownPressed) ? -_d : 0) +
 		((_keyboardStatus.isRightPressed || _keyboardStatus.isRightUpPressed || _keyboardStatus.isRightDownPressed) ? _d : 0);
 
-	LONG dy = 
+	LONG dy =
 		((_keyboardStatus.isUpPressed || _keyboardStatus.isLeftUpPressed || _keyboardStatus.isRightUpPressed) ? -_d : 0) +
 		((_keyboardStatus.isDownPressed || _keyboardStatus.isLeftDownPressed || _keyboardStatus.isRightDownPressed) ? _d : 0);
 
 	// if at least one of the keys was already pressed, stop ramp-up cursor mover
 	if ((_keyboardStatus.isLeftPressed && oldStatus.isLeftPressed) ||
-		(_keyboardStatus.isRightPressed && oldStatus.isRightPressed) ||
-		(_keyboardStatus.isUpPressed && oldStatus.isUpPressed) ||
-		(_keyboardStatus.isDownPressed && oldStatus.isDownPressed) ||
-		(_keyboardStatus.isLeftDownPressed && oldStatus.isLeftDownPressed) ||
-		(_keyboardStatus.isRightDownPressed && oldStatus.isRightDownPressed) ||
-		(_keyboardStatus.isLeftUpPressed && oldStatus.isLeftUpPressed) ||
-		(_keyboardStatus.isRightUpPressed && oldStatus.isRightUpPressed) )
+	    (_keyboardStatus.isRightPressed && oldStatus.isRightPressed) ||
+	    (_keyboardStatus.isUpPressed && oldStatus.isUpPressed) ||
+	    (_keyboardStatus.isDownPressed && oldStatus.isDownPressed) ||
+	    (_keyboardStatus.isLeftDownPressed && oldStatus.isLeftDownPressed) ||
+	    (_keyboardStatus.isRightDownPressed && oldStatus.isRightDownPressed) ||
+	    (_keyboardStatus.isLeftUpPressed && oldStatus.isLeftUpPressed) ||
+	    (_keyboardStatus.isRightUpPressed && oldStatus.isRightUpPressed) )
 	{
 		_rampUpCursorMover.stopMove();
 	}
@@ -241,13 +241,13 @@ MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 	// if at least one key changed its status to Pressed right now, invoke ramp-up cursor mover 
 	// to avoid keyboard repeat delay
 	if ((_keyboardStatus.isLeftPressed && !oldStatus.isLeftPressed) ||
-		(_keyboardStatus.isRightPressed && !oldStatus.isRightPressed) ||
-		(_keyboardStatus.isUpPressed && !oldStatus.isUpPressed) ||
-		(_keyboardStatus.isDownPressed && !oldStatus.isDownPressed) ||
-		(_keyboardStatus.isLeftDownPressed && !oldStatus.isLeftDownPressed) ||
-		(_keyboardStatus.isRightDownPressed && !oldStatus.isRightDownPressed) ||
-		(_keyboardStatus.isLeftUpPressed && !oldStatus.isLeftUpPressed) ||
-		(_keyboardStatus.isRightUpPressed && !oldStatus.isRightUpPressed))
+	    (_keyboardStatus.isRightPressed && !oldStatus.isRightPressed) ||
+	    (_keyboardStatus.isUpPressed && !oldStatus.isUpPressed) ||
+	    (_keyboardStatus.isDownPressed && !oldStatus.isDownPressed) ||
+	    (_keyboardStatus.isLeftDownPressed && !oldStatus.isLeftDownPressed) ||
+	    (_keyboardStatus.isRightDownPressed && !oldStatus.isRightDownPressed) ||
+	    (_keyboardStatus.isLeftUpPressed && !oldStatus.isLeftUpPressed) ||
+	    (_keyboardStatus.isRightUpPressed && !oldStatus.isRightUpPressed))
 	{
 		if ((dx != 0) || (dy != 0)) _rampUpCursorMover.moveAsync(dx, dy);
 	}
@@ -256,7 +256,6 @@ MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 		if ((dx != 0) || (dy != 0)) MouseUtils::MouseMove(dx, dy);
 	}
 	return result;
-
 }
 
 
@@ -311,7 +310,7 @@ MouseActioner::processKeyUp(KeyboardUtils::VirtualKey_t vk)
 	if ( (_stickyButton != NMB_Left) && (mouseParams.VKPressLB == vk) )
 	{
 		if (_keyboardStatus.isLeftBtnPressed)
-		{					
+		{
 			MouseUtils::MousePressLB(true);
 			_keyboardStatus.isLeftBtnPressed = false;
 		}
@@ -320,16 +319,16 @@ MouseActioner::processKeyUp(KeyboardUtils::VirtualKey_t vk)
 	if ( (_stickyButton != NMB_Right) && (mouseParams.VKPressRB == vk) )
 	{
 		if (_keyboardStatus.isRightBtnPressed)
-		{					
+		{
 			MouseUtils::MousePressRB(true);
 			_keyboardStatus.isRightBtnPressed = false;
 		}
-	} else	
+	} else
 	// middle button up -----------------------------------------------------
 	if ( (_stickyButton != NMB_Middle) && (mouseParams.VKPressMB == vk) )
 	{
 		if (_keyboardStatus.isMiddleBtnPressed)
-		{					
+		{
 			MouseUtils::MousePressMB(true);
 			_keyboardStatus.isMiddleBtnPressed = false;
 		}
@@ -375,13 +374,13 @@ MouseActioner::processKeyDown(KeyboardUtils::VirtualKey_t vk)
 			resetStickyButton();
 		} else
 		if (!_keyboardStatus.isRightBtnPressed)
-		{					
+		{
 			MouseUtils::MousePressRB(false);
 			_keyboardStatus.isRightBtnPressed = true;
 			if (isStickyModifierOn)
 			{
 				_stickyButton = NMB_Right;
-			}			
+			}
 		}
 	} else
 	// middle button down ---------------------------------------------------
@@ -398,7 +397,7 @@ MouseActioner::processKeyDown(KeyboardUtils::VirtualKey_t vk)
 			if (isStickyModifierOn)
 			{
 				_stickyButton = NMB_Middle;
-			}			
+			}
 		}
 	} else
 	// up -------------------------------------------------------------------
@@ -453,7 +452,7 @@ MouseActioner::processKeyDown(KeyboardUtils::VirtualKey_t vk)
 		MouseUtils::MouseWheel(true);
 	} else
 	{
-			return false;
+		return false;
 	}
 
 	return true;
