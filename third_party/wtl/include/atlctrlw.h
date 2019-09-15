@@ -182,7 +182,7 @@ template <class T, class TBase = CCommandBarCtrlBase, class TWinTraits = ATL::CC
 class ATL_NO_VTABLE CCommandBarCtrlImpl : public ATL::CWindowImpl< T, TBase, TWinTraits >
 {
 public:
-	DECLARE_WND_SUPERCLASS(NULL, TBase::GetWndClassName())
+	DECLARE_WND_SUPERCLASS2(NULL, T, TBase::GetWndClassName())
 
 // Declarations
 	struct _MenuItemData	// menu item data
@@ -193,7 +193,9 @@ public:
 		UINT fState;
 		int iButton;
 
-		_MenuItemData() { dwMagic = 0x1313; }
+		_MenuItemData() : dwMagic(0x1313), lpstrText(NULL), fType(0U), fState(0U), iButton(0)
+		{ }
+
 		bool IsCmdBarMenuItem() { return (dwMagic == 0x1313); }
 	};
 
@@ -278,31 +280,31 @@ public:
 	CCommandBarCtrlImpl() : 
 			m_hMenu(NULL), 
 			m_hImageList(NULL), 
-			m_wndParent(this, 1), 
+			m_dwExtendedStyle(CBR_EX_TRANSPARENT | CBR_EX_SHAREMENU | CBR_EX_TRACKALWAYS),
+			m_wndParent(this, 1),
 			m_bMenuActive(false), 
 			m_bAttachedMenu(false), 
-			m_nPopBtn(-1), 
-			m_nNextPopBtn(-1), 
-			m_bPopupItem(false),
 			m_bImagesVisible(true),
-			m_bSkipMsg(false),
-			m_uSysKey(0),
-			m_hWndFocus(NULL),
+			m_bPopupItem(false),
 			m_bContextMenu(false),
 			m_bEscapePressed(false),
-			m_clrMask(RGB(192, 192, 192)),
-			m_dwExtendedStyle(CBR_EX_TRANSPARENT | CBR_EX_SHAREMENU | CBR_EX_TRACKALWAYS),
+			m_bSkipMsg(false),
 			m_bParentActive(true),
 			m_bFlatMenus(false),
 			m_bUseKeyboardCues(false),
 			m_bShowKeyboardCues(false),
 			m_bAllowKeyboardCues(true),
 			m_bKeyboardInput(false),
-			m_cxExtraSpacing(0),
 			m_bAlphaImages(false),
 			m_bLayoutRTL(false),
 			m_bSkipPostDown(false),
-			m_bVistaMenus(false)
+			m_bVistaMenus(false),
+			m_nPopBtn(-1),
+			m_nNextPopBtn(-1), 
+			m_clrMask(RGB(192, 192, 192)),
+			m_uSysKey(0),
+			m_hWndFocus(NULL),
+			m_cxExtraSpacing(0)
 	{
 		SetImageSize(16, 15);   // default
  	}
@@ -427,8 +429,8 @@ public:
 
 	HWND GetCmdBar() const
 	{
-		ATLASSERT(::IsWindow(m_hWnd));
-		return (HWND)::SendMessage(m_hWnd, CBRM_GETCMDBAR, 0, 0L);
+		ATLASSERT(::IsWindow(this->m_hWnd));
+		return (HWND)::SendMessage(this->m_hWnd, CBRM_GETCMDBAR, 0, 0L);
 	}
 
 // Methods
@@ -443,9 +445,9 @@ public:
 
 	BOOL AttachToWindow(HWND hWnd)
 	{
-		ATLASSERT(m_hWnd == NULL);
+		ATLASSERT(this->m_hWnd == NULL);
 		ATLASSERT(::IsWindow(hWnd));
-		BOOL bRet = SubclassWindow(hWnd);
+		BOOL bRet = this->SubclassWindow(hWnd);
 		if(bRet)
 		{
 			m_bAttachedMenu = true;
@@ -457,7 +459,7 @@ public:
 
 	BOOL LoadMenu(ATL::_U_STRINGorID menu)
 	{
-		ATLASSERT(::IsWindow(m_hWnd));
+		ATLASSERT(::IsWindow(this->m_hWnd));
 
 		if(m_bAttachedMenu)   // doesn't work in this mode
 			return FALSE;
@@ -510,8 +512,8 @@ public:
 			int nItems = ::GetMenuItemCount(m_hMenu);
 
 			T* pT = static_cast<T*>(this);
-			pT;   // avoid level 4 warning
-			TCHAR szString[pT->_nMaxMenuItemTextLength] = { 0 };
+			(void)pT;   // avoid level 4 warning
+			TCHAR szString[pT->_nMaxMenuItemTextLength] = {};
 			for(int i = 0; i < nItems; i++)
 			{
 				CMenuItemInfo mii;
@@ -532,7 +534,7 @@ public:
 				// NOTE: Command Bar currently supports only drop-down menu items
 				ATLASSERT(mii.hSubMenu != NULL);
 
-				TBBUTTON btn = { 0 };
+				TBBUTTON btn = {};
 				btn.iBitmap = 0;
 				btn.idCommand = i;
 				btn.fsState = (BYTE)(((mii.fState & MFS_DISABLED) == 0) ? TBSTATE_ENABLED : 0);
@@ -543,7 +545,7 @@ public:
 				bRet = this->InsertButton(-1, &btn);
 				ATLASSERT(bRet);
 
-				TBBUTTONINFO bi = { 0 };
+				TBBUTTONINFO bi = {};
 				bi.cbSize = sizeof(TBBUTTONINFO);
 				bi.dwMask = TBIF_TEXT;
 				bi.pszText = szString;
@@ -656,7 +658,7 @@ public:
 
 	BOOL AddBitmap(ATL::_U_STRINGorID bitmap, int nCommandID)
 	{
-		ATLASSERT(::IsWindow(m_hWnd));
+		ATLASSERT(::IsWindow(this->m_hWnd));
 		CBitmap bmp;
 		bmp.LoadBitmap(bitmap.m_lpstr);
 		if(bmp.m_hBitmap == NULL)
@@ -666,7 +668,7 @@ public:
 
 	BOOL AddBitmap(HBITMAP hBitmap, UINT nCommandID)
 	{
-		ATLASSERT(::IsWindow(m_hWnd));
+		ATLASSERT(::IsWindow(this->m_hWnd));
 		T* pT = static_cast<T*>(this);
 		// Create image list if it doesn't exist
 		if(m_hImageList == NULL)
@@ -676,7 +678,7 @@ public:
 		}
 		// check bitmap size
 		CBitmapHandle bmp = hBitmap;
-		SIZE size = { 0, 0 };
+		SIZE size = {};
 		bmp.GetSize(size);
 		if((size.cx != m_szBitmap.cx) || (size.cy != m_szBitmap.cy))
 		{
@@ -701,7 +703,7 @@ public:
 
 	BOOL AddIcon(ATL::_U_STRINGorID icon, UINT nCommandID)
 	{
-		ATLASSERT(::IsWindow(m_hWnd));
+		ATLASSERT(::IsWindow(this->m_hWnd));
 		HICON hIcon = ::LoadIcon(ModuleHelper::GetResourceInstance(), icon.m_lpstr);
 		if(hIcon == NULL)
 			return FALSE;
@@ -710,7 +712,7 @@ public:
 
 	BOOL AddIcon(HICON hIcon, UINT nCommandID)
 	{
-		ATLASSERT(::IsWindow(m_hWnd));
+		ATLASSERT(::IsWindow(this->m_hWnd));
 		T* pT = static_cast<T*>(this);
 		// create image list if it doesn't exist
 		if(m_hImageList == NULL)
@@ -736,7 +738,7 @@ public:
 
 	BOOL ReplaceBitmap(ATL::_U_STRINGorID bitmap, int nCommandID)
 	{
-		ATLASSERT(::IsWindow(m_hWnd));
+		ATLASSERT(::IsWindow(this->m_hWnd));
 		CBitmap bmp;
 		bmp.LoadBitmap(bitmap.m_lpstr);
 		if(bmp.m_hBitmap == NULL)
@@ -746,7 +748,7 @@ public:
 
 	BOOL ReplaceBitmap(HBITMAP hBitmap, UINT nCommandID)
 	{
-		ATLASSERT(::IsWindow(m_hWnd));
+		ATLASSERT(::IsWindow(this->m_hWnd));
 		BOOL bRet = FALSE;
 		for(int i = 0; i < m_arrCommand.GetSize(); i++)
 		{
@@ -775,7 +777,7 @@ public:
 
 	BOOL ReplaceIcon(ATL::_U_STRINGorID icon, UINT nCommandID)
 	{
-		ATLASSERT(::IsWindow(m_hWnd));
+		ATLASSERT(::IsWindow(this->m_hWnd));
 		HICON hIcon = ::LoadIcon(ModuleHelper::GetResourceInstance(), icon.m_lpstr);
 		if(hIcon == NULL)
 			return FALSE;
@@ -784,7 +786,7 @@ public:
 
 	BOOL ReplaceIcon(HICON hIcon, UINT nCommandID)
 	{
-		ATLASSERT(::IsWindow(m_hWnd));
+		ATLASSERT(::IsWindow(this->m_hWnd));
 		BOOL bRet = FALSE;
 		for(int i = 0; i < m_arrCommand.GetSize(); i++)
 		{
@@ -806,7 +808,7 @@ public:
 
 	BOOL RemoveImage(int nCommandID)
 	{
-		ATLASSERT(::IsWindow(m_hWnd));
+		ATLASSERT(::IsWindow(this->m_hWnd));
 
 		BOOL bRet = FALSE;
 		for(int i = 0; i < m_arrCommand.GetSize(); i++)
@@ -834,7 +836,7 @@ public:
 
 	BOOL RemoveAllImages()
 	{
-		ATLASSERT(::IsWindow(m_hWnd));
+		ATLASSERT(::IsWindow(this->m_hWnd));
 
 		ATLTRACE2(atlTraceUI, 0, _T("CmdBar - Removing all images\n"));
 		BOOL bRet = ::ImageList_RemoveAll(m_hImageList);
@@ -988,7 +990,7 @@ public:
 					pData->hMsgHook = hMsgHook;
 					pData->dwUsage = 1;
 					BOOL bRet = this->s_pmapMsgHook->Add(dwThreadID, pData);
-					bRet;
+					(void)bRet;   // avoid level 4 warning
 					ATLASSERT(bRet);
 				}
 			}
@@ -1147,11 +1149,11 @@ public:
 		}
 		else
 		{
-			RECT rcClient = { 0 };
+			RECT rcClient = {};
 			this->GetClientRect(&rcClient);
-			RECT rcBtn = { 0 };
+			RECT rcBtn = {};
 			this->GetItemRect(nBtn, &rcBtn);
-			TBBUTTON tbb = { 0 };
+			TBBUTTON tbb = {};
 			this->GetButton(nBtn, &tbb);
 			if(((tbb.fsState & TBSTATE_ENABLED) != 0) && ((tbb.fsState & TBSTATE_HIDDEN) == 0) && (rcBtn.right <= rcClient.right))
 			{
@@ -1204,7 +1206,7 @@ public:
 		}
 
 		CDCHandle dc = (HDC)wParam;
-		RECT rect = { 0 };
+		RECT rect = {};
 		this->GetClientRect(&rect);
 		dc.FillRect(&rect, COLOR_MENU);
 
@@ -1272,8 +1274,8 @@ public:
 			ATLASSERT(menuPopup.m_hMenu != NULL);
 
 			T* pT = static_cast<T*>(this);
-			pT;   // avoid level 4 warning
-			TCHAR szString[pT->_nMaxMenuItemTextLength] = { 0 };
+			(void)pT;   // avoid level 4 warning
+			TCHAR szString[pT->_nMaxMenuItemTextLength] = {};
 			BOOL bRet = FALSE;
 			for(int i = 0; i < menuPopup.GetMenuItemCount(); i++)
 			{
@@ -1360,7 +1362,7 @@ public:
 						ATLASSERT(bRet);
 
 						_MenuItemData* pMI = (_MenuItemData*)mii.dwItemData;
-						if((pMI != NULL) && pMI->IsCmdBarMenuItem())
+						if(_IsValidMem(pMI) && pMI->IsCmdBarMenuItem())
 						{
 							mii.fMask = MIIM_DATA | MIIM_TYPE | MIIM_STATE;
 							mii.fType = pMI->fType;
@@ -1416,7 +1418,7 @@ public:
 
 	LRESULT OnWindowPosChanging(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
-		LRESULT lRet = DefWindowProc(uMsg, wParam, lParam);
+		LRESULT lRet = this->DefWindowProc(uMsg, wParam, lParam);
 
 		LPWINDOWPOS lpWP = (LPWINDOWPOS)lParam;
 		int cyMin = ::GetSystemMetrics(SM_CYMENU);
@@ -1448,7 +1450,7 @@ public:
 			int nCount = ::GetMenuItemCount(menu);
 			int nRetCode = MNC_EXECUTE;
 			BOOL bRet = FALSE;
-			TCHAR szString[pT->_nMaxMenuItemTextLength] = { 0 };
+			TCHAR szString[pT->_nMaxMenuItemTextLength] = {};
 			WORD wMnem = 0;
 			bool bFound = false;
 			for(int i = 0; i < nCount; i++)
@@ -1461,7 +1463,7 @@ public:
 				if(!bRet || (mii.fType & MFT_SEPARATOR))
 					continue;
 				_MenuItemData* pmd = (_MenuItemData*)mii.dwItemData;
-				if((pmd != NULL) && pmd->IsCmdBarMenuItem())
+				if(_IsValidMem(pmd) && pmd->IsCmdBarMenuItem())
 				{
 					LPTSTR p = pmd->lpstrText;
 
@@ -1519,11 +1521,11 @@ public:
 			}
 			else if(m_wndParent.IsWindowEnabled())
 			{
-				RECT rcClient = { 0 };
+				RECT rcClient = {};
 				this->GetClientRect(&rcClient);
-				RECT rcBtn = { 0 };
+				RECT rcBtn = {};
 				this->GetItemRect(nBtn, &rcBtn);
-				TBBUTTON tbb = { 0 };
+				TBBUTTON tbb = {};
 				this->GetButton(nBtn, &tbb);
 				if(((tbb.fsState & TBSTATE_ENABLED) != 0) && ((tbb.fsState & TBSTATE_HIDDEN) == 0) && (rcBtn.right <= rcClient.right))
 				{
@@ -1559,7 +1561,7 @@ public:
 	{
 		LPDRAWITEMSTRUCT lpDrawItemStruct = (LPDRAWITEMSTRUCT)lParam;
 		_MenuItemData* pmd = (_MenuItemData*)lpDrawItemStruct->itemData;
-		if((lpDrawItemStruct->CtlType == ODT_MENU) && (pmd != NULL) && pmd->IsCmdBarMenuItem())
+		if((lpDrawItemStruct->CtlType == ODT_MENU) && _IsValidMem(pmd) && pmd->IsCmdBarMenuItem())
 		{
 			T* pT = static_cast<T*>(this);
 			pT->DrawItem(lpDrawItemStruct);
@@ -1575,7 +1577,7 @@ public:
 	{
 		LPMEASUREITEMSTRUCT lpMeasureItemStruct = (LPMEASUREITEMSTRUCT)lParam;
 		_MenuItemData* pmd = (_MenuItemData*)lpMeasureItemStruct->itemData;
-		if((lpMeasureItemStruct->CtlType == ODT_MENU) && (pmd != NULL) && pmd->IsCmdBarMenuItem())
+		if((lpMeasureItemStruct->CtlType == ODT_MENU) && _IsValidMem(pmd) && pmd->IsCmdBarMenuItem())
 		{
 			T* pT = static_cast<T*>(this);
 			pT->MeasureItem(lpMeasureItemStruct);
@@ -1842,8 +1844,8 @@ public:
 			hFontOld = dc.SelectFont(hFont);
 
 		const int cchText = 200;
-		TCHAR szText[cchText] = { 0 };
-		TBBUTTONINFO tbbi = { 0 };
+		TCHAR szText[cchText] = {};
+		TBBUTTONINFO tbbi = {};
 		tbbi.cbSize = sizeof(TBBUTTONINFO);
 		tbbi.dwMask = TBIF_TEXT;
 		tbbi.pszText = szText;
@@ -1873,7 +1875,7 @@ public:
 
 				if(((point.x != s_point.x) || (point.y != s_point.y)) && (nHit >= 0) && (nHit < ::GetMenuItemCount(m_hMenu)) && (nHit != m_nPopBtn) && (m_nPopBtn != -1))
 				{
-					TBBUTTON tbb = { 0 };
+					TBBUTTON tbb = {};
 					this->GetButton(nHit, &tbb);
 					if((tbb.fsState & TBSTATE_ENABLED) != 0)
 					{
@@ -1935,7 +1937,7 @@ public:
 		if(!m_bAllowKeyboardCues)
 			m_bAllowKeyboardCues = true;
 		bHandled = FALSE;
-		wParam;
+		(void)wParam;   // avoid level 4 warning
 #ifdef _CMDBAR_EXTRA_TRACE
 		ATLTRACE2(atlTraceUI, 0, _T("CmdBar - Hook WM_SYSKEYUP (0x%2.2X)\n"), wParam);
 #endif
@@ -2334,7 +2336,7 @@ public:
 	{
 		if(m_bAlphaImages)
 		{
-			IMAGELISTDRAWPARAMS ildp = { 0 };
+			IMAGELISTDRAWPARAMS ildp = {};
 			ildp.cbSize = sizeof(IMAGELISTDRAWPARAMS);
 			ildp.himl = m_hImageList;
 			ildp.i = nImage;
@@ -2380,7 +2382,7 @@ public:
 	BOOL DrawCheckmark(CDCHandle& dc, const RECT& rc, BOOL bSelected, BOOL bDisabled, BOOL bRadio, HBITMAP hBmpCheck)
 	{
 		// get checkmark bitmap, if none, use Windows standard
-		SIZE size = { 0, 0 };
+		SIZE size = {};
 		CBitmapHandle bmp = hBmpCheck;
 		if(hBmpCheck != NULL)
 		{
@@ -2553,7 +2555,7 @@ public:
 			if(pmd->fState & MFS_DEFAULT)
 			{
 				// need bold version of font
-				LOGFONT lf = { 0 };
+				LOGFONT lf = {};
 				m_fontMenu.GetLogFont(lf);
 				lf.lfWeight += 200;
 				fontBold.CreateFontIndirect(&lf);
@@ -2565,12 +2567,12 @@ public:
 				hOldFont = dc.SelectFont(m_fontMenu);
 			}
 
-			RECT rcText = { 0 };
+			RECT rcText = {};
 			dc.DrawText(pmd->lpstrText, -1, &rcText, DT_SINGLELINE | DT_LEFT | DT_VCENTER | DT_CALCRECT);
 			int cx = rcText.right - rcText.left;
 			dc.SelectFont(hOldFont);
 
-			LOGFONT lf = { 0 };
+			LOGFONT lf = {};
 			m_fontMenu.GetLogFont(lf);
 			int cy = lf.lfHeight;
 			if(cy < 0)
@@ -2597,7 +2599,7 @@ public:
 	static LRESULT CALLBACK CreateHookProc(int nCode, WPARAM wParam, LPARAM lParam)
 	{
 		const int cchClassName = 7;
-		TCHAR szClassName[cchClassName] = { 0 };
+		TCHAR szClassName[cchClassName] = {};
 
 		if(nCode == HCBT_CREATEWND)
 		{
@@ -2678,19 +2680,19 @@ public:
 		T* pT = static_cast<T*>(this);
 
 		// get popup menu and it's position
-		RECT rect = { 0 };
+		RECT rect = {};
 		this->GetItemRect(nIndex, &rect);
 		POINT pt = { rect.left, rect.bottom };
 		this->MapWindowPoints(NULL, &pt, 1);
 		this->MapWindowPoints(NULL, &rect);
-		TPMPARAMS TPMParams = { 0 };
+		TPMPARAMS TPMParams = {};
 		TPMParams.cbSize = sizeof(TPMPARAMS);
 		TPMParams.rcExclude = rect;
 		HMENU hMenuPopup = ::GetSubMenu(m_hMenu, nIndex);
 		ATLASSERT(hMenuPopup != NULL);
 
 		// get button ID
-		TBBUTTON tbb = { 0 };
+		TBBUTTON tbb = {};
 		this->GetButton(nIndex, &tbb);
 		int nCmdID = tbb.idCommand;
 
@@ -2708,7 +2710,7 @@ public:
 		m_nPopBtn = -1;   // restore
 
 		// eat next message if click is on the same button
-		MSG msg = { 0 };
+		MSG msg = {};
 		if(::PeekMessage(&msg, this->m_hWnd, WM_LBUTTONDOWN, WM_LBUTTONDOWN, PM_NOREMOVE) && ::PtInRect(&rect, msg.pt))
 			::PeekMessage(&msg, this->m_hWnd, WM_LBUTTONDOWN, WM_LBUTTONDOWN, PM_REMOVE);
 
@@ -2798,7 +2800,7 @@ public:
 					ATLASSERT(bRet);
 
 					_MenuItemData* pMI = (_MenuItemData*)mii.dwItemData;
-					if((pMI != NULL) && pMI->IsCmdBarMenuItem())
+					if(_IsValidMem(pMI) && pMI->IsCmdBarMenuItem())
 					{
 						mii.fMask = MIIM_DATA | MIIM_TYPE | MIIM_STATE;
 						mii.fType = pMI->fType;
@@ -2825,16 +2827,16 @@ public:
 	{
 		if(nBtn == -1)
 			return -1;
-		RECT rcClient = { 0 };
+		RECT rcClient = {};
 		this->GetClientRect(&rcClient);
 		int nNextBtn;
 		for(nNextBtn = nBtn - 1; nNextBtn != nBtn; nNextBtn--)
 		{
 			if(nNextBtn < 0)
 				nNextBtn = ::GetMenuItemCount(m_hMenu) - 1;
-			TBBUTTON tbb = { 0 };
+			TBBUTTON tbb = {};
 			this->GetButton(nNextBtn, &tbb);
-			RECT rcBtn = { 0 };
+			RECT rcBtn = {};
 			this->GetItemRect(nNextBtn, &rcBtn);
 			if(rcBtn.right > rcClient.right)
 			{
@@ -2851,7 +2853,7 @@ public:
 	{
 		if(nBtn == -1)
 			return -1;
-		RECT rcClient = { 0 };
+		RECT rcClient = {};
 		this->GetClientRect(&rcClient);
 		int nNextBtn = 0;
 		int nCount = ::GetMenuItemCount(m_hMenu);
@@ -2859,9 +2861,9 @@ public:
 		{
 			if(nNextBtn >= nCount)
 				nNextBtn = 0;
-			TBBUTTON tbb = { 0 };
+			TBBUTTON tbb = {};
 			this->GetButton(nNextBtn, &tbb);
-			RECT rcBtn = { 0 };
+			RECT rcBtn = {};
 			this->GetItemRect(nNextBtn, &rcBtn);
 			if(rcBtn.right > rcClient.right)
 			{
@@ -2906,7 +2908,7 @@ public:
 		ATLASSERT(bRet);
 		if(bRet)
 		{
-			LOGFONT logfont = { 0 };
+			LOGFONT logfont = {};
 			if(m_fontMenu.m_hFont != NULL)
 				m_fontMenu.GetLogFont(logfont);
 			if((logfont.lfHeight != info.lfMenuFont.lfHeight) ||
@@ -2941,7 +2943,7 @@ public:
 		// check if we need extra spacing for menu item text
 		CWindowDC dc(this->m_hWnd);
 		HFONT hFontOld = dc.SelectFont(m_fontMenu);
-		RECT rcText = { 0 };
+		RECT rcText = {};
 		dc.DrawText(_T("\t"), -1, &rcText, DT_SINGLELINE | DT_LEFT | DT_VCENTER | DT_CALCRECT);
 		if((rcText.right - rcText.left) < 4)
 		{
@@ -3152,7 +3154,7 @@ public:
 	HBITMAP _CreateVistaBitmapHelper(int nIndex, HDC hDCSource, HDC hDCTarget)
 	{
 		// Create 32-bit bitmap
-		BITMAPINFO bi = { 0 };
+		BITMAPINFO bi = {};
 		bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 		bi.bmiHeader.biWidth = m_szBitmap.cx;
 		bi.bmiHeader.biHeight = m_szBitmap.cy;
@@ -3172,7 +3174,7 @@ public:
 		{
 			::SelectObject(hDCTarget, hBitmap);
 
-			IMAGELISTDRAWPARAMS ildp = { 0 };
+			IMAGELISTDRAWPARAMS ildp = {};
 			ildp.cbSize = sizeof(IMAGELISTDRAWPARAMS);
 			ildp.himl = m_hImageList;
 			ildp.i = nIndex;
@@ -3204,6 +3206,20 @@ public:
 		}
 	}
 #endif // _WTL_CMDBAR_VISTA_MENUS
+
+// Implementation helper
+	static bool _IsValidMem(void* pMem)
+	{
+		bool bRet = false;
+		if(pMem != NULL)
+		{
+			MEMORY_BASIC_INFORMATION mbi = {};
+			::VirtualQuery(pMem, &mbi, sizeof(MEMORY_BASIC_INFORMATION));
+			bRet = (mbi.BaseAddress != NULL) && ((mbi.Protect & (PAGE_READONLY | PAGE_READWRITE)) != 0);
+		}
+
+		return bRet;
+	}
 };
 
 
@@ -3260,7 +3276,7 @@ public:
 // Operations
 	BOOL SetMDIClient(HWND hWndMDIClient)
 	{
-		ATLASSERT(::IsWindow(m_hWnd));
+		ATLASSERT(::IsWindow(this->m_hWnd));
 		ATLASSERT(::IsWindow(hWndMDIClient));
 		if(!::IsWindow(hWndMDIClient))
 			return FALSE;
@@ -3270,7 +3286,7 @@ public:
 		{
 			LPCTSTR lpszMDIClientClass = _T("MDICLIENT");
 			const int nNameLen = 9 + 1;   // "MDICLIENT" + NULL
-			TCHAR szClassName[nNameLen] = { 0 };
+			TCHAR szClassName[nNameLen] = {};
 			::GetClassName(hWndMDIClient, szClassName, nNameLen);
 			ATLASSERT(lstrcmpi(szClassName, lpszMDIClientClass) == 0);
 		}
@@ -3382,7 +3398,7 @@ public:
 
 		// get DC and window rectangle
 		CWindowDC dc(this->m_hWnd);
-		RECT rect = { 0 };
+		RECT rect = {};
 		this->GetWindowRect(&rect);
 		int cxWidth = rect.right - rect.left;
 		int cyHeight = rect.bottom - rect.top;
@@ -3401,7 +3417,7 @@ public:
 				dc.FillRect(&rect, COLOR_MENU);
 		}
 
-		RECT rcIcon = { 0 };
+		RECT rcIcon = {};
 		T* pT = static_cast<T*>(this);
 		pT->_CalcIconRect(cxWidth, cyHeight, rcIcon);
 		dc.DrawIconEx(rcIcon.left, rcIcon.top, m_hIconChildMaximized, m_cxIconWidth, m_cyIconHeight);
@@ -3411,7 +3427,7 @@ public:
 		if(m_hTheme != NULL)
 		{
 			// this is to account for the left non-client area
-			POINT ptOrg = { 0, 0 };
+			POINT ptOrg = {};
 			dc.GetViewportOrg(&ptOrg);
 			dc.SetViewportOrg(ptOrg.x + m_cxLeft, ptOrg.y);
 			::OffsetRect(&rect, -m_cxLeft, 0);
@@ -3431,7 +3447,7 @@ public:
 		}
 
 		// draw buttons
-		RECT arrRect[3] = { 0 };
+		RECT arrRect[3] = {};
 		pT->_CalcBtnRects(cxWidth, cyHeight, arrRect);
 		pT->_DrawMDIButton(dc, arrRect, -1);   // draw all buttons
 
@@ -3443,7 +3459,7 @@ public:
 		LRESULT lRet = this->DefWindowProc(uMsg, wParam, lParam);
 		if(m_bChildMaximized)
 		{
-			RECT rect = { 0 };
+			RECT rect = {};
 			this->GetWindowRect(&rect);
 			POINT pt = { GET_X_LPARAM(lParam) - rect.left, GET_Y_LPARAM(lParam) - rect.top };
 			if(this->m_bLayoutRTL)
@@ -3471,15 +3487,15 @@ public:
 		ATLASSERT(_DebugCheckChild());
 
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-		RECT rect = { 0 };
+		RECT rect = {};
 		this->GetWindowRect(&rect);
 		pt.x -= rect.left;
 		pt.y -= rect.top;
 
-		RECT rcIcon = { 0 };
+		RECT rcIcon = {};
 		T* pT = static_cast<T*>(this);
 		pT->_CalcIconRect(rect.right - rect.left, rect.bottom - rect.top, rcIcon, this->m_bLayoutRTL);
-		RECT arrRect[3] = { 0 };
+		RECT arrRect[3] = {};
 		pT->_CalcBtnRects(rect.right - rect.left, rect.bottom - rect.top, arrRect, this->m_bLayoutRTL);
 
 		if(::PtInRect(&rcIcon, pt))
@@ -3493,7 +3509,7 @@ public:
 
 			// eat next message if click is on the same button
 			::OffsetRect(&rcIcon, rect.left, rect.top);
-			MSG msg = { 0 };
+			MSG msg = {};
 			if(::PeekMessage(&msg, this->m_hWnd, WM_NCLBUTTONDOWN, WM_NCLBUTTONDOWN, PM_NOREMOVE) && ::PtInRect(&rcIcon, msg.pt))
 				::PeekMessage(&msg, this->m_hWnd, WM_NCLBUTTONDOWN, WM_NCLBUTTONDOWN, PM_REMOVE);
 
@@ -3548,11 +3564,11 @@ public:
 
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 		this->ClientToScreen(&pt);
-		RECT rect = { 0 };
+		RECT rect = {};
 		this->GetWindowRect(&rect);
 		pt.x -= rect.left;
 		pt.y -= rect.top;
-		RECT arrRect[3] = { 0 };
+		RECT arrRect[3] = {};
 		T* pT = static_cast<T*>(this);
 		pT->_CalcBtnRects(rect.right - rect.left, rect.bottom - rect.top, arrRect, this->m_bLayoutRTL);
 		int nOldBtnPressed = m_nBtnPressed;
@@ -3579,7 +3595,7 @@ public:
 
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 		this->ClientToScreen(&pt);
-		RECT rect = { 0 };
+		RECT rect = {};
 		this->GetWindowRect(&rect);
 		pt.x -= rect.left;
 		pt.y -= rect.top;
@@ -3587,7 +3603,7 @@ public:
 		int nBtn = m_nBtnWasPressed;
 		ReleaseCapture();
 
-		RECT arrRect[3] = { 0 };
+		RECT arrRect[3] = {};
 		T* pT = static_cast<T*>(this);
 		pT->_CalcBtnRects(rect.right - rect.left, rect.bottom - rect.top, arrRect, this->m_bLayoutRTL);
 		if(::PtInRect(&arrRect[nBtn], pt))
@@ -3631,15 +3647,15 @@ public:
 		ATLASSERT(_DebugCheckChild());
 
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-		RECT rect = { 0 };
+		RECT rect = {};
 		this->GetWindowRect(&rect);
 		pt.x -= rect.left;
 		pt.y -= rect.top;
 
-		RECT rcIcon = { 0 };
+		RECT rcIcon = {};
 		T* pT = static_cast<T*>(this);
 		pT->_CalcIconRect(rect.right - rect.left, rect.bottom - rect.top, rcIcon, this->m_bLayoutRTL);
-		RECT arrRect[3] = { 0 };
+		RECT arrRect[3] = {};
 		pT->_CalcBtnRects(rect.right - rect.left, rect.bottom - rect.top, arrRect, this->m_bLayoutRTL);
 
 		if(::PtInRect(&rcIcon, pt))
@@ -3662,9 +3678,9 @@ public:
 			{
 				ATLASSERT(m_nBtnPressed == m_nBtnWasPressed);   // must be
 				m_nBtnPressed = -1;
-				RECT rect = { 0 };
+				RECT rect = {};
 				this->GetWindowRect(&rect);
-				RECT arrRect[3] = { 0 };
+				RECT arrRect[3] = {};
 				T* pT = static_cast<T*>(this);
 				pT->_CalcBtnRects(rect.right - rect.left, rect.bottom - rect.top, arrRect);
 				CWindowDC dc(this->m_hWnd);
@@ -3694,7 +3710,7 @@ public:
 		m_wndMDIClient.DefWindowProc(uMsg, NULL, lParam);
 		HMENU hOldMenu = this->GetMenu();
 		BOOL bRet = this->AttachMenu((HMENU)wParam);
-		bRet;   // avoid level 4 warning
+		(void)bRet;   // avoid level 4 warning
 		ATLASSERT(bRet);
 
 		T* pT = static_cast<T*>(this);
@@ -3731,7 +3747,7 @@ public:
 				int nBtnCount = this->GetButtonCount();
 				if(nBtnCount > 0)
 				{
-					RECT rect = { 0 };
+					RECT rect = {};
 					this->GetItemRect(nBtnCount - 1, &rect);
 					rbi.cxIdeal += rect.right;
 				}
@@ -3803,7 +3819,7 @@ public:
 		if((bMaxOld != m_bChildMaximized) || (hIconOld != m_hIconChildMaximized))
 		{
 			// force size change and redraw everything
-			RECT rect = { 0 };
+			RECT rect = {};
 			this->GetWindowRect(&rect);
 			::MapWindowPoints(NULL, this->GetParent(), (LPPOINT)&rect, 2);
 			this->SetRedraw(FALSE);
@@ -3845,7 +3861,7 @@ public:
 			}
 		}
 
-		RECT rect = { 0 };
+		RECT rect = {};
 		this->GetClientRect(&rect);
 		T* pT = static_cast<T*>(this);
 		pT->_AdjustBtnSize(rect.bottom);
@@ -3986,6 +4002,6 @@ public:
 	DECLARE_WND_SUPERCLASS(_T("WTL_MDICommandBar"), GetWndClassName())
 };
 
-}; // namespace WTL
+} // namespace WTL
 
 #endif // __ATLCTRLW_H__

@@ -467,7 +467,7 @@ inline bool AtlDrawThemeClientEdge(HTHEME hTheme, HWND hWnd, HRGN hRgnUpdate = N
 	if(SUCCEEDED(::GetThemeInt(hTheme, nPartID, nStateID, TMT_SIZINGBORDERWIDTH, &cxBorder)))
 		cyBorder = cxBorder;
 
-	RECT rect = { 0 };
+	RECT rect = {};
 	::GetWindowRect(hWnd, &rect);            
 
 	// Remove the client edge from the update region
@@ -604,7 +604,7 @@ public:
 
 	HRESULT SetWindowTheme(LPCWSTR pszSubAppName, LPCWSTR pszSubIDList)
 	{
-		if(!IsThemingSupported())
+		if(!this->IsThemingSupported())
 			return S_FALSE;
 
 		T* pT = static_cast<T*>(this);
@@ -614,7 +614,7 @@ public:
 
 	HTHEME GetWindowTheme() const
 	{
-		if(!IsThemingSupported())
+		if(!this->IsThemingSupported())
 			return NULL;
 
 		const T* pT = static_cast<const T*>(this);
@@ -624,7 +624,7 @@ public:
 
 	HRESULT EnableThemeDialogTexture(DWORD dwFlags)
 	{
-		if(!IsThemingSupported())
+		if(!this->IsThemingSupported())
 			return S_FALSE;
 
 		T* pT = static_cast<T*>(this);
@@ -634,7 +634,7 @@ public:
 
 	BOOL IsThemeDialogTextureEnabled() const
 	{
-		if(!IsThemingSupported())
+		if(!this->IsThemingSupported())
 			return FALSE;
 
 		const T* pT = static_cast<const T*>(this);
@@ -644,7 +644,7 @@ public:
 
 	HRESULT DrawThemeParentBackground(HDC hDC, const RECT* pRect = NULL)
 	{
-		if(!IsThemingSupported())
+		if(!this->IsThemingSupported())
 			return S_FALSE;
 
 		T* pT = static_cast<T*>(this);
@@ -655,7 +655,7 @@ public:
 #if (_WIN32_WINNT >= 0x0600)
 	HRESULT SetWindowThemeAttribute(WINDOWTHEMEATTRIBUTETYPE type, PVOID pvAttribute, DWORD cbAttribute)
 	{
-		if(!IsThemingSupported())
+		if(!this->IsThemingSupported())
 			return S_FALSE;
 
 		T* pT = static_cast<T*>(this);
@@ -665,7 +665,7 @@ public:
 
 	HRESULT SetWindowThemeNonClientAttributes(DWORD dwAttributes, DWORD dwMask)
 	{
-		if(!IsThemingSupported())
+		if(!this->IsThemingSupported())
 			return S_FALSE;
 
 		T* pT = static_cast<T*>(this);
@@ -676,7 +676,7 @@ public:
 
 	HRESULT DrawThemeParentBackgroundEx(HDC hDC, DWORD dwFlags, const RECT* lpRect = NULL)
 	{
-		if(!IsThemingSupported())
+		if(!this->IsThemingSupported())
 			return S_FALSE;
 
 		T* pT = static_cast<T*>(this);
@@ -922,7 +922,7 @@ public:
 		T* pT = static_cast<T*>(this);
 		if(wParam != NULL)
 		{
-			RECT rect = { 0 };
+			RECT rect = {};
 			pT->GetClientRect(&rect);
 			pT->DoPaint((HDC)wParam, rect);
 		}
@@ -1097,7 +1097,7 @@ public:
 		T* pT = static_cast<T*>(this);
 		if(wParam != NULL)
 		{
-			RECT rect = { 0 };
+			RECT rect = {};
 			pT->GetClientRect(&rect);
 			pT->DoPaint((HDC)wParam, rect, m_NewState);
 		}
@@ -1185,6 +1185,6 @@ public:
 
 #endif // (_WIN32_WINNT >= 0x0600)
 
-}; // namespace WTL
+} // namespace WTL
 
 #endif // __ATLTHEME_H__

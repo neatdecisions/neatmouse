@@ -24,6 +24,38 @@
 // CWindowEx
 
 
+/////////////////////////////////////////////////////////////////////////////
+// Additional macros needed for template classes
+
+#ifndef DECLARE_WND_CLASS_EX2
+  #define DECLARE_WND_CLASS_EX2(WndClassName, EnclosingClass, style, bkgnd) \
+  static ATL::CWndClassInfo& GetWndClassInfo() \
+  { \
+	static ATL::CWndClassInfo wc = \
+	{ \
+		{ sizeof(WNDCLASSEX), style, EnclosingClass::StartWindowProc, \
+		  0, 0, NULL, NULL, NULL, (HBRUSH)(bkgnd + 1), NULL, WndClassName, NULL }, \
+		  NULL, NULL, IDC_ARROW, TRUE, 0, _T("") \
+	}; \
+	return wc; \
+  }
+#endif // DECLARE_WND_CLASS_EX2
+
+#ifndef DECLARE_WND_SUPERCLASS2
+  #define DECLARE_WND_SUPERCLASS2(WndClassName, EnclosingClass, OrigWndClassName) \
+  static ATL::CWndClassInfo& GetWndClassInfo() \
+  { \
+	static ATL::CWndClassInfo wc = \
+	{ \
+		{ sizeof(WNDCLASSEX), 0, EnclosingClass::StartWindowProc, \
+		  0, 0, NULL, NULL, NULL, NULL, NULL, WndClassName, NULL }, \
+		  OrigWndClassName, NULL, NULL, TRUE, 0, _T("") \
+	}; \
+	return wc; \
+  }
+#endif // DECLARE_WND_SUPERCLASS2
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // Command Chaining Macros
 
@@ -172,14 +204,14 @@ inline LRESULT WtlReflectNotificationsFiltered(HWND hWndParent, UINT uMsg, WPARA
 	return lResult;
 }
 
-}; // namespace WTL
+} // namespace WTL
 
 // Try to prevent problems with WM_CTLCOLOR* messages when
 // the message wasn't really handled
 #define REFLECT_NOTIFICATIONS_EX() \
 { \
 	bHandled = TRUE; \
-	lResult = ReflectNotifications(uMsg, wParam, lParam, bHandled); \
+	lResult = this->ReflectNotifications(uMsg, wParam, lParam, bHandled); \
 	if((lResult == 0) && (uMsg >= WM_CTLCOLORMSGBOX) && (uMsg <= WM_CTLCOLORSTATIC)) \
 		bHandled = FALSE; \
 	if(bHandled) \
@@ -189,7 +221,7 @@ inline LRESULT WtlReflectNotificationsFiltered(HWND hWndParent, UINT uMsg, WPARA
 #define REFLECT_NOTIFICATIONS_MSG_FILTERED(uMsgFilter) \
 	{ \
 		bHandled = TRUE; \
-		lResult = WTL::WtlReflectNotificationsFiltered(m_hWnd, uMsg, wParam, lParam, bHandled, uMsgFilter, 0, NULL); \
+		lResult = WTL::WtlReflectNotificationsFiltered(this->m_hWnd, uMsg, wParam, lParam, bHandled, uMsgFilter, 0, NULL); \
 		if(bHandled) \
 			return TRUE; \
 	}
@@ -197,7 +229,7 @@ inline LRESULT WtlReflectNotificationsFiltered(HWND hWndParent, UINT uMsg, WPARA
 #define REFLECT_NOTIFICATIONS_ID_FILTERED(idFromFilter) \
 	{ \
 		bHandled = TRUE; \
-		lResult = WTL::WtlReflectNotificationsFiltered(m_hWnd, uMsg, wParam, lParam, bHandled, WM_NULL, idFromFilter, NULL); \
+		lResult = WTL::WtlReflectNotificationsFiltered(this->m_hWnd, uMsg, wParam, lParam, bHandled, WM_NULL, idFromFilter, NULL); \
 		if(bHandled) \
 			return TRUE; \
 	}
@@ -205,7 +237,7 @@ inline LRESULT WtlReflectNotificationsFiltered(HWND hWndParent, UINT uMsg, WPARA
 #define REFLECT_NOTIFICATIONS_HWND_FILTERED(hWndChildFilter) \
 	{ \
 		bHandled = TRUE; \
-		lResult = WTL::WtlReflectNotificationsFiltered(m_hWnd, uMsg, wParam, lParam, bHandled, WM_NULL, 0, hWndChildFilter); \
+		lResult = WTL::WtlReflectNotificationsFiltered(this->m_hWnd, uMsg, wParam, lParam, bHandled, WM_NULL, 0, hWndChildFilter); \
 		if(bHandled) \
 			return TRUE; \
 	}
@@ -213,7 +245,7 @@ inline LRESULT WtlReflectNotificationsFiltered(HWND hWndParent, UINT uMsg, WPARA
 #define REFLECT_NOTIFICATIONS_MSG_ID_FILTERED(uMsgFilter, idFromFilter) \
 	{ \
 		bHandled = TRUE; \
-		lResult = WTL::WtlReflectNotificationsFiltered(m_hWnd, uMsg, wParam, lParam, bHandled, uMsgFilter, idFromFilter, NULL); \
+		lResult = WTL::WtlReflectNotificationsFiltered(this->m_hWnd, uMsg, wParam, lParam, bHandled, uMsgFilter, idFromFilter, NULL); \
 		if(bHandled) \
 			return TRUE; \
 	}
@@ -221,7 +253,7 @@ inline LRESULT WtlReflectNotificationsFiltered(HWND hWndParent, UINT uMsg, WPARA
 #define REFLECT_NOTIFICATIONS_MSG_HWND_FILTERED(uMsgFilter, hWndChildFilter) \
 	{ \
 		bHandled = TRUE; \
-		lResult = WTL::WtlReflectNotificationsFiltered(m_hWnd, uMsg, wParam, lParam, bHandled, uMsgFilter, 0, hWndChildFilter); \
+		lResult = WTL::WtlReflectNotificationsFiltered(this->m_hWnd, uMsg, wParam, lParam, bHandled, uMsgFilter, 0, hWndChildFilter); \
 		if(bHandled) \
 			return TRUE; \
 	}
@@ -230,7 +262,7 @@ inline LRESULT WtlReflectNotificationsFiltered(HWND hWndParent, UINT uMsg, WPARA
 	if((uMsg == WM_COMMAND) && (id == LOWORD(wParam)) && (code == HIWORD(wParam))) \
 	{ \
 		bHandled = TRUE; \
-		lResult = ReflectNotifications(uMsg, wParam, lParam, bHandled); \
+		lResult = this->ReflectNotifications(uMsg, wParam, lParam, bHandled); \
 		if(bHandled) \
 			return TRUE; \
 	}
@@ -239,7 +271,7 @@ inline LRESULT WtlReflectNotificationsFiltered(HWND hWndParent, UINT uMsg, WPARA
 	if((uMsg == WM_COMMAND) && (id == LOWORD(wParam))) \
 	{ \
 		bHandled = TRUE; \
-		lResult = ReflectNotifications(uMsg, wParam, lParam, bHandled); \
+		lResult = this->ReflectNotifications(uMsg, wParam, lParam, bHandled); \
 		if(bHandled) \
 			return TRUE; \
 	}
@@ -248,7 +280,7 @@ inline LRESULT WtlReflectNotificationsFiltered(HWND hWndParent, UINT uMsg, WPARA
 	if((uMsg == WM_COMMAND) && (code == HIWORD(wParam))) \
 	{ \
 		bHandled = TRUE; \
-		lResult = ReflectNotifications(uMsg, wParam, lParam, bHandled); \
+		lResult = this->ReflectNotifications(uMsg, wParam, lParam, bHandled); \
 		if(bHandled) \
 			return TRUE; \
 	}
@@ -257,7 +289,7 @@ inline LRESULT WtlReflectNotificationsFiltered(HWND hWndParent, UINT uMsg, WPARA
 	if((uMsg == WM_COMMAND) && (LOWORD(wParam) >= idFirst) && (LOWORD(wParam) <= idLast)) \
 	{ \
 		bHandled = TRUE; \
-		lResult = ReflectNotifications(uMsg, wParam, lParam, bHandled); \
+		lResult = this->ReflectNotifications(uMsg, wParam, lParam, bHandled); \
 		if(bHandled) \
 			return TRUE; \
 	}
@@ -266,7 +298,7 @@ inline LRESULT WtlReflectNotificationsFiltered(HWND hWndParent, UINT uMsg, WPARA
 	if((uMsg == WM_COMMAND) && (code == HIWORD(wParam)) && (LOWORD(wParam) >= idFirst) && (LOWORD(wParam) <= idLast)) \
 	{ \
 		bHandled = TRUE; \
-		lResult = ReflectNotifications(uMsg, wParam, lParam, bHandled); \
+		lResult = this->ReflectNotifications(uMsg, wParam, lParam, bHandled); \
 		if(bHandled) \
 			return TRUE; \
 	}
@@ -275,7 +307,7 @@ inline LRESULT WtlReflectNotificationsFiltered(HWND hWndParent, UINT uMsg, WPARA
 	if((uMsg == WM_NOTIFY) && (id == ((LPNMHDR)lParam)->idFrom) && (cd == ((LPNMHDR)lParam)->code)) \
 	{ \
 		bHandled = TRUE; \
-		lResult = ReflectNotifications(uMsg, wParam, lParam, bHandled); \
+		lResult = this->ReflectNotifications(uMsg, wParam, lParam, bHandled); \
 		if(bHandled) \
 			return TRUE; \
 	}
@@ -284,7 +316,7 @@ inline LRESULT WtlReflectNotificationsFiltered(HWND hWndParent, UINT uMsg, WPARA
 	if((uMsg == WM_NOTIFY) && (id == ((LPNMHDR)lParam)->idFrom)) \
 	{ \
 		bHandled = TRUE; \
-		lResult = ReflectNotifications(uMsg, wParam, lParam, bHandled); \
+		lResult = this->ReflectNotifications(uMsg, wParam, lParam, bHandled); \
 		if(bHandled) \
 			return TRUE; \
 	}
@@ -293,7 +325,7 @@ inline LRESULT WtlReflectNotificationsFiltered(HWND hWndParent, UINT uMsg, WPARA
 	if((uMsg == WM_NOTIFY) && (cd == ((LPNMHDR)lParam)->code)) \
 	{ \
 		bHandled = TRUE; \
-		lResult = ReflectNotifications(uMsg, wParam, lParam, bHandled); \
+		lResult = this->ReflectNotifications(uMsg, wParam, lParam, bHandled); \
 		if(bHandled) \
 			return TRUE; \
 	}
@@ -302,7 +334,7 @@ inline LRESULT WtlReflectNotificationsFiltered(HWND hWndParent, UINT uMsg, WPARA
 	if((uMsg == WM_NOTIFY) && (((LPNMHDR)lParam)->idFrom >= idFirst) && (((LPNMHDR)lParam)->idFrom <= idLast)) \
 	{ \
 		bHandled = TRUE; \
-		lResult = ReflectNotifications(uMsg, wParam, lParam, bHandled); \
+		lResult = this->ReflectNotifications(uMsg, wParam, lParam, bHandled); \
 		if(bHandled) \
 			return TRUE; \
 	}
@@ -311,7 +343,7 @@ inline LRESULT WtlReflectNotificationsFiltered(HWND hWndParent, UINT uMsg, WPARA
 	if((uMsg == WM_NOTIFY) && (cd == ((LPNMHDR)lParam)->code) && (((LPNMHDR)lParam)->idFrom >= idFirst) && (((LPNMHDR)lParam)->idFrom <= idLast)) \
 	{ \
 		bHandled = TRUE; \
-		lResult = ReflectNotifications(uMsg, wParam, lParam, bHandled); \
+		lResult = this->ReflectNotifications(uMsg, wParam, lParam, bHandled); \
 		if(bHandled) \
 			return TRUE; \
 	}
@@ -393,7 +425,7 @@ public:
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 
-		POINT pt = { 0, 0 };
+		POINT pt = {};
 		::GetCursorPos(&pt);
 		return ::DragDetect(m_hWnd, pt);
 	}
@@ -496,7 +528,7 @@ public:
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 
-		TRACKMOUSEEVENT tme = { 0 };
+		TRACKMOUSEEVENT tme = {};
 		tme.cbSize = sizeof(TRACKMOUSEEVENT);
 		tme.dwFlags = TME_LEAVE;
 		tme.hwndTrack = m_hWnd;
@@ -507,7 +539,7 @@ public:
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 
-		TRACKMOUSEEVENT tme = { 0 };
+		TRACKMOUSEEVENT tme = {};
 		tme.cbSize = sizeof(TRACKMOUSEEVENT);
 		tme.dwFlags = dwFlags;
 		tme.hwndTrack = m_hWnd;
@@ -519,7 +551,7 @@ public:
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 
-		TRACKMOUSEEVENT tme = { 0 };
+		TRACKMOUSEEVENT tme = {};
 		tme.cbSize = sizeof(TRACKMOUSEEVENT);
 		tme.dwFlags = TME_CANCEL | dwType;
 		tme.hwndTrack = m_hWnd;
@@ -562,6 +594,6 @@ public:
 #endif // __ATLSTR_H__
 };
 
-}; // namespace WTL
+} // namespace WTL
 
 #endif // __ATLWINX_H__

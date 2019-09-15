@@ -27,6 +27,10 @@
 	#error WTL requires that _ATL_NO_COMMODULE is not defined
 #endif
 
+#ifdef _ATL_NO_WIN_SUPPORT
+	#error WTL requires that _ATL_NO_WIN_SUPPORT is not defined
+#endif
+
 #if (_MSC_VER < 1400)
 	#error WTL10 requires C++ compiler version 14 (Visual C++ 2005) or higher
 #endif
@@ -51,6 +55,10 @@
 	#error WTL10 doesn't support _ATL_MIN_CRT
 #endif
 
+#ifdef _ATL_NO_MSIMG
+	#error WTL10 doesn't support _ATL_NO_MSIMG
+#endif
+
 #include <limits.h>
 #ifdef _MT
   #include <process.h>	// for _beginthreadex
@@ -58,6 +66,9 @@
 
 #include <commctrl.h>
 #pragma comment(lib, "comctl32.lib")
+
+#include <commdlg.h>
+#include <shellapi.h>
 
 // Check for VS2005 without newer WinSDK
 #if (_MSC_VER == 1400) && !defined(RB_GETEXTENDEDSTYLE)
@@ -91,10 +102,11 @@
 // CServerAppModule
 //
 // Global functions:
+//   AtlInitCommonControls()
 //   AtlGetDefaultGuiFont()
 //   AtlCreateControlFont()
 //   AtlCreateBoldFont()
-//   AtlInitCommonControls()
+//   AtlGetStringPtr()
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -127,7 +139,7 @@
 
 // Forward declaration for ATL11 fix
 #if (_ATL_VER >= 0x0B00)
-  namespace ATL { HRESULT AtlGetCommCtrlVersion(LPDWORD pdwMajor, LPDWORD pdwMinor); };
+  namespace ATL { HRESULT AtlGetCommCtrlVersion(LPDWORD pdwMajor, LPDWORD pdwMinor); }
 #endif
 
 #ifndef WM_MOUSEHWHEEL
@@ -139,14 +151,30 @@
   #define _WTL_STACK_ALLOC_THRESHOLD   512
 #endif
 
+// Used to declare overriden virtual functions
+#if (__cplusplus >= 201103L) || (defined(_MSC_VER) && _MSC_VER >= 1900)
+  #define _WTL_OVERRIDE override
+#else
+  #define _WTL_OVERRIDE
+#endif
+
 
 namespace WTL
 {
 
-DECLARE_TRACE_CATEGORY(atlTraceUI);
+DECLARE_TRACE_CATEGORY(atlTraceUI)
 #ifdef _DEBUG
   __declspec(selectany) ATL::CTraceCategory atlTraceUI(_T("atlTraceUI"));
 #endif // _DEBUG
+
+// Common Controls initialization helper
+inline BOOL AtlInitCommonControls(DWORD dwFlags)
+{
+	INITCOMMONCONTROLSEX iccx = { sizeof(INITCOMMONCONTROLSEX), dwFlags };
+	BOOL bRet = ::InitCommonControlsEx(&iccx);
+	ATLASSERT(bRet);
+	return bRet;
+}
 
 // Default GUI font helper - "MS Shell Dlg" stock font
 inline HFONT AtlGetDefaultGuiFont()
@@ -158,7 +186,7 @@ inline HFONT AtlGetDefaultGuiFont()
 // (NOTE: Caller owns the font, and should destroy it when it's no longer needed)
 inline HFONT AtlCreateControlFont()
 {
-	LOGFONT lf = { 0 };
+	LOGFONT lf = {};
 	ATLVERIFY(::SystemParametersInfo(SPI_GETICONTITLELOGFONT, sizeof(LOGFONT), &lf, 0) != FALSE);
 	HFONT hFont = ::CreateFontIndirect(&lf);
 	ATLASSERT(hFont != NULL);
@@ -169,7 +197,7 @@ inline HFONT AtlCreateControlFont()
 // (NOTE: Caller owns the font, and should destroy it when it's no longer needed)
 inline HFONT AtlCreateBoldFont(HFONT hFont = NULL)
 {
-	LOGFONT lf = { 0 };
+	LOGFONT lf = {};
 	if(hFont == NULL)
 		ATLVERIFY(::SystemParametersInfo(SPI_GETICONTITLELOGFONT, sizeof(LOGFONT), &lf, 0) != FALSE);
 	else
@@ -180,13 +208,14 @@ inline HFONT AtlCreateBoldFont(HFONT hFont = NULL)
 	return hFontBold;
 }
 
-// Common Controls initialization helper
-inline BOOL AtlInitCommonControls(DWORD dwFlags)
+// Resource string pointer
+inline LPCWSTR AtlGetStringPtr(UINT uID, int* pch = NULL)
 {
-	INITCOMMONCONTROLSEX iccx = { sizeof(INITCOMMONCONTROLSEX), dwFlags };
-	BOOL bRet = ::InitCommonControlsEx(&iccx);
-	ATLASSERT(bRet);
-	return bRet;
+	LPCWSTR lpstr = NULL;
+	int nRet = ::LoadStringW(ATL::_AtlBaseModule.GetResourceInstance(), uID, (LPWSTR)&lpstr, 0);
+	if(pch != NULL)
+		*pch = nRet;
+	return lpstr;
 }
 
 
@@ -348,7 +377,7 @@ namespace RunTimeHelper
 #endif
 		return uSize;
 	}
-};
+} // namespace RunTimeHelper
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -375,11 +404,11 @@ namespace ModuleHelper
 	{
 		return ATL::_AtlWinModule.ExtractCreateWndData();
 	}
-};
+} // namespace ModuleHelper
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// SecureHelper - WTL10 requires use if secure functions
+// SecureHelper - WTL10 requires use of secure functions
 // these are here only for compatibility with existing projects
 
 namespace SecureHelper
@@ -478,7 +507,7 @@ namespace SecureHelper
 		va_end(args);
 		return nRes;
 	}
-}; // namespace SecureHelper
+} // namespace SecureHelper
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -511,7 +540,7 @@ namespace MinCrtHelper
 	{
 		return _tcsrchr(str, ch);
 	}
-}; // namespace MinCrtHelper
+} // namespace MinCrtHelper
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -544,7 +573,7 @@ namespace GenericWndClass
 	{
 		return ::UnregisterClass(GetName(), ModuleHelper::GetModuleInstance());
 	}
-}; // namespace GenericWndClass
+} // namespace GenericWndClass
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -576,6 +605,12 @@ public:
 	ATL::CSimpleArray<CMessageFilter*> m_aMsgFilter;
 	ATL::CSimpleArray<CIdleHandler*> m_aIdleHandler;
 	MSG m_msg;
+
+	CMessageLoop()
+	{ }
+
+	virtual ~CMessageLoop()
+	{ }
 
 // Message filter operations
 	BOOL AddMessageFilter(CMessageFilter* pMessageFilter)
@@ -1057,7 +1092,7 @@ public:
 
 typedef ATL::CRegKey CRegKeyEx;
 
-}; // namespace WTL
+} // namespace WTL
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1171,7 +1206,7 @@ inline HRESULT AtlGetShellVersion(LPDWORD pdwMajor, LPDWORD pdwMinor)
 	return hRet;
 }
 
-}; // namespace ATL
+} // namespace ATL
 
 #endif // (_ATL_VER >= 0x0B00)
 
