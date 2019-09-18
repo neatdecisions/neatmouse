@@ -41,12 +41,11 @@ public:
 	CString getText() const;
 
 private:
-	typedef CIndirectDialogImpl<CInputBox, CMemDlgTemplate> PARENT;
-	const short kWindowWidth = 240;
-	const short kWindowHeight = 38;
+	static constexpr short kWindowWidth = 240;
+	static constexpr short kWindowHeight = 38;
 
-	static const WORD ID_EDIT = 3;
-	static const WORD ID_STATIC = 4;
+	static constexpr WORD ID_EDIT = 3;
+	static constexpr WORD ID_STATIC = 4;
 
 	const CString m_caption;
 	const CString m_prompt;

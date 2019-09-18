@@ -65,7 +65,6 @@ extern CAppModule _Module;
 
 #include <assert.h>
 #include <map>
-#include <queue>
 #include <string>
 #include <vector>
 #include <algorithm>

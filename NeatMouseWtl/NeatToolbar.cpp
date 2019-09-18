@@ -26,7 +26,7 @@ const TBBUTTON allButtons[] =
 	{ 3, ID_TOOLBAR_ADVANCEDVIEW, TBSTATE_ENABLED, BTNS_CHECK, {0}, 0, (INT_PTR)L"Advanced view" },
 
 	{ -1, ID_TOOLBAR_SEP1, TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
-	
+
 	{ 4, ID_TOOLBAR_LANGUAGE, TBSTATE_ENABLED, BTNS_WHOLEDROPDOWN | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)L"Language" },
 	{ 5, ID_TOOLBAR_HELP, TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)L"Help" }
 };
@@ -40,7 +40,7 @@ CNeatToolbar::LoadBitmaps()
 	AddBitmap(1, SafeLoadPng(IDB_PNG_CROSS));
 	AddBitmap(1, SafeLoadPng(IDB_PNG_DISK));
 	AddBitmap(1, SafeLoadPng(IDB_PNG_EQUALIZER));
-		
+
 	const neatcommon::system::LocaleUiDescriptor & aFallbackLocale = logic::MainSingleton::Instance().GetFallbackLocale();
 	langs[aFallbackLocale.code] = AddBitmap(1, SafeLoadPng(aFallbackLocale.iconId));
 
@@ -60,7 +60,7 @@ CNeatToolbar::RedrawMe()
 	CRect rect;
 	GetClientRect(&rect);
 	InvalidateRect(&rect, TRUE);
-	
+
 	MapWindowPoints(GetParent(), (POINT *) &rect, 2);
 	::RedrawWindow(GetParent(), rect, 0, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE| RDW_ALLCHILDREN);
 }
@@ -169,7 +169,7 @@ CSize
 CNeatToolbar::getGUIFontSize()
 {
 	CClientDC dc(m_hWnd);
-	dc.SelectFont((HFONT) GetStockObject( DEFAULT_GUI_FONT ));		
+	dc.SelectFont((HFONT) GetStockObject( DEFAULT_GUI_FONT ));
 	TEXTMETRIC tm;
 	dc.GetTextMetrics( &tm );
 
@@ -237,13 +237,10 @@ CNeatToolbar::DeleteCurrentSettings()
 	comboPresets.DeleteString(n);
 	logic::MainSingleton::Instance().GetOptionsHolder().DeleteSettings(&pso);
 	if (n >= comboPresets.GetCount()) n--;
-
-	ASSERT(n >= 0);
-	
 	if (n < 0) return false;
-				
+
 	comboPresets.SetCurSel(n);
-			
+
 	return true;
 }
 
@@ -253,7 +250,7 @@ void
 CNeatToolbar::FillSettings()
 {
 	comboPresets.Clear();
-	UINT cbPresetsSelectionIndex = 0;
+	size_t cbPresetsSelectionIndex = 0;
 
 	logic::COptionsHolder & optionsHolder = logic::MainSingleton::Instance().GetOptionsHolder();
 	for (size_t i = 0; i < optionsHolder.GetSettingsCount(); i++)
@@ -271,7 +268,7 @@ CNeatToolbar::FillSettings()
 
 	if (optionsHolder.GetSettingsCount() > cbPresetsSelectionIndex)
 	{
-		comboPresets.SetCurSel(cbPresetsSelectionIndex);
+		comboPresets.SetCurSel(static_cast<int>(cbPresetsSelectionIndex));
 	}
 
 	UpdateButtonStates();
@@ -299,7 +296,7 @@ CNeatToolbar::RepositionCombobox()
 	comboRect.MoveToX(labelRect.right + 5);
 
 	comboPresets.MoveWindow(comboRect.left, comboRect.top, comboRect.Width(), comboRect.Height());
-		
+
 	TBBUTTONINFO bi;
 	bi.cbSize = sizeof(TBBUTTONINFO); 
 	bi.dwMask = TBIF_SIZE; 

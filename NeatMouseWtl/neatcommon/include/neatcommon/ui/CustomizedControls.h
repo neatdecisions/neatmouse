@@ -28,16 +28,15 @@ void SetMenuItemBitmapCallbackMode(CMenuHandle hmenu, UINT id, CBitmapHandle bit
 class CGdiPlusInitializer
 {
 public:	
-	static bool IsGdiPlusPresent();	
-	CGdiPlusInitializer();	
+	static bool IsGdiPlusPresent();
 	bool Init();
-	void Uninit();	
+	void Uninit();
 	~CGdiPlusInitializer();
 
 private:
-	volatile static int m_GdiPlusPresend;
-	bool gdiPlusInit; 
-	ULONG_PTR gdiplusToken;
+	volatile static int m_GdiPlusPresent;
+	bool gdiPlusInit = false;
+	ULONG_PTR gdiplusToken = 0;
 };
 
 

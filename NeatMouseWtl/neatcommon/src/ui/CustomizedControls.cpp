@@ -14,7 +14,7 @@
 namespace neatcommon {
 namespace ui {
 
-volatile int CGdiPlusInitializer::m_GdiPlusPresend = -1;
+volatile int CGdiPlusInitializer::m_GdiPlusPresent = -1;
 
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ void DrawBitmapAdvanced(HDC pDC, CBitmapHandle bitmap, int x, int y, int w, int 
 	dcImage.CreateCompatibleDC(pDC);
 
 	if (isDisabled)
-	{		
+	{
 		BITMAPINFO bmi;
 		ZeroMemory(&bmi, sizeof(BITMAPINFO));
 		bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -78,11 +78,10 @@ void DrawBitmapAdvanced(HDC pDC, CBitmapHandle bitmap, int x, int y, int w, int 
 		BlendFunction.AlphaFormat = AC_SRC_ALPHA;  // use bitmap alpha
 
 		AlphaBlend(pDC, x, y, w, h, dcImage, 0, 0, w, h, BlendFunction);
-			
-			
+
 		dcImage.SelectBitmap(hBmpOld);
 		mdc.DeleteDC();
-				
+
 	} else
 	{
 		HBITMAP hBmpOld = dcImage.SelectBitmap(bitmap);
@@ -93,9 +92,9 @@ void DrawBitmapAdvanced(HDC pDC, CBitmapHandle bitmap, int x, int y, int w, int 
 		BlendFunction.AlphaFormat = AC_SRC_ALPHA;  // use bitmap alpha
 
 		AlphaBlend(pDC, x, y, w, h,	dcImage, 0, 0, w, h, BlendFunction);
-		
+
 		dcImage.SelectBitmap(hBmpOld);
-	}	
+	}
 }
 
 
@@ -155,7 +154,7 @@ HBITMAP AtlLoadGdiplusImage(ATL::_U_STRINGorID bitmap, ATL::_U_STRINGorID type =
 bool 
 CGdiPlusInitializer::IsGdiPlusPresent()
 {
-	if (m_GdiPlusPresend == -1)
+	if (m_GdiPlusPresent == -1)
 	{
 		CStaticDataInitCriticalSectionLock lock;
 		if(FAILED(lock.Lock()))
@@ -165,10 +164,10 @@ CGdiPlusInitializer::IsGdiPlusPresent()
 			return false;
 		}
 
-		if (m_GdiPlusPresend == -1)
+		if (m_GdiPlusPresent == -1)
 		{
 			HMODULE hThemeDLL = ::LoadLibrary(_T("gdiplus.dll"));
-			m_GdiPlusPresend = (hThemeDLL != NULL) ? 1 : 0;
+			m_GdiPlusPresent = (hThemeDLL != NULL) ? 1 : 0;
 			if(hThemeDLL != NULL)
 				::FreeLibrary(hThemeDLL);
 		}
@@ -176,17 +175,10 @@ CGdiPlusInitializer::IsGdiPlusPresent()
 		lock.Unlock();
 	}
 
-	ATLASSERT(m_GdiPlusPresend != -1);
-	return (m_GdiPlusPresend == 1);
+	ATLASSERT(m_GdiPlusPresent != -1);
+	return (m_GdiPlusPresent == 1);
 }
-	
 
-//---------------------------------------------------------------------------------------------------------------------
-CGdiPlusInitializer::CGdiPlusInitializer()
-{
-	gdiPlusInit = false;
-}
-	
 
 //---------------------------------------------------------------------------------------------------------------------
 bool 
@@ -228,9 +220,9 @@ CGdiPlusInitializer::~CGdiPlusInitializer()
 //---------------------------------------------------------------------------------------------------------------------
 CImageManager::~CImageManager()
 {
-	for (std::map<UINT, HBITMAP>::iterator it = bitmaps.begin(); it != bitmaps.end(); ++it)
+	for (const auto & kv : bitmaps)
 	{
-		DeleteObject(it->second);
+		DeleteObject(kv.second);
 	}
 }
 
@@ -245,7 +237,7 @@ CImageManager::GetBitmapFromPng(UINT id)
 		return it->second;
 	}
 	HBITMAP b = AtlLoadGdiplusImage(id, _T("PNG"));
-	bitmaps.insert(std::pair<UINT, HBITMAP>(id, b));
+	bitmaps.emplace(id, b);
 	return b;
 }
 
@@ -258,10 +250,9 @@ CImageManager::GetBitmapFromPng(UINT id)
 //---------------------------------------------------------------------------------------------------------------------
 CMenuBitmapsManager::~CMenuBitmapsManager()
 {
-	for (std::map<UINT, CBitmapHandle>::iterator it = icons.begin(); it != icons.end(); ++it)
+	for (auto & kv : icons)
 	{
-		if (!it->second.IsNull())
-			it->second.DeleteObject();
+		if (!kv.second.IsNull()) kv.second.DeleteObject();
 	}
 }
 
@@ -293,18 +284,15 @@ CMenuBitmapsManager::GetBitmap(UINT id)
 void 
 CMenuBitmapsManager::SetBitmap(UINT id, CBitmapHandle bmp)
 {
-	std::map<UINT, CBitmapHandle>::iterator it = icons.find(id);
-	if (it == icons.end())
-		icons.insert(std::pair<UINT, CBitmapHandle>(id, bmp));
-	else
+	if (bmp.IsNull())
 	{
-		if (bmp.IsNull())
-			icons.erase(it);
-		else
-			it->second = bmp;
+		icons.erase(id);
+	} else
+	{
+		icons[id] = bmp;
 	}
 }
-	
+
 
 //---------------------------------------------------------------------------------------------------------------------
 void 
@@ -314,17 +302,17 @@ CMenuBitmapsManager::Measure(LPMEASUREITEMSTRUCT lpmis)
 	{
 		return;
 	}
-				
+
 	std::map<UINT, CBitmapHandle>::iterator it = icons.find(lpmis->itemID);
 	if (it == icons.end())
 	{
 		return;
 	}
-			
+
 	lpmis->itemWidth += 2;
 	if (static_cast<LONG>(lpmis->itemHeight) < sz.cy)
 	{
-			lpmis->itemHeight = sz.cy;
+		lpmis->itemHeight = sz.cy;
 	}
 }
 	
@@ -335,7 +323,7 @@ CMenuBitmapsManager::Draw(LPDRAWITEMSTRUCT lpdis)
 {
 	if ((lpdis == NULL) || (lpdis->CtlType != ODT_MENU))
 	{
-			return; // not for a menu
+		return; // not for a menu
 	}
 
 	std::map<UINT, CBitmapHandle>::iterator it = icons.find(lpdis->itemID);
@@ -343,10 +331,10 @@ CMenuBitmapsManager::Draw(LPDRAWITEMSTRUCT lpdis)
 	{
 		return;
 	}
-		
+
 	DrawBitmapAdvanced(
-			lpdis->hDC, 
-			it->second, 
+			lpdis->hDC,
+			it->second,
 			lpdis->rcItem.left - sz.cx,
 			lpdis->rcItem.top + (lpdis->rcItem.bottom - lpdis->rcItem.top - sz.cy) / 2,
 			sz.cx,
@@ -365,9 +353,8 @@ CMenuBitmapsManager::Draw(LPDRAWITEMSTRUCT lpdis)
 void 
 CAutosizeStatic::SetText(const CString & s)
 {
-	//DCHandle dc = GetDC();
 	CClientDC dc(*this);
-		
+
 	SIZE sz;
 	HFONT oldFont = dc.SelectFont(GetFont());
 	dc.GetTextExtent(s, s.GetLength(), &sz);
@@ -376,8 +363,8 @@ CAutosizeStatic::SetText(const CString & s)
 
 	GetClientRect(&r);
 	r.right = r.left + sz.cx;
-	ResizeClient(sz.cx, sz.cy);	
-		
+	ResizeClient(sz.cx, sz.cy);
+
 	SetWindowText(s);
 }
 

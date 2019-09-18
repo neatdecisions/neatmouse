@@ -43,14 +43,14 @@ protected:
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 	END_MSG_MAP() 
 
-	HWND wndSelect;
+	HWND wndSelect = NULL;
 	WTL::CMenu menus;
 	neatcommon::ui::CAutosizeStatic labelPresets;
 	std::map<std::string, int> langs;
 	
 	HBRUSH OnCtlColorStatic(CDCHandle dc, CStatic wndStatic);
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-  LRESULT OnToolbarDropDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT OnToolbarDropDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	
 	void LoadBitmaps();
 	CSize getGUIFontSize();
