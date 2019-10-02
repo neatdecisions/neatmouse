@@ -147,7 +147,7 @@ MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 			{
 				reset();
 			}
-			return true;
+			return false;
 		}
 
 		// if Activation Modifier is a Shift and we're working with the numerical keyboard, isNumlockSpecialHandling will indicate
@@ -175,7 +175,7 @@ MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 	// update the status of Alternative Speed Modifier; if we're currently processing its event, nothing more to do - exit
 	if (checkModifierButtonDown(vk, mouseParams.VKAccelerated, isKeyUp, isNumlockSpecialHandling, _isAlternativeSpeedButtonPressed))
 	{
-		return true;
+		return false;
 	}
 
 	// updade the status of Sticky Key Modifier and check if anything else should be done
@@ -198,7 +198,7 @@ MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 				resetStickyButton();
 			}
 		}
-		return true;
+		return false;
 	}
 	else
 	{
