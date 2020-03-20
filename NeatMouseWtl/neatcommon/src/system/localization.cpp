@@ -1,9 +1,9 @@
 //
-// Copyright © 2016–2019 Neat Decisions. All rights reserved.
+// Copyright © 2016–2020 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -66,14 +66,12 @@ std::wstring CFormatter::str() const
 //=====================================================================================================================
 
 //---------------------------------------------------------------------------------------------------------------------
-LocalizeSection::LocalizeSection()
-{
-	defaultString = L"{}";
-}
+LocalizeSection::LocalizeSection() : defaultString(L"{}")
+{}
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 LocalizeSection::Clear()
 {
 	sections.clear();
@@ -97,7 +95,7 @@ LocalizeSection::GetValue(const std::string & value) const
 
 
 //---------------------------------------------------------------------------------------------------------------------
-const LocalizeSection::Ptr 
+const LocalizeSection::Ptr
 LocalizeSection::GetSection(const std::string & section) const
 {
 	std::map<std::string, LocalizeSection::Ptr>::const_iterator it = sections.find(section);
@@ -106,7 +104,7 @@ LocalizeSection::GetSection(const std::string & section) const
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LocalizeSection::Ptr 
+LocalizeSection::Ptr
 LocalizeSection::GetSection(const std::string & section)
 {
 	std::map<std::string, LocalizeSection::Ptr>::iterator it = sections.find(section);
@@ -125,7 +123,7 @@ LocalizeSection::AddSection(const std::string & name)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 LocalizeSection::SetValue(const std::string & name, const std::wstring & value)
 {
 	values.emplace(name, value);
@@ -143,7 +141,7 @@ CLocalizer::CLocalizer() : defaultString(L"{}"), section(std::make_shared<Locali
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CLocalizer::SetValue(const std::string & path, const std::wstring & value)
 {
 	const std::vector<std::string> & splits = SplitString(path, ".");
@@ -159,7 +157,7 @@ CLocalizer::SetValue(const std::string & path, const std::wstring & value)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-const std::wstring & 
+const std::wstring &
 CLocalizer::GetValue(const std::string & path) const
 {
 	const std::vector<std::string> & splits = SplitString(path, ".");
@@ -178,7 +176,7 @@ CLocalizer::GetValue(const std::string & path) const
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CLocalizer::loadFromIniFile(MyIniFile & iniFile)
 {
 	section->Clear();
@@ -197,7 +195,7 @@ CLocalizer::loadFromIniFile(MyIniFile & iniFile)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CLocalizer::load(UINT resourceId, const std::wstring & iResourceType)
 {
 	HRSRC hrsrc = FindResource(0, MAKEINTRESOURCE(resourceId), iResourceType.c_str());
@@ -209,7 +207,7 @@ CLocalizer::load(UINT resourceId, const std::wstring & iResourceType)
 		{
 			LPWSTR str = static_cast<LPWSTR>(LockResource(hResourceLoaded));
 			MyIniFile iniFile;
-			
+
 			iniFile.loadFromBuffer(std::wstring(str, sz / sizeof(TCHAR)).c_str());
 			loadFromIniFile(iniFile);
 		}
@@ -218,7 +216,7 @@ CLocalizer::load(UINT resourceId, const std::wstring & iResourceType)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CLocalizer::load(const std::wstring & fileName)
 {
 	MyIniFile iniFile;

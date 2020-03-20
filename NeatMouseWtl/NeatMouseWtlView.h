@@ -1,9 +1,9 @@
 //
-// Copyright © 2016–2019 Neat Decisions. All rights reserved.
+// Copyright © 2016–2020 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -21,7 +21,7 @@ class CNeatMouseWtlView : public CDialogImpl<CNeatMouseWtlView>
 {
 public:
 	enum { IDD = IDD_NEATMOUSEWTL_FORM };
-	
+
 	BOOL PreTranslateMessage(MSG* pMsg);
 
 	void SetToolbar(CNeatToolbar * tb);
@@ -64,7 +64,7 @@ protected:
 	void OnComboSelChange(UINT uCode, int nID, HWND hwndCtrl);
 	void OnDelBtnClick(UINT uCode, int nID, HWND hwndCtrl);
 	void OnDelHotkeyClick(UINT uCode, int nID, HWND hwndCtrl);
-	
+
 	void OnHotKey(int id, UINT mods, UINT vk);
 	void OnDestroy();
 	void SynchronizeCombos();
@@ -85,6 +85,6 @@ protected:
 	std::array<neatcommon::ui::CButtonST, 13> m_btnDel{};
 	neatcommon::ui::CButtonST m_btnDelHotkey;
 	int m_checkBoxPadding = 0;
-};	
+};
 
 } // namespace neatmouse

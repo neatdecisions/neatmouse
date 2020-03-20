@@ -1,9 +1,9 @@
 //
-// Copyright © 2016–2019 Neat Decisions. All rights reserved.
+// Copyright © 2016–2020 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -25,7 +25,7 @@ namespace {
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatMouseWtlView::SetToolbar(CNeatToolbar * pToolbar)
 {
 	m_tb = pToolbar;
@@ -33,7 +33,7 @@ CNeatMouseWtlView::SetToolbar(CNeatToolbar * pToolbar)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-CString 
+CString
 CNeatMouseWtlView::GetHotkeyName(UINT mods, UINT vk)
 {
 	if ((mods == 0) || (vk == 0)) return L"";
@@ -49,7 +49,7 @@ CNeatMouseWtlView::GetHotkeyName(UINT mods, UINT vk)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-BOOL 
+BOOL
 CNeatMouseWtlView::PreTranslateMessage(MSG* pMsg)
 {
 	static HACCEL hAccelTable = LoadAccelerators(_Module.m_hInst, MAKEINTRESOURCE(IDR_MAINFRAME));
@@ -63,9 +63,9 @@ CNeatMouseWtlView::PreTranslateMessage(MSG* pMsg)
 		if (pMsg->message == WM_KEYDOWN || pMsg->message == WM_SYSKEYDOWN)
 		{
 			// these keys won't be accepted in the binding edit boxes
-			static const std::set<DWORD> bannedKeys 
+			static const std::set<DWORD> bannedKeys
 			{
-				VK_SHIFT, VK_CONTROL, VK_MENU, VK_NUMLOCK, VK_SCROLL, VK_CAPITAL, VK_CANCEL, VK_TAB, 
+				VK_SHIFT, VK_CONTROL, VK_MENU, VK_NUMLOCK, VK_SCROLL, VK_CAPITAL, VK_CANCEL, VK_TAB,
 				VK_LSHIFT, VK_RSHIFT, VK_LMENU, VK_RMENU, VK_LCONTROL, VK_RCONTROL, VK_LWIN, VK_RWIN
 			};
 
@@ -74,7 +74,7 @@ CNeatMouseWtlView::PreTranslateMessage(MSG* pMsg)
 			{
 				if (bannedKeys.find(pMsg->wParam) != bannedKeys.end()) break;
 
-				USHORT scanCode = (pMsg->lParam >> 16) & 0xFF;
+				const USHORT scanCode = (pMsg->lParam >> 16) & 0xFF;
 				int vk = pMsg->wParam;
 
 				if (HIWORD(pMsg->lParam) & KF_EXTENDED)
@@ -93,19 +93,19 @@ CNeatMouseWtlView::PreTranslateMessage(MSG* pMsg)
 					}
 
 					UINT mods = 0;
-					if (logic::KeyboardUtils::IsKeyDown(VK_CONTROL) && 
+					if (logic::KeyboardUtils::IsKeyDown(VK_CONTROL) &&
 					    !logic::MainSingleton::Instance().GetMouseParams()->isModifierTaken(MOD_CONTROL))
 					{
 						mods |= MOD_CONTROL;
 					}
 
-					if (logic::KeyboardUtils::IsKeyDown(VK_MENU) && 
+					if (logic::KeyboardUtils::IsKeyDown(VK_MENU) &&
 					    !logic::MainSingleton::Instance().GetMouseParams()->isModifierTaken(MOD_ALT))
 					{
 						mods |= MOD_ALT;
 					}
 
-					if (logic::KeyboardUtils::IsKeyDown(VK_SHIFT) && 
+					if (logic::KeyboardUtils::IsKeyDown(VK_SHIFT) &&
 					    !logic::MainSingleton::Instance().GetMouseParams()->isModifierTaken(MOD_SHIFT))
 					{
 						mods |= MOD_SHIFT;
@@ -121,7 +121,7 @@ CNeatMouseWtlView::PreTranslateMessage(MSG* pMsg)
 					} else
 					{
 						if (!EnableHotkey(
-								logic::MainSingleton::Instance().GetMouseParams()->modHotkey, 
+								logic::MainSingleton::Instance().GetMouseParams()->modHotkey,
 								logic::MainSingleton::Instance().GetMouseParams()->VKHotkey))
 						{
 							logic::MainSingleton::Instance().GetMouseParams()->modHotkey = 0;
@@ -225,7 +225,7 @@ CNeatMouseWtlView::PreTranslateMessage(MSG* pMsg)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatMouseWtlView::OnHotKey(int /*id*/, UINT /*mods*/, UINT /*vk*/)
 {
 	logic::MainSingleton::Instance().GetMouseActioner().activateEmulation(
@@ -236,7 +236,7 @@ CNeatMouseWtlView::OnHotKey(int /*id*/, UINT /*mods*/, UINT /*vk*/)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT 
+LRESULT
 CNeatMouseWtlView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	PAINTSTRUCT ps;
@@ -256,9 +256,9 @@ CNeatMouseWtlView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 			}
 		}
 	}
-		
+
 	EndPaint(&ps);
-	
+
 	bHandled = FALSE;
 	return 1;
 }
@@ -273,7 +273,7 @@ CNeatMouseWtlView::OnDestroy()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatMouseWtlView::OnMinimizeOnStartupCheck(UINT /*uCode*/, int /*nID*/, HWND /*hwndCtrl*/)
 {
 	CButton checkBox(GetDlgItem(IDC_CHECK_MINIMIZE));
@@ -284,7 +284,7 @@ CNeatMouseWtlView::OnMinimizeOnStartupCheck(UINT /*uCode*/, int /*nID*/, HWND /*
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatMouseWtlView::OnActivateOnStartupCheck(UINT /*uCode*/, int /*nID*/, HWND /*hwndCtrl*/)
 {
 	CButton checkBox(GetDlgItem(IDC_CHECK_AUTOACTIVATE));
@@ -295,7 +295,7 @@ CNeatMouseWtlView::OnActivateOnStartupCheck(UINT /*uCode*/, int /*nID*/, HWND /*
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatMouseWtlView::OnCursorCheck(UINT /*uCode*/, int /*nID*/, HWND /*hwndCtrl*/)
 {
 	CButton checkBox(GetDlgItem(IDC_CHECK_CURSOR));
@@ -307,7 +307,7 @@ CNeatMouseWtlView::OnCursorCheck(UINT /*uCode*/, int /*nID*/, HWND /*hwndCtrl*/)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatMouseWtlView::OnShowNotificationsCheck(UINT /*uCode*/, int /*nID*/, HWND /*hwndCtrl*/)
 {
 	CButton checkBox(GetDlgItem(IDC_CHECK_NOTIFICATIONS));
@@ -318,7 +318,7 @@ CNeatMouseWtlView::OnShowNotificationsCheck(UINT /*uCode*/, int /*nID*/, HWND /*
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatMouseWtlView::OnDelHotkeyClick(UINT /*uCode*/, int /*nID*/, HWND /*hwndCtrl*/)
 {
 	::SetWindowText(GetDlgItem(IDC_EDIT_HOTKEY), L"");
@@ -331,7 +331,7 @@ CNeatMouseWtlView::OnDelHotkeyClick(UINT /*uCode*/, int /*nID*/, HWND /*hwndCtrl
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatMouseWtlView::OnDelBtnClick(UINT /*uCode*/, int nID, HWND /*hwndCtrl*/)
 {
 	switch (nID)
@@ -415,7 +415,7 @@ CNeatMouseWtlView::EnableHotkey(UINT mods, UINT vk)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatMouseWtlView::OnComboSelChange(UINT /*uCode*/, int nID, HWND hwndCtrl)
 {
 	switch (nID)
@@ -490,7 +490,7 @@ CNeatMouseWtlView::OnComboSelChange(UINT /*uCode*/, int nID, HWND hwndCtrl)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT 
+LRESULT
 CNeatMouseWtlView::OnEditChange(UINT /*code*/, UINT id, HWND hwnd, BOOL & bHandled)
 {
 	bHandled = false;
@@ -518,15 +518,15 @@ CNeatMouseWtlView::OnEditChange(UINT /*code*/, UINT id, HWND hwnd, BOOL & bHandl
 
 
 //---------------------------------------------------------------------------------------------------------------------
-int 
+int
 CNeatMouseWtlView::CheckIfChangesSaved()
 {
 	if (logic::MainSingleton::Instance().WereParametersChanged())
 	{
 		switch (AtlMessageBox(
-			*this, 
-			_("toolbar.presets.confirm-save-prompt"), 
-			_("toolbar.presets.confirm-save-caption"), 
+			*this,
+			_("toolbar.presets.confirm-save-prompt"),
+			_("toolbar.presets.confirm-save-caption"),
 			MB_YESNOCANCEL | MB_ICONQUESTION))
 		{
 			case IDYES:
@@ -542,17 +542,17 @@ CNeatMouseWtlView::CheckIfChangesSaved()
 				return IDNO;
 		}
 	}
-		
+
 	return IDNO;
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatMouseWtlView::PopulateControls()
 {
 	const logic::MouseParams::Ptr mp = logic::MainSingleton::Instance().GetMouseParams();
-		
+
 	std::wstring s = std::to_wstring(mp->delta);
 
 	GetDlgItem(IDC_EDIT_SPEED).SetWindowText(s.c_str());
@@ -577,7 +577,7 @@ CNeatMouseWtlView::PopulateControls()
 	GetDlgItem(IDC_EDIT_SCROLL_DOWN).SetWindowText(logic::KeyboardUtils::GetKeyName(mp->VKWheelDown, 0).c_str());
 
 	GetDlgItem(IDC_EDIT_HOTKEY).SetWindowText(GetHotkeyName(mp->modHotkey, mp->VKHotkey));
-		
+
 	CComboBox cbEnabler(GetDlgItem(IDC_COMBO_ACTIVATION));
 	for (int i = 0; i < cbEnabler.GetCount(); i++)
 	{
@@ -619,7 +619,7 @@ CNeatMouseWtlView::PopulateControls()
 			cbStickyKey.SetCurSel(i);
 			break;
 		}
-	}	
+	}
 
 	CButton checkBox(GetDlgItem(IDC_CHECK_MINIMIZE));
 	checkBox.SetCheck(mp->minimizeOnStartup ? BST_CHECKED : BST_UNCHECKED);
@@ -659,7 +659,7 @@ bool ComboBoxContains(const CComboBox & cb, DWORD val)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatMouseWtlView::FillModifierCombobox(
 	CComboBox & comboBox, const std::vector<DWORD> & keys, const std::set<DWORD> & skip, DWORD valueToSet)
 {
@@ -694,19 +694,19 @@ CNeatMouseWtlView::FillModifierCombobox(
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatMouseWtlView::SynchronizeCombos()
 {
 	// controlling comboboxes which are used to select modifier keys
-	// make sure that if a modifier has been in one of the comboboxes, it doesn't 
+	// make sure that if a modifier has been in one of the comboboxes, it doesn't
 	// show up in the others
 
 	// keys which should be shown in the comboboxes by default, i.e. when
 	// there's not hotkey specified and all comboboxes have [None] value selected
 	constexpr DWORD kDefaultValue = 0; // [None] value
-	static const std::vector<DWORD> keys = { 
+	static const std::vector<DWORD> keys = {
 		kDefaultValue, VK_LCONTROL, VK_LMENU, VK_LSHIFT, VK_RCONTROL, VK_RMENU, VK_RSHIFT };
-	
+
 	// list of the comboboxes to process, with their values retrieved from the settings
 	using ComboboxDescriptor_t = std::vector< std::pair<CComboBox, DWORD> >;
 	ComboboxDescriptor_t comboBoxes = {
@@ -742,7 +742,7 @@ CNeatMouseWtlView::SynchronizeCombos()
 	}
 
 	// For each combobox, and if a value which should be assigned to it has been
-	// already taken, fallback to the [None] value. 
+	// already taken, fallback to the [None] value.
 	for (ComboboxDescriptor_t::value_type & aValue: comboBoxes)
 	{
 		if (!takenKeys.insert(aValue.second).second)
@@ -762,7 +762,7 @@ CNeatMouseWtlView::SynchronizeCombos()
 	{
 		// we'll pass two sets in FillModifierCombobox:
 		// 1) with all possible values which might be present in a combobox
-		// 2) with the values which should be skipped while filling it (i.e. keys 
+		// 2) with the values which should be skipped while filling it (i.e. keys
 		//    taken by the hotkey or the other comboboxes).
 		std::set<DWORD> skipSet = takenKeys;
 		// [None] value should be present in all combos; remove also the actual value of this
@@ -779,7 +779,7 @@ CNeatMouseWtlView::SynchronizeCombos()
 	logic::MainSingleton::Instance().GetMouseParams()->VKAccelerated = comboBoxes[0].second;
 	logic::MainSingleton::Instance().GetMouseParams()->VKActivationMod = comboBoxes[1].second;
 	logic::MainSingleton::Instance().GetMouseParams()->VKStickyKey = comboBoxes[2].second;
-	
+
 	// enable or disable the Alternative Speed value input box depending on the selection
 	// in the corresponding combobox
 	CComboBox comboAlt(GetDlgItem(IDC_COMBO_ALT_MOD));
@@ -789,7 +789,7 @@ CNeatMouseWtlView::SynchronizeCombos()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatMouseWtlView::localize()
 {
 	GetDlgItem(IDC_GROUP_ACTIVATION).SetWindowText(_("main.gb-activation"));
@@ -823,7 +823,7 @@ CNeatMouseWtlView::localize()
 
 	GetDlgItem(IDC_STATIC_STICKYKEYS).SetWindowText(_("main.lbl-sticky-keys"));
 
-	
+
 	// label "On startup"
 	neatcommon::ui::CAutosizeStatic lblOnstartup;
 	lblOnstartup.Attach(GetDlgItem(IDC_STATIC_ONSTARTUP));
@@ -911,7 +911,7 @@ CNeatMouseWtlView::localize()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT 
+LRESULT
 CNeatMouseWtlView::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	int n = IDC_BTN_DEL1;
@@ -975,7 +975,7 @@ CNeatMouseWtlView::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	}
 
 	localize();
-	
+
 	PopulateControls();
 
 	if (logic::MainSingleton::Instance().GetMouseParams()->activateOnStartup)
@@ -988,7 +988,7 @@ CNeatMouseWtlView::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatMouseWtlView::enableAdvancedMode()
 {
 	ToggleAdvancedItems();
@@ -1003,10 +1003,10 @@ CNeatMouseWtlView::enableAdvancedMode()
 	showAdvancedControls(true);
 	RedrawWindow();
 }
-	
+
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatMouseWtlView::disableAdvancedMode()
 {
 	ToggleAdvancedItems();
@@ -1025,7 +1025,7 @@ CNeatMouseWtlView::disableAdvancedMode()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatMouseWtlView::showAdvancedControls(bool show)
 {
 	static const std::array<UINT, 17> itemsToHide
@@ -1057,7 +1057,7 @@ CNeatMouseWtlView::showAdvancedControls(bool show)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatMouseWtlView::AutosizeCheckbox(CWindow & wnd)
 {
 	CString s;
@@ -1075,7 +1075,7 @@ CNeatMouseWtlView::AutosizeCheckbox(CWindow & wnd)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatMouseWtlView::SwapItems(int item1, int item2)
 {
 	CRect aItemRect1, aItemRect2;

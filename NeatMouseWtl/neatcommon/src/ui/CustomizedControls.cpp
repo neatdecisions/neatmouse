@@ -1,9 +1,9 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2020 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -52,7 +52,7 @@ void DrawBitmapAdvanced(HDC pDC, CBitmapHandle bitmap, int x, int y, int w, int 
 		VOID *pvBits;
 		WTL::CBitmap Bitmap(::CreateDIBSection(dcImage, &bmi, DIB_RGB_COLORS, &pvBits, NULL, 0));
 		HBITMAP hBmpOld = dcImage.SelectBitmap(Bitmap);
-			
+
 		CMemoryDC mdc(dcImage, CRect(0, 0, w, h));
 
 		HBITMAP ho = mdc.SelectBitmap(bitmap);
@@ -70,7 +70,7 @@ void DrawBitmapAdvanced(HDC pDC, CBitmapHandle bitmap, int x, int y, int w, int 
 				static_cast<unsigned int>(p[0]) *  28
 			) >> 8;
 		}
-			
+
 		BLENDFUNCTION BlendFunction;
 		BlendFunction.BlendOp = AC_SRC_OVER;
 		BlendFunction.BlendFlags = 0;
@@ -108,13 +108,13 @@ HBITMAP AtlLoadGdiplusImage(ATL::_U_STRINGorID bitmap, ATL::_U_STRINGorID type =
 		return 0;
 	}
 
-	Gdiplus::Bitmap* pBitmap = NULL;
-	if (HIWORD(bitmap.m_lpstr) != NULL) 
+	std::unique_ptr<Gdiplus::Bitmap> pBitmap;
+	if (HIWORD(bitmap.m_lpstr) != NULL)
 	{
 		// Load from filename
-		pBitmap = new Gdiplus::Bitmap(T2CW(bitmap.m_lpstr)); 
-	} 
-	else if (type.m_lpstr != NULL && type.m_lpstr != RT_BITMAP) 
+		pBitmap = std::make_unique<Gdiplus::Bitmap>(T2CW(bitmap.m_lpstr));
+	}
+	else if (type.m_lpstr != NULL && type.m_lpstr != RT_BITMAP)
 	{
 		// Loading PNG, JPG resources etc
 		WTL::CResource res;
@@ -124,24 +124,23 @@ HBITMAP AtlLoadGdiplusImage(ATL::_U_STRINGorID bitmap, ATL::_U_STRINGorID type =
 		if( hMemory == NULL ) return NULL;
 		::memcpy(::GlobalLock(hMemory), res.Lock(), dwSize);
 		::GlobalUnlock(hMemory);
-		IStream* pStream = NULL; 
-		if( FAILED( ::CreateStreamOnHGlobal(hMemory, TRUE, &pStream) ) ) 
+		IStream* pStream = NULL;
+		if( FAILED( ::CreateStreamOnHGlobal(hMemory, TRUE, &pStream) ) )
 		{
 			::GlobalFree(hMemory);
 			return FALSE;
 		}
-		pBitmap = new Gdiplus::Bitmap(pStream);
+		pBitmap = std::make_unique<Gdiplus::Bitmap>(pStream);
 		pStream->Release();
 	}
-	else 
+	else
 	{
 		// This only loads BMP resources
-		pBitmap = new Gdiplus::Bitmap(_Module.GetResourceInstance(), (LPCWSTR) (UINT) bitmap.m_lpstr);
+		pBitmap = std::make_unique<Gdiplus::Bitmap>(_Module.GetResourceInstance(), (LPCWSTR) (UINT) bitmap.m_lpstr);
 	}
-	if( pBitmap == NULL ) return NULL;
+	if (!pBitmap) return NULL;
 	HBITMAP hBitmap = NULL;
-	pBitmap->GetHBITMAP(NULL, &hBitmap); 
-	delete pBitmap;
+	pBitmap->GetHBITMAP(NULL, &hBitmap);
 	return hBitmap;
 }
 
@@ -151,7 +150,7 @@ HBITMAP AtlLoadGdiplusImage(ATL::_U_STRINGorID bitmap, ATL::_U_STRINGorID type =
 //=====================================================================================================================
 
 //---------------------------------------------------------------------------------------------------------------------
-bool 
+bool
 CGdiPlusInitializer::IsGdiPlusPresent()
 {
 	if (m_GdiPlusPresent == -1)
@@ -181,7 +180,7 @@ CGdiPlusInitializer::IsGdiPlusPresent()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-bool 
+bool
 CGdiPlusInitializer::Init()
 {
 	if (IsGdiPlusPresent())
@@ -189,13 +188,13 @@ CGdiPlusInitializer::Init()
 		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 		gdiPlusInit = Gdiplus::Ok == Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 	}
-		
+
 	return gdiPlusInit;
 }
-	
+
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CGdiPlusInitializer::Uninit()
 {
 	if (gdiPlusInit)
@@ -203,7 +202,7 @@ CGdiPlusInitializer::Uninit()
 		Gdiplus::GdiplusShutdown(gdiplusToken);
 	}
 }
-	
+
 
 //---------------------------------------------------------------------------------------------------------------------
 CGdiPlusInitializer::~CGdiPlusInitializer()
@@ -228,7 +227,7 @@ CImageManager::~CImageManager()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-HBITMAP 
+HBITMAP
 CImageManager::GetBitmapFromPng(UINT id)
 {
 	std::map<UINT, HBITMAP>::iterator it = bitmaps.find(id);
@@ -245,8 +244,8 @@ CImageManager::GetBitmapFromPng(UINT id)
 
 //=====================================================================================================================
 // MenuBitmapsManager
-//=====================================================================================================================		
-		
+//=====================================================================================================================
+
 //---------------------------------------------------------------------------------------------------------------------
 CMenuBitmapsManager::~CMenuBitmapsManager()
 {
@@ -265,23 +264,16 @@ CMenuBitmapsManager::CMenuBitmapsManager(int cx, int cy)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-CBitmapHandle 
+CBitmapHandle
 CMenuBitmapsManager::GetBitmap(UINT id)
 {
 	std::map<UINT, CBitmapHandle>::iterator it = icons.find(id);
-	if (it == icons.end())
-	{
-		return CBitmapHandle(NULL);
-	}
-	else
-	{
-		return it->second;
-	}
+	return (it == icons.end()) ? CBitmapHandle() : it->second;
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CMenuBitmapsManager::SetBitmap(UINT id, CBitmapHandle bmp)
 {
 	if (bmp.IsNull())
@@ -295,7 +287,7 @@ CMenuBitmapsManager::SetBitmap(UINT id, CBitmapHandle bmp)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CMenuBitmapsManager::Measure(LPMEASUREITEMSTRUCT lpmis)
 {
 	if (lpmis == NULL)
@@ -315,10 +307,10 @@ CMenuBitmapsManager::Measure(LPMEASUREITEMSTRUCT lpmis)
 		lpmis->itemHeight = sz.cy;
 	}
 }
-	
+
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CMenuBitmapsManager::Draw(LPDRAWITEMSTRUCT lpdis)
 {
 	if ((lpdis == NULL) || (lpdis->CtlType != ODT_MENU))
@@ -340,17 +332,17 @@ CMenuBitmapsManager::Draw(LPDRAWITEMSTRUCT lpdis)
 			sz.cx,
 			sz.cy,
 			(lpdis->itemState & ODS_GRAYED) != FALSE);
-	
+
 }
 
 
 
 //=====================================================================================================================
 // CAutosizeStatic
-//=====================================================================================================================	
+//=====================================================================================================================
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CAutosizeStatic::SetText(const CString & s)
 {
 	CClientDC dc(*this);
