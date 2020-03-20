@@ -1,9 +1,9 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2020 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -14,13 +14,13 @@
 
 namespace neatmouse {
 
-class CMainFrame : public CFrameWindowImpl<CMainFrame>, 
+class CMainFrame : public CFrameWindowImpl<CMainFrame>,
                    public CMessageFilter
 {
 protected:
 	neatcommon::ui::CMenuBitmapsManager menuBitmapsManager;
 	CNeatMouseWtlView m_view;
-	CNeatToolbar tb; 
+	CNeatToolbar tb;
 
 	int cbPresetsSelectionIndex;
 	bool isVisible;
@@ -35,12 +35,12 @@ protected:
 	LRESULT OnCreate(LPCREATESTRUCT lpcs);
 	LRESULT OnBnClickedButtonPresetSave(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/);
 	LRESULT OnBnClickedButtonPresetAdd(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/);
-	LRESULT OnBnClickedButtonPresetDelete(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/);		
-	LRESULT OnBnClickedButtonAdvancedView(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/);		
+	LRESULT OnBnClickedButtonPresetDelete(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/);
+	LRESULT OnBnClickedButtonAdvancedView(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/);
 	LRESULT OnAppAbout(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/);
 
 	LRESULT OnTrayBtnClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	
+
 	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnTrayShow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -48,7 +48,7 @@ protected:
 
 	void RedrawToolbar();
 	void localize();
-	void TrackTrayMenu();	
+	void TrackTrayMenu();
 
 	BEGIN_MSG_MAP(CMainFrame)
 		MSG_WM_CREATE(OnCreate)
@@ -86,13 +86,13 @@ protected:
 
 		CHAIN_MSG_MAP(CFrameWindowImpl<CMainFrame>)
 	END_MSG_MAP()
-	
+
 public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
 	CMainFrame();
-	
+
 	void ToggleVisible();
 
 private:

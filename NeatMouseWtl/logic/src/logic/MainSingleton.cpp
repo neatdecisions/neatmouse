@@ -1,9 +1,9 @@
 //
-// Copyright © 2016–2019 Neat Decisions. All rights reserved.
+// Copyright © 2016–2020 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -23,7 +23,7 @@ namespace logic {
 //=====================================================================================================================
 
 //---------------------------------------------------------------------------------------------------------------------
-MainSingleton & 
+MainSingleton &
 MainSingleton::Instance()
 {
 	static MainSingleton mainSingleton;
@@ -47,23 +47,24 @@ MainSingleton::NotifyEnabling(bool enabled)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-bool 
+bool
 MainSingleton::selectLocale(const std::string & langCode)
 {
-	for (const neatcommon::system::LocaleUiDescriptor & aLocale : locales)
+	auto it = std::find_if(locales.begin(), locales.end(),
+		[&langCode](const neatcommon::system::LocaleUiDescriptor & locale) {
+			return locale.code == langCode;
+		} );
+	if (it != locales.end())
 	{
-		if (aLocale.code == langCode)
-		{
-			localizer.load(aLocale.fileId, L"LANG");
-			return true;
-		}
+		localizer.load(it->fileId, L"LANG");
+		return true;
 	}
 	return false;
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
-const std::vector<neatcommon::system::LocaleUiDescriptor> & 
+const std::vector<neatcommon::system::LocaleUiDescriptor> &
 MainSingleton::GetLocales() const
 {
 	return locales;
@@ -80,7 +81,7 @@ MainSingleton::GetFallbackLocale() const
 
 
 //---------------------------------------------------------------------------------------------------------------------
-MainSingleton::~MainSingleton() 
+MainSingleton::~MainSingleton()
 {
 	if (GetMouseParams() != nullptr)
 	{
@@ -93,7 +94,7 @@ MainSingleton::~MainSingleton()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-unsigned short 
+unsigned short
 MainSingleton::Init(const std::vector<neatcommon::system::LocaleUiDescriptor> & iLocales)
 {
 	locales = iLocales;
@@ -158,7 +159,7 @@ MainSingleton::Init(const std::vector<neatcommon::system::LocaleUiDescriptor> & 
 	if (GetLastError() == ERROR_ALREADY_EXISTS || GetLastError() == ERROR_ACCESS_DENIED) return 1;
 
 	UpdateCursor();
-	
+
 	return 0;
 }
 
@@ -172,7 +173,7 @@ MainSingleton::GetMouseParams()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-bool 
+bool
 MainSingleton::WereParametersChanged()
 {
 	ASSERT(mouseParams);
@@ -199,7 +200,7 @@ MainSingleton::RevertMouseParams()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 MainSingleton::SetMouseParams(MouseParams::Ptr value)
 {
 	mouseParams = value;
@@ -208,7 +209,7 @@ MainSingleton::SetMouseParams(MouseParams::Ptr value)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-const MouseParams * const 
+const MouseParams * const
 MainSingleton::GetInitialMouseParams() const
 {
 	return &initialMouseParams;
@@ -216,7 +217,7 @@ MainSingleton::GetInitialMouseParams() const
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 MainSingleton::SetEmulationNotifier(const IEmulationNotifier::Ptr & notifier)
 {
 	emulationNotifier = notifier;
@@ -224,7 +225,7 @@ MainSingleton::SetEmulationNotifier(const IEmulationNotifier::Ptr & notifier)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 MainSingleton::UpdateCursor()
 {
 	if (emulationNotifier) emulationNotifier->RefreshOverlay(GetMouseActioner().isEmulationActivated() && GetMouseParams()->changeCursor);
