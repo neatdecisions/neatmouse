@@ -14,8 +14,6 @@
 #include <atlimpl.cpp>
 #endif //(_ATL_VER < 0x0700)
 
-CDPI gMetrics;
-
 
 //-----------------------------------------------------------------------------
 HBITMAP SafeLoadPng(UINT id)

@@ -2,8 +2,8 @@
 // Copyright © 2016 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -16,35 +16,28 @@
 
 namespace neatmouse {
 
-HINSTANCE overlayInstance = NULL;
-HWND overlayHwnd = NULL;
-HHOOK mouseHook = NULL;
-HANDLE threadHandle = NULL;
-HBITMAP overlayBitmap = NULL;
-
-
-#define OVERLAY_WINDOW_NAME L"NeatOverlay"
-#define OVERLAY_DX 10
-#define OVERLAY_DY 10
+namespace {
+	HINSTANCE overlayInstance = NULL;
+	HWND overlayHwnd = NULL;
+	HHOOK mouseHook = NULL;
+	HANDLE threadHandle = NULL;
+	HBITMAP overlayBitmap = NULL;
+	constexpr LPWSTR OVERLAY_WINDOW_NAME = L"NeatOverlay";
+}
 
 
 //---------------------------------------------------------------------------------------------------------------------
 LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
 	if ((nCode < 0) || (wParam != WM_MOUSEMOVE)) CallNextHookEx(mouseHook, nCode, wParam, lParam);
-	
+
 	POINT pt;
-	const PMOUSEHOOKSTRUCT pMouseStruct = reinterpret_cast<PMOUSEHOOKSTRUCT>(lParam);
-	if (pMouseStruct != NULL)
-	{
-		pt = pMouseStruct->pt;
-	} else
-	{
-		// should never happen...
-		GetCursorPos(&pt);
-	}
-	
-	SetWindowPos(overlayHwnd, HWND_TOPMOST, pt.x + OVERLAY_DX, pt.y + OVERLAY_DY, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE);
+	GetCursorPos(&pt);
+
+	const int dx = GetSystemMetrics(SM_CXCURSOR) / 2;
+	const int dy = GetSystemMetrics(SM_CYCURSOR) / 2;
+
+	SetWindowPos(overlayHwnd, HWND_TOPMOST, pt.x + dx, pt.y + dy, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE);
 	return CallNextHookEx(mouseHook, nCode, wParam, lParam);
 }
 
@@ -62,7 +55,7 @@ void DrawOverlay(HWND hwndSplash, HBITMAP hbmpSplash)
 	BlendFunction.BlendOp = AC_SRC_OVER;
 	BlendFunction.BlendFlags = 0;
 	BlendFunction.SourceConstantAlpha = 0xFF;   // half transparent
-	BlendFunction.AlphaFormat = AC_SRC_ALPHA;  // use bitmap alpha
+	BlendFunction.AlphaFormat = AC_SRC_ALPHA;   // use bitmap alpha
 
 	POINT pt = { 0, 0 };
 	SIZE sz = { 16, 16 };
@@ -140,6 +133,8 @@ void UninitOverlay()
 //---------------------------------------------------------------------------------------------------------------------
 unsigned int WINAPI ThreadProc(void *)
 {
+	const int dx = GetSystemMetrics(SM_CXCURSOR) / 2;
+	const int dy = GetSystemMetrics(SM_CYCURSOR) / 2;
 	POINT p;
 	GetCursorPos(&p);
 	overlayHwnd = CreateWindowEx(
@@ -147,8 +142,8 @@ unsigned int WINAPI ThreadProc(void *)
 		OVERLAY_WINDOW_NAME,
 		NULL,
 		WS_POPUP | WS_VISIBLE,
-		p.x + OVERLAY_DX,
-		p.y + OVERLAY_DY,
+		p.x + dx,
+		p.y + dy,
 		16,
 		16,
 		NULL,
@@ -163,7 +158,7 @@ unsigned int WINAPI ThreadProc(void *)
 	ShowWindow(overlayHwnd, SW_SHOWNORMAL);
 	UpdateWindow(overlayHwnd);
 
-	SetWindowPos(overlayHwnd, HWND_TOPMOST, p.x + OVERLAY_DX, p.y + OVERLAY_DY, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE);
+	SetWindowPos(overlayHwnd, HWND_TOPMOST, p.x + dx, p.y + dy, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE);
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0))
 	{

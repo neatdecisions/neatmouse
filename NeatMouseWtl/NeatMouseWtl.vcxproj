@@ -41,13 +41,13 @@
     <IntDir>Debug\</IntDir>
     <OutDir>Debug\</OutDir>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\third_party\wtl\include;..\third_party\cdpi\include;neatcommon\include;logic\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\third_party\wtl\include;neatcommon\include;logic\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IntDir>Release\</IntDir>
     <OutDir>Release\</OutDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\third_party\wtl\include;..\third_party\cdpi\include;neatcommon\include;logic\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\third_party\wtl\include;neatcommon\include;logic\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -86,7 +86,8 @@
       </DllDataFileName>
     </Midl>
     <Manifest>
-      <AdditionalManifestFiles>DeclareDPIAware.manifest</AdditionalManifestFiles>
+      <AdditionalManifestFiles>
+      </AdditionalManifestFiles>
     </Manifest>
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
@@ -130,7 +131,8 @@
       </DllDataFileName>
     </Midl>
     <Manifest>
-      <AdditionalManifestFiles>DeclareDPIAware.manifest</AdditionalManifestFiles>
+      <AdditionalManifestFiles>
+      </AdditionalManifestFiles>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -244,11 +246,6 @@
     <None Include="res\png\neatmouse16.png" />
     <None Include="res\png\plus.png" />
     <None Include="res\png\question.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Manifest Include="DeclareDPIAware.manifest">
-      <SubType>Designer</SubType>
-    </Manifest>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\png\GitHub-Mark-16px.png" />

@@ -63,7 +63,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	}
 
 	neatmouse::CMainFrame wndMain;
-	RECT rect{ 0, 0, gMetrics.ScaleX(640), gMetrics.ScaleY(480) };
+	RECT rect{ 0, 0, 640, 480 };
 	if (wndMain.CreateEx(0, rect, WS_OVERLAPPEDWINDOW & ~WS_MAXIMIZEBOX & ~WS_SIZEBOX ) == NULL)
 	{
 		ATLTRACE(_T("Main window creation failed!\n"));

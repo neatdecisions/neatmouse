@@ -2,8 +2,8 @@
 // Copyright © 2016 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -18,7 +18,7 @@
 
 namespace neatmouse {
 
-const TCHAR * kRegistryStartupValueName = _T("NeatMouse");
+constexpr TCHAR * kRegistryStartupValueName = _T("NeatMouse");
 
 
 //=====================================================================================================================
@@ -28,7 +28,7 @@ const TCHAR * kRegistryStartupValueName = _T("NeatMouse");
 //---------------------------------------------------------------------------------------------------------------------
 void
 CAboutDlg::localize()
-{	
+{
 	GetDlgItem(IDC_STATIC_ITALIAN).SetWindowText(_("about.translation-contrib"));
 	SetWindowText(_("about.caption"));
 	visitLink.SetLabel(_("about.lnk-visit-site"));
@@ -39,11 +39,11 @@ CAboutDlg::localize()
 	ScreenToClient(&layoutRect);
 
 	ykLink.SetWindowPos(HWND_BOTTOM, layoutRect.right, layoutRect.top, 0, 0, SWP_NOSIZE);
-	
+
 	CButton btn;
 	btn.Attach(GetDlgItem(IDOK));
 	btn.Detach();
-	
+
 	btn.Attach(GetDlgItem(IDC_CHECK_RUN_AT_STARTUP));
 	btn.SetWindowText(_("about.chk-run-at-startup"));
 	btn.Detach();
@@ -60,8 +60,8 @@ CAboutDlg::OnInitDialog(HWND, LRESULT)
 	CButton cfu;
 	cfu.Attach(GetDlgItem(IDC_CHECK_RUN_AT_STARTUP));
 	cfu.SetCheck(neatcommon::system::AutorunManager().getAutostartEnabled(kRegistryStartupValueName) ? BST_CHECKED : BST_UNCHECKED);
-	cfu.Detach();	
-	
+	cfu.Detach();
+
 	SetTextBackGround(0xFFFFFF);
 
 	LONG lStyle = GetWindowLong(GWL_STYLE);
@@ -74,8 +74,8 @@ CAboutDlg::OnInitDialog(HWND, LRESULT)
 	neatcommon::system::GetProductVersion(info);
 
 	CString s(_T("NeatMouse"));
-	
-	titleFont.CreateFont(gMetrics.PointsToPixels(24), 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, OEM_CHARSET, 0, 0, DEFAULT_QUALITY, FF_ROMAN, _T("Verdana"));
+
+	titleFont.CreateFont(32, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, OEM_CHARSET, 0, 0, DEFAULT_QUALITY, FF_ROMAN, _T("Verdana"));
 	programName.Attach(GetDlgItem(IDC_STATIC_PROGRAMNAME));
 	programName.SetFont(titleFont);
 	programName.SetText(s);
@@ -87,25 +87,25 @@ CAboutDlg::OnInitDialog(HWND, LRESULT)
 
 	versionFont.CreateFont(0, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, OEM_CHARSET, 0, 0, DEFAULT_QUALITY, FF_ROMAN, _T("Verdana"));
 	programVersion.Attach(GetDlgItem(IDC_STATIC_VERSION));
-	programVersion.SetWindowText(s);	
+	programVersion.SetWindowText(s);
 
-	
+
 	ykLink.SetHyperLinkExtendedStyle(HLINK_UNDERLINEHOVER);
 	ykLink.SubclassWindow(GetDlgItem(IDC_STATIC_YK));
 	ykLink.SetHyperLink(_T("http://p.yusukekamiyamane.com"));
-	
+
 	visitLink.SetHyperLinkExtendedStyle(HLINK_UNDERLINEHOVER);
 	visitLink.SubclassWindow(GetDlgItem(IDC_STATIC_VISIT));
 	visitLink.SetHyperLink(CString(LINK_SITE));
 
 	link.SetHyperLinkExtendedStyle(HLINK_UNDERLINEHOVER);
 	link.SubclassWindow(GetDlgItem(IDC_STATIC_UPDATE));
-		
+
 	link.SetHyperLink(CString(LINK_GITHUB));
 	link.SetLabel(_("about.github"));
-	
+
 	someIcons.Attach(GetDlgItem(IDC_STATIC_SOMEICONS));
-	
+
 	localize();
 	Invalidate();
 
@@ -114,7 +114,7 @@ CAboutDlg::OnInitDialog(HWND, LRESULT)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT 
+LRESULT
 CAboutDlg::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	EndDialog(wID);
@@ -123,7 +123,7 @@ CAboutDlg::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT 
+LRESULT
 CAboutDlg::OnRunAtStartup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CButton checkBox(GetDlgItem(IDC_CHECK_RUN_AT_STARTUP));
@@ -134,7 +134,7 @@ CAboutDlg::OnRunAtStartup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, 
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT 
+LRESULT
 CAboutDlg::OnSetCursor(CWindow /*wndTopLevel*/, UINT /*nHitTest*/, UINT /*message*/)
 {
 	SetCursor(::LoadCursor(NULL, IDC_ARROW));
@@ -144,7 +144,7 @@ CAboutDlg::OnSetCursor(CWindow /*wndTopLevel*/, UINT /*nHitTest*/, UINT /*messag
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT 
+LRESULT
 CAboutDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	titleFont.DeleteObject();
@@ -155,9 +155,9 @@ CAboutDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& 
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT 
+LRESULT
 CAboutDlg::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{ 
+{
 	PAINTSTRUCT ps;
 	HDC hDC = BeginPaint(&ps);
 	{
