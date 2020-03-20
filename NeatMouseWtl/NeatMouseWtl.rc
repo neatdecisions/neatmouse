@@ -210,7 +210,7 @@ BEGIN
     LTEXT           "Static",IDC_STATIC_UPDATE,24,83,267,8
     LTEXT           "Some Icons by",IDC_STATIC_SOMEICONS,3,133,48,8
     LTEXT           "Yusuke Kamiyamane.",IDC_STATIC_YK,51,133,83,8
-    CONTROL         "© 2011–2019 Neat Decisions.",IDC_STATIC_COPYRIGHT,
+    CONTROL         "© 2011–2020 Neat Decisions.",IDC_STATIC_COPYRIGHT,
                     "Static",SS_LEFTNOWORDWRAP | WS_GROUP,7,59,97,8
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,5,107,283,1
     LTEXT           "Visit the Neat Decisions website for the latest news, FAQs and support",IDC_STATIC_VISIT,8,71,287,8
