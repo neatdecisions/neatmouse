@@ -1,9 +1,9 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2020 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -39,7 +39,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	neatmouse::InitOverlay(_Module.m_hInst);
 
 	// prepare supported translations
-	const std::vector<neatcommon::system::LocaleUiDescriptor> locales 
+	const std::vector<neatcommon::system::LocaleUiDescriptor> locales
 	{
 		neatcommon::system::LocaleUiDescriptor("en", IDR_LANG_ENGLISH, IDB_PNG_LANG_EN, ID_LANGUAGE_EN),
 		neatcommon::system::LocaleUiDescriptor("de", IDR_LANG_GERMAN, IDB_PNG_LANG_DE, ID_LANGUAGE_DE),
@@ -84,7 +84,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	nd.uID = 10;
 	nd.hIcon = LoadIcon(_Module.m_hInst, MAKEINTRESOURCE(IDI_MAUSEMUL));
 	nd.uFlags = NIF_TIP | NIF_ICON | NIF_MESSAGE;
-	
+
 	if (neatmouse::logic::MainSingleton::Instance().GetMouseParams()->minimizeOnStartup)
 	{
 		wndMain.ToggleVisible();
@@ -113,9 +113,9 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 //---------------------------------------------------------------------------------------------------------------------
 int WINAPI wWinMain(
-	_In_ HINSTANCE hInstance, 
-	_In_opt_ HINSTANCE /*hPrevInstance*/, 
-	_In_ LPWSTR lpstrCmdLine, 
+	_In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE /*hPrevInstance*/,
+	_In_ LPWSTR lpstrCmdLine,
 	_In_ int nCmdShow)
 {
 	HRESULT hRes = ::CoInitialize(NULL);
