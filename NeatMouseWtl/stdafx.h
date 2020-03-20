@@ -72,9 +72,6 @@ extern CAppModule _Module;
 
 #include "logic/MainSingleton.h"
 #include "neatcommon/system/Helpers.h"
-#include "CDPI.h"
-
-extern CDPI gMetrics;
 
 #define ASSERT(x) assert(x)
 

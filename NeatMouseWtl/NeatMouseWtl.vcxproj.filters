@@ -350,11 +350,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Manifest Include="DeclareDPIAware.manifest">
-      <Filter>Resource Files</Filter>
-    </Manifest>
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="res\png\main\plug-connect.png">
       <Filter>Resource Files\png</Filter>
     </Image>
