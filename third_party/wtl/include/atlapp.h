@@ -151,13 +151,6 @@
   #define _WTL_STACK_ALLOC_THRESHOLD   512
 #endif
 
-// Used to declare overriden virtual functions
-#if (__cplusplus >= 201103L) || (defined(_MSC_VER) && _MSC_VER >= 1900)
-  #define _WTL_OVERRIDE override
-#else
-  #define _WTL_OVERRIDE
-#endif
-
 
 namespace WTL
 {
@@ -286,7 +279,7 @@ namespace RunTimeHelper
 #else // !_versionhelpers_H_INCLUDED_
 		OSVERSIONINFO ovi = { sizeof(OSVERSIONINFO) };
 		BOOL bRet = ::GetVersionEx(&ovi);
-		return ((bRet != FALSE) && (ovi.dwMajorVersion == 6) && (ovi.dwMinorVersion >= 1));
+		return ((bRet != FALSE) && ((ovi.dwMajorVersion > 6) || ((ovi.dwMajorVersion == 6) && (ovi.dwMinorVersion >= 1))));
 #endif // _versionhelpers_H_INCLUDED_
 	}
 

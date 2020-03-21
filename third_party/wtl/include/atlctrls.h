@@ -3681,6 +3681,12 @@ public:
 		return (BOOL)::SendMessage(this->m_hWnd, LVM_ENSUREVISIBLE, nItem, MAKELPARAM(bPartialOK, 0));
 	}
 
+	BOOL Scroll(int cx, int cy)
+	{
+		ATLASSERT(::IsWindow(this->m_hWnd));
+		return (BOOL)::SendMessage(this->m_hWnd, LVM_SCROLL, cx, cy);
+	}
+
 	BOOL Scroll(SIZE size)
 	{
 		ATLASSERT(::IsWindow(this->m_hWnd));
