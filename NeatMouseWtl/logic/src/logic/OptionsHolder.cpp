@@ -20,7 +20,7 @@ void COptionsHolder::Load(const std::wstring & filePath)
 {
 	neatcommon::system::MyIniFile mif;
 	mif.load(filePath);
-	mFileName = filePath;
+	m_fileName = filePath;
 
 	std::string language = "en";
 
@@ -60,7 +60,7 @@ void COptionsHolder::Load(const std::wstring & filePath)
 
 	const std::wstring defaultSettingsFileName = mif.readStringValue(L"General", L"dsfn", L"");
 	m_defaultSettingsName = mif.readStringValue(L"General", L"dsn", L"");
-	this->lang = mif.readUtf8Value(L"General", L"lang", language);
+	m_lang = mif.readUtf8Value(L"General", L"lang", language);
 
 	LoadOptions();
 
@@ -82,7 +82,7 @@ void COptionsHolder::Load(const std::wstring & filePath)
 //---------------------------------------------------------------------------------------------------------------------
 void COptionsHolder::Save()
 {
-	Save(mFileName);
+	Save(m_fileName);
 }
 
 
@@ -92,10 +92,10 @@ void COptionsHolder::Save(const std::wstring & filePath)
 	neatcommon::system::MyIniFile mif;
 
 	mif.writeStringValue(L"General", L"dsn", m_defaultSettingsName);
-	mif.writeUtf8Value(L"General", L"lang", lang);
+	mif.writeUtf8Value(L"General", L"lang", m_lang);
 
 	mif.save(filePath);
-	mFileName = filePath;
+	m_fileName = filePath;
 }
 
 
@@ -140,28 +140,28 @@ void COptionsHolder::SetSettings(const std::wstring& name, const MouseParams& pa
 //---------------------------------------------------------------------------------------------------------------------
 void COptionsHolder::SetOptionsFolder(const std::wstring & path)
 {
-	optionsFolder = path;
+	m_optionsFolder = path;
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
-const std::wstring & COptionsHolder::GetOptionsFolder() const
+std::wstring COptionsHolder::GetOptionsFolder() const
 {
-	return optionsFolder;
+	return m_optionsFolder;
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
 std::string COptionsHolder::GetLanguageCode() const
 {
-	return lang;
+	return m_lang;
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
 void COptionsHolder::SetLanguageCode(const std::string & langCode)
 {
-	lang = langCode;
+	m_lang = langCode;
 }
 
 
@@ -171,12 +171,12 @@ void COptionsHolder::LoadOptions()
 	m_settings.clear();
 
 	MouseParams opts(true);
-	opts.Load(optionsFolder + L"\\default");
-	opts.Save(optionsFolder + L"\\default");
+	opts.Load(m_optionsFolder + L"\\default");
+	opts.Save(m_optionsFolder + L"\\default");
 	m_settings.emplace(opts.GetName(), opts);
 
 	WIN32_FIND_DATA fd;
-	HANDLE hFind = FindFirstFile((optionsFolder + L"\\*.nmp").c_str(), &fd);
+	HANDLE hFind = FindFirstFile((m_optionsFolder + L"\\*.nmp").c_str(), &fd);
 
 	bool res = INVALID_HANDLE_VALUE != hFind;
 
@@ -184,7 +184,7 @@ void COptionsHolder::LoadOptions()
 	{
 		do
 		{
-			std::wstring fn = optionsFolder + L"\\" + fd.cFileName;
+			const std::wstring fn = m_optionsFolder + L"\\" + fd.cFileName;
 			MouseParams optsItem;
 			optsItem.Load(fn);
 			m_settings.emplace(optsItem.GetName(), optsItem);
@@ -223,11 +223,11 @@ MouseParams COptionsHolder::CreateNewSettings(const std::wstring & proposedName)
 
 	if (fname.empty()) fname = L"(Untitled)";
 
-	std::wstring finalName = optionsFolder + L"\\" + fname + L".nmp";
+	std::wstring finalName = m_optionsFolder + L"\\" + fname + L".nmp";
 	int i = 1;
 	while (::GetFileAttributes(finalName.c_str()) != DWORD(-1))
 	{
-		finalName = optionsFolder + L"\\" + fname + L" (" + std::to_wstring(i++) + L").nmp";
+		finalName = m_optionsFolder + L"\\" + fname + L" (" + std::to_wstring(i++) + L").nmp";
 	}
 
 	mouseParams.Save(finalName);

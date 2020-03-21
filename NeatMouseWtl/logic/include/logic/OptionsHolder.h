@@ -29,18 +29,18 @@ public:
 	void DeleteSettings(const std::wstring & name);
 
 	void SetOptionsFolder(const std::wstring & path);
-	const std::wstring & GetOptionsFolder() const;
+	std::wstring GetOptionsFolder() const;
 
 	std::string GetLanguageCode() const;
 	void SetLanguageCode(const std::string & langCode);
 
 protected:
-	std::string lang;
+	std::string m_lang;
 	std::wstring m_defaultSettingsName;
-	std::wstring optionsFolder;
+	std::wstring m_optionsFolder;
 	std::map<std::wstring, MouseParams> m_settings;
 	void LoadOptions();
-	std::wstring mFileName;
+	std::wstring m_fileName;
 };
 
 }}
