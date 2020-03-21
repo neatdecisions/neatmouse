@@ -83,7 +83,7 @@ MainSingleton::GetFallbackLocale() const
 //---------------------------------------------------------------------------------------------------------------------
 MainSingleton::~MainSingleton()
 {
-	optionsHolder.SetDefaultSettingsName(GetMouseParams().Name);
+	optionsHolder.SetDefaultSettingsName(GetMouseParams().GetName());
 	optionsHolder.Save();
 
 	if (mutex) CloseHandle(mutex);
@@ -177,7 +177,7 @@ void
 MainSingleton::AcceptMouseParams()
 {
 	m_initialMouseParams = m_mouseParams;
-	optionsHolder.SetSettings(m_mouseParams.Name, m_mouseParams);
+	optionsHolder.SetSettings(m_mouseParams.GetName(), m_mouseParams);
 	m_mouseParams.Save();
 	mouseActioner.setMouseParams(m_mouseParams);
 }

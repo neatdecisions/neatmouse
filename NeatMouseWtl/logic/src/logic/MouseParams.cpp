@@ -16,9 +16,23 @@ namespace neatmouse {
 namespace logic {
 
 //---------------------------------------------------------------------------------------------------------------------
+std::wstring MouseParams::GetName() const
+{
+	return m_name;
+}
+
+
+//---------------------------------------------------------------------------------------------------------------------
+std::wstring MouseParams::GetFilePath() const
+{
+	return m_filePath;
+}
+
+
+//---------------------------------------------------------------------------------------------------------------------
 bool MouseParams::Save()
 {
-	return Save(FileName);
+	return Save(m_filePath);
 }
 
 
@@ -52,7 +66,7 @@ bool MouseParams::Save(const std::wstring & fileName)
 	mif.writeUIntValue(L"General", L"VK_Hotkey", this->VKHotkey);
 	mif.writeUIntValue(L"General", L"ModHotkey", this->modHotkey);
 
-	mif.writeStringValue(L"General", L"Name", this->Name);
+	mif.writeStringValue(L"General", L"Name", this->m_name);
 
 	mif.writeUIntValue(L"General", L"VKActivationMod", this->VKActivationMod);
 	mif.writeUIntValue(L"General", L"VKStickyKey", this->VKStickyKey);
@@ -61,7 +75,7 @@ bool MouseParams::Save(const std::wstring & fileName)
 	mif.writeBoolValue(L"General", L"ChangeCursor", this->changeCursor);
 	mif.writeBoolValue(L"General", L"ShowNotifications", this->showNotifications);
 
-	this->FileName = fileName;
+	m_filePath = fileName;
 	return mif.save(fileName);
 }
 
@@ -69,7 +83,7 @@ bool MouseParams::Save(const std::wstring & fileName)
 //---------------------------------------------------------------------------------------------------------------------
 bool MouseParams::Load(const std::wstring & fileName)
 {
-	this->FileName = fileName;
+	m_filePath = fileName;
 
 	neatcommon::system::MyIniFile mif;
 	bool res = mif.load(fileName);
@@ -99,7 +113,7 @@ bool MouseParams::Load(const std::wstring & fileName)
 	this->VKHotkey = mif.readUIntValue(L"General", L"VK_Hotkey", VK_F10);
 	this->modHotkey = mif.readUIntValue(L"General", L"ModHotkey", MOD_CONTROL | MOD_ALT);
 
-	this->Name = mif.readStringValue(L"General", L"Name", L"[Untitled]");
+	this->m_name = mif.readStringValue(L"General", L"Name", L"[Untitled]");
 
 	this->minimizeOnStartup = mif.readBoolValue(L"General", L"MinimizeOnStartup", false);
 	this->activateOnStartup = mif.readBoolValue(L"General", L"ActivateOnStartup", false);
@@ -163,38 +177,17 @@ bool MouseParams::IsEqual(const MouseParams & mouseParams) const
 	return true;
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+MouseParams::MouseParams(const std::wstring& name) : m_name(name)
+{}
+
 
 //---------------------------------------------------------------------------------------------------------------------
 MouseParams::MouseParams(bool iIsPreset) :
-		isPreset(iIsPreset),
-		Name(_T("[Untitled]")),
-		FileName(_T("")),
-		delta(20),
-		adelta(1),
-		VKEnabler(VK_SCROLL),
-		VKAccelerated(kVKNone),
-		VKActivationMod(kVKNone),
-		VKStickyKey(kVKNone),
-		modHotkey(MOD_CONTROL | MOD_ALT),
-		VKHotkey(VK_F10),
-		VKMoveUp(VK_NUMPAD8),
-		VKMoveDown(VK_NUMPAD2),
-		VKMoveLeft(VK_NUMPAD4),
-		VKMoveRight(VK_NUMPAD6),
-		VKMoveLeftUp(VK_NUMPAD7),
-		VKMoveRightDown(VK_NUMPAD3),
-		VKMoveLeftDown(VK_NUMPAD1),
-		VKMoveRightUp(VK_NUMPAD9),
-		VKPressLB(VK_NUMPAD0),
-		VKPressRB(VK_NUMPADENTER),
-		VKPressMB(VK_NUMPAD5),
-		VKWheelDown(VK_MULTIPLY),
-		VKWheelUp(-VK_DIVIDE),
-		minimizeOnStartup(false),
-		changeCursor(false),
-		activateOnStartup(false),
-		showNotifications(true)
-{}
+	m_name(iIsPreset ? _T("(Default)") : _T("[Untitled]")),
+	isPreset(iIsPreset)
+{
+}
 
 
 //---------------------------------------------------------------------------------------------------------------------

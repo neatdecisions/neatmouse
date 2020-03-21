@@ -69,7 +69,7 @@ void COptionsHolder::Load(const std::wstring & filePath)
 	{
 		for (const auto & kv : m_settings)
 		{
-			if (neatcommon::system::GetFileName(kv.second.FileName) == defaultSettingsFileName)
+			if (neatcommon::system::GetFileName(kv.second.GetFilePath()) == defaultSettingsFileName)
 			{
 				m_defaultSettingsName = kv.first;
 				break;
@@ -172,9 +172,8 @@ void COptionsHolder::LoadOptions()
 
 	MouseParams opts(true);
 	opts.Load(optionsFolder + L"\\default");
-	opts.Name = L"(Default)";
 	opts.Save(optionsFolder + L"\\default");
-	m_settings.emplace(opts.Name, opts);
+	m_settings.emplace(opts.GetName(), opts);
 
 	WIN32_FIND_DATA fd;
 	HANDLE hFind = FindFirstFile((optionsFolder + L"\\*.nmp").c_str(), &fd);
@@ -188,7 +187,7 @@ void COptionsHolder::LoadOptions()
 			std::wstring fn = optionsFolder + L"\\" + fd.cFileName;
 			MouseParams optsItem;
 			optsItem.Load(fn);
-			m_settings.emplace(optsItem.Name, optsItem);
+			m_settings.emplace(optsItem.GetName(), optsItem);
 		} while (FindNextFile(hFind, &fd));
 
 		FindClose(hFind);
@@ -199,8 +198,6 @@ void COptionsHolder::LoadOptions()
 //---------------------------------------------------------------------------------------------------------------------
 MouseParams COptionsHolder::CreateNewSettings(const std::wstring & proposedName)
 {
-	MouseParams mouseParams;
-
 	std::wstring name = proposedName;
 	int n = 0;
 
@@ -209,7 +206,8 @@ MouseParams COptionsHolder::CreateNewSettings(const std::wstring & proposedName)
 		name = proposedName + _T(" (") + std::to_wstring(++n) + _T(")");
 	}
 
-	mouseParams.Name = name;
+	MouseParams mouseParams(name);
+
 
 	std::wstring fname;
 	std::wstring badChars(L":\\/*?|<>");
@@ -234,7 +232,7 @@ MouseParams COptionsHolder::CreateNewSettings(const std::wstring & proposedName)
 
 	mouseParams.Save(finalName);
 
-	m_settings.emplace(mouseParams.Name, mouseParams);
+	m_settings.emplace(mouseParams.GetName(), mouseParams);
 	return mouseParams;
 }
 
@@ -245,7 +243,7 @@ void COptionsHolder::DeleteSettings(const std::wstring & name)
 	auto it = m_settings.find(name);
 	if (it == m_settings.end()) return;
 	if (it->second.IsPreset()) return;
-	DeleteFile(it->second.FileName.c_str());
+	DeleteFile(it->second.GetFilePath().c_str());
 	m_settings.erase(it);
 }
 

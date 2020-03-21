@@ -131,7 +131,7 @@ CNeatToolbar::localize()
 void
 CNeatToolbar::AddSettings(const logic::MouseParams & mouseParams)
 {
-	int n = comboPresets.AddString(mouseParams.Name.c_str());
+	int n = comboPresets.AddString(mouseParams.GetName().c_str());
 	comboPresets.SetCurSel(n);
 }
 
@@ -230,7 +230,7 @@ CNeatToolbar::DeleteCurrentSettings()
 	if (n < 0) return false;
 
 	comboPresets.DeleteString(n);
-	logic::MainSingleton::Instance().GetOptionsHolder().DeleteSettings(currentSettings.Name);
+	logic::MainSingleton::Instance().GetOptionsHolder().DeleteSettings(currentSettings.GetName());
 	if (n >= comboPresets.GetCount()) n--;
 	if (n < 0) return false;
 
@@ -248,10 +248,11 @@ CNeatToolbar::FillSettings()
 	int cbPresetsSelectionIndex = 0;
 
 	logic::COptionsHolder & optionsHolder = logic::MainSingleton::Instance().GetOptionsHolder();
+	const std::wstring & currentSettingsName = logic::MainSingleton::Instance().GetMouseParams().GetName();
 	for (const std::wstring & settingName : optionsHolder.GetAllSettingNames())
 	{
 		comboPresets.AddString(settingName.c_str());
-		if (settingName == logic::MainSingleton::Instance().GetMouseParams().Name)
+		if (settingName == currentSettingsName)
 		{
 			cbPresetsSelectionIndex = comboPresets.GetCount() - 1;
 		}
