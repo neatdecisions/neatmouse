@@ -1,9 +1,9 @@
 //
-// Copyright © 2016–2019 Neat Decisions. All rights reserved.
+// Copyright © 2016–2020 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -21,7 +21,7 @@ bool wstring2utf8string(const std::wstring & value, std::string & outValue);
 
 
 //----------------------------------------------------------------------------
-template < class T > 
+template < class T >
 inline T from_string_def( const std::wstring & s, T def )
 {
 	T result;

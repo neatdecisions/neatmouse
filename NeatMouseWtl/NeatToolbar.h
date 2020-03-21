@@ -26,8 +26,8 @@ public:
 	void ChangeLanguageMenu(const std::string & langCode);
 	void SetToolbarButtonText(UINT nId, LPCTSTR text);
 
-	logic::MouseParams::Ptr GetCurrentSettings();
-	void AddSettings(logic::MouseParams::Ptr mouseParams);
+	logic::MouseParams GetCurrentSettings();
+	void AddSettings(const logic::MouseParams & mouseParams);
 	bool DeleteCurrentSettings();
 	void FillSettings();
 

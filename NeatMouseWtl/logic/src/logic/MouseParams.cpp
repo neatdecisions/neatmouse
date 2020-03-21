@@ -1,9 +1,9 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2020 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -48,7 +48,7 @@ bool MouseParams::Save(const std::wstring & fileName)
 	mif.writeIntValue(L"General", L"VK_PressMB", this->VKPressMB);
 	mif.writeIntValue(L"General", L"VK_WheelUp", this->VKWheelUp);
 	mif.writeIntValue(L"General", L"VK_WheelDown", this->VKWheelDown);
-	
+
 	mif.writeUIntValue(L"General", L"VK_Hotkey", this->VKHotkey);
 	mif.writeUIntValue(L"General", L"ModHotkey", this->modHotkey);
 
@@ -121,43 +121,43 @@ bool MouseParams::UseHotkey() const
 
 
 //---------------------------------------------------------------------------------------------------------------------
-bool MouseParams::IsPreset() const 
+bool MouseParams::IsPreset() const
 {
-	return isPreset; 
+	return isPreset;
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
-bool MouseParams::IsEqual(const MouseParams::Ptr & mouseParams) const
+bool MouseParams::IsEqual(const MouseParams & mouseParams) const
 {
-	if (delta != mouseParams->delta) return false;
-	if (adelta != mouseParams->adelta) return false;
-	if (VKEnabler != mouseParams->VKEnabler) return false;
-	if (VKMoveUp != mouseParams->VKMoveUp) return false;
-	if (VKMoveDown != mouseParams->VKMoveDown) return false;
-	if (VKMoveLeft != mouseParams->VKMoveLeft) return false;
-	if (VKMoveRight != mouseParams->VKMoveRight) return false;
-	if (VKMoveLeftUp != mouseParams->VKMoveLeftUp) return false;
-	if (VKMoveLeftDown != mouseParams->VKMoveLeftDown) return false;
-	if (VKMoveRightUp != mouseParams->VKMoveRightUp) return false;
-	if (VKMoveRightDown != mouseParams->VKMoveRightDown) return false;
-	if (VKAccelerated != mouseParams->VKAccelerated) return false;
-	if (VKPressLB != mouseParams->VKPressLB) return false;
-	if (VKPressRB != mouseParams->VKPressRB) return false;
-	if (VKPressMB != mouseParams->VKPressMB) return false;
-	if (VKWheelUp != mouseParams->VKWheelUp) return false;
-	if (VKWheelDown != mouseParams->VKWheelDown) return false;
-	if (minimizeOnStartup != mouseParams->minimizeOnStartup) return false;
-	if (activateOnStartup != mouseParams->activateOnStartup) return false;
-	if (changeCursor != mouseParams->changeCursor) return false;
-	if (showNotifications != mouseParams->showNotifications) return false;
-	if (VKActivationMod != mouseParams->VKActivationMod) return false;
-	if (VKStickyKey != mouseParams->VKStickyKey) return false;
-	
+	if (delta != mouseParams.delta) return false;
+	if (adelta != mouseParams.adelta) return false;
+	if (VKEnabler != mouseParams.VKEnabler) return false;
+	if (VKMoveUp != mouseParams.VKMoveUp) return false;
+	if (VKMoveDown != mouseParams.VKMoveDown) return false;
+	if (VKMoveLeft != mouseParams.VKMoveLeft) return false;
+	if (VKMoveRight != mouseParams.VKMoveRight) return false;
+	if (VKMoveLeftUp != mouseParams.VKMoveLeftUp) return false;
+	if (VKMoveLeftDown != mouseParams.VKMoveLeftDown) return false;
+	if (VKMoveRightUp != mouseParams.VKMoveRightUp) return false;
+	if (VKMoveRightDown != mouseParams.VKMoveRightDown) return false;
+	if (VKAccelerated != mouseParams.VKAccelerated) return false;
+	if (VKPressLB != mouseParams.VKPressLB) return false;
+	if (VKPressRB != mouseParams.VKPressRB) return false;
+	if (VKPressMB != mouseParams.VKPressMB) return false;
+	if (VKWheelUp != mouseParams.VKWheelUp) return false;
+	if (VKWheelDown != mouseParams.VKWheelDown) return false;
+	if (minimizeOnStartup != mouseParams.minimizeOnStartup) return false;
+	if (activateOnStartup != mouseParams.activateOnStartup) return false;
+	if (changeCursor != mouseParams.changeCursor) return false;
+	if (showNotifications != mouseParams.showNotifications) return false;
+	if (VKActivationMod != mouseParams.VKActivationMod) return false;
+	if (VKStickyKey != mouseParams.VKStickyKey) return false;
+
 	if (UseHotkey())
 	{
-		if (VKHotkey != mouseParams->VKHotkey) return false;
-		if (modHotkey != mouseParams->modHotkey) return false;
+		if (VKHotkey != mouseParams.VKHotkey) return false;
+		if (modHotkey != mouseParams.modHotkey) return false;
 	}
 
 	return true;
@@ -248,7 +248,7 @@ bool MouseParams::isModifierTaken(DWORD modifierId) const
 			(VKAccelerated == VK_LMENU) || (VKAccelerated == VK_RMENU) ||
 			(VKStickyKey == VK_LMENU) || (VKStickyKey == VK_RMENU);
 	}
-	
+
 	return result;
 }
 

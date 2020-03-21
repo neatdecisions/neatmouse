@@ -1,9 +1,9 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2020 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -16,7 +16,7 @@
 
 namespace neatmouse {
 
-const TBBUTTON allButtons[] = 
+const TBBUTTON allButtons[] =
 {
 	{ -1, ID_TOOLBAR_COMBOPRESETS, TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0 },
 	{ 0, ID_TOOLBAR_ADDPRESET, TBSTATE_ENABLED, BTNS_BUTTON, {0}, 0, (INT_PTR)L"Add preset" },
@@ -33,7 +33,7 @@ const TBBUTTON allButtons[] =
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatToolbar::LoadBitmaps()
 {
 	AddBitmap(1, SafeLoadPng(IDB_PNG_PLUS));
@@ -68,18 +68,16 @@ CNeatToolbar::RedrawMe()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatToolbar::UpdateButtonStates()
 {
 	EnableButton(ID_TOOLBAR_SAVEPRESET, logic::MainSingleton::Instance().WereParametersChanged());
-	logic::MouseParams::Ptr mp = logic::MainSingleton::Instance().GetMouseParams();
-	if (mp != nullptr)
-		EnableButton(ID_TOOLBAR_REMOVEPRESET, !mp->IsPreset());
+	EnableButton(ID_TOOLBAR_REMOVEPRESET, !logic::MainSingleton::Instance().GetMouseParams().IsPreset());
 }
-	
+
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatToolbar::ChangeLanguageMenu(const std::string & langCode)
 {
 	std::map<std::string, int>::const_iterator it = langs.find(langCode);
@@ -91,12 +89,12 @@ CNeatToolbar::ChangeLanguageMenu(const std::string & langCode)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatToolbar::SetToolbarButtonText(UINT nId, LPCTSTR text)
 {
 	TBBUTTONINFO bi;
-	bi.cbSize = sizeof(TBBUTTONINFO); 
-	bi.dwMask = TBIF_TEXT; 
+	bi.cbSize = sizeof(TBBUTTONINFO);
+	bi.dwMask = TBIF_TEXT;
 	bi.pszText = _wcsdup(text);
 	SetButtonInfo(nId, &bi);
 	delete [] bi.pszText;
@@ -104,7 +102,7 @@ CNeatToolbar::SetToolbarButtonText(UINT nId, LPCTSTR text)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatToolbar::localize()
 {
 	ChangeLanguageMenu(logic::MainSingleton::Instance().GetOptionsHolder().GetLanguageCode());
@@ -131,16 +129,15 @@ CNeatToolbar::localize()
 
 //---------------------------------------------------------------------------------------------------------------------
 void
-CNeatToolbar::AddSettings(logic::MouseParams::Ptr mouseParams)
+CNeatToolbar::AddSettings(const logic::MouseParams & mouseParams)
 {
-	int n = comboPresets.AddString(mouseParams->Name.c_str());
-	comboPresets.SetItemData(n, reinterpret_cast<DWORD_PTR>(mouseParams));
+	int n = comboPresets.AddString(mouseParams.Name.c_str());
 	comboPresets.SetCurSel(n);
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
-HBRUSH 
+HBRUSH
 CNeatToolbar::OnCtlColorStatic(CDCHandle dc, CStatic /*wndStatic*/)
 {
   dc.SetBkMode(TRANSPARENT);
@@ -149,7 +146,7 @@ CNeatToolbar::OnCtlColorStatic(CDCHandle dc, CStatic /*wndStatic*/)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-BOOL 
+BOOL
 CNeatToolbar::SubclassWindow(HWND hWnd)
 {
 	ATLASSERT(m_hWnd == NULL);
@@ -178,7 +175,7 @@ CNeatToolbar::getGUIFontSize()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT 
+LRESULT
 CNeatToolbar::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	RepositionRightAlignedItems();
@@ -188,7 +185,7 @@ CNeatToolbar::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& 
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatToolbar::RepositionRightAlignedItems()
 {
 	TBBUTTONINFO bi;
@@ -204,23 +201,21 @@ CNeatToolbar::RepositionRightAlignedItems()
 	GetItemRect(CommandToIndex(ID_TOOLBAR_HELP), rc);
 	width -= rc.Width();
 
-	bi.cbSize = sizeof(TBBUTTONINFO); 
-	bi.dwMask = TBIF_SIZE; 
+	bi.cbSize = sizeof(TBBUTTONINFO);
+	bi.dwMask = TBIF_SIZE;
 	bi.cx = static_cast<WORD>(width);
 	SetButtonInfo(ID_TOOLBAR_SEP1, &bi);
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
-logic::MouseParams::Ptr 
+logic::MouseParams
 CNeatToolbar::GetCurrentSettings()
 {
+	CString s = "(Default)";
 	int n = comboPresets.GetCurSel();
-	logic::MouseParams::Ptr mp = (n >= 0) 
-		? reinterpret_cast<logic::MouseParams::Ptr>(comboPresets.GetItemData(n))
-		: nullptr;
-
-	return mp;
+	if (n >= 0) comboPresets.GetLBText(n, s);
+	return logic::MainSingleton::Instance().GetOptionsHolder().GetSettings(s.GetString());
 }
 
 
@@ -228,14 +223,14 @@ CNeatToolbar::GetCurrentSettings()
 bool
 CNeatToolbar::DeleteCurrentSettings()
 {
-	logic::MouseParams::Ptr pso = GetCurrentSettings();
-	if (pso->IsPreset()) return false;
-	
+	const logic::MouseParams & currentSettings = GetCurrentSettings();
+	if (currentSettings.IsPreset()) return false;
+
 	int n = comboPresets.GetCurSel();
 	if (n < 0) return false;
 
 	comboPresets.DeleteString(n);
-	logic::MainSingleton::Instance().GetOptionsHolder().DeleteSettings(&pso);
+	logic::MainSingleton::Instance().GetOptionsHolder().DeleteSettings(currentSettings.Name);
 	if (n >= comboPresets.GetCount()) n--;
 	if (n < 0) return false;
 
@@ -250,38 +245,30 @@ void
 CNeatToolbar::FillSettings()
 {
 	comboPresets.Clear();
-	size_t cbPresetsSelectionIndex = 0;
+	int cbPresetsSelectionIndex = 0;
 
 	logic::COptionsHolder & optionsHolder = logic::MainSingleton::Instance().GetOptionsHolder();
-	for (size_t i = 0; i < optionsHolder.GetSettingsCount(); i++)
+	for (const std::wstring & settingName : optionsHolder.GetAllSettingNames())
 	{
-		comboPresets.SetItemData(
-			comboPresets.AddString(optionsHolder.GetSettings(i)->Name.c_str()),
-			reinterpret_cast<DWORD_PTR>(optionsHolder.GetSettings(i))
-			);
-
-		if (optionsHolder.GetSettings(i) == logic::MainSingleton::Instance().GetMouseParams())
+		comboPresets.AddString(settingName.c_str());
+		if (settingName == logic::MainSingleton::Instance().GetMouseParams().Name)
 		{
-			cbPresetsSelectionIndex = i;
+			cbPresetsSelectionIndex = comboPresets.GetCount() - 1;
 		}
 	}
 
-	if (optionsHolder.GetSettingsCount() > cbPresetsSelectionIndex)
-	{
-		comboPresets.SetCurSel(static_cast<int>(cbPresetsSelectionIndex));
-	}
-
+	comboPresets.SetCurSel(cbPresetsSelectionIndex);
 	UpdateButtonStates();
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatToolbar::RepositionCombobox()
 {
 	int nIndex = CommandToIndex(ID_TOOLBAR_COMBOPRESETS);
 	CRect rc, labelRect, comboRect;
-	GetItemRect(nIndex, &rc); 
+	GetItemRect(nIndex, &rc);
 
 	labelPresets.GetWindowRect(labelRect);
 	labelPresets.GetParent().ScreenToClient(labelRect);
@@ -298,8 +285,8 @@ CNeatToolbar::RepositionCombobox()
 	comboPresets.MoveWindow(comboRect.left, comboRect.top, comboRect.Width(), comboRect.Height());
 
 	TBBUTTONINFO bi;
-	bi.cbSize = sizeof(TBBUTTONINFO); 
-	bi.dwMask = TBIF_SIZE; 
+	bi.cbSize = sizeof(TBBUTTONINFO);
+	bi.dwMask = TBIF_SIZE;
 	bi.cx = static_cast<WORD>(labelRect.Width() + comboRect.Width() + 17);
 	SetButtonInfo(ID_TOOLBAR_COMBOPRESETS, &bi);
 
@@ -308,7 +295,7 @@ CNeatToolbar::RepositionCombobox()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatToolbar::CreatePresetsCombobox()
 {
 	TBBUTTONINFO tbi;
@@ -317,26 +304,26 @@ CNeatToolbar::CreatePresetsCombobox()
 	tbi.cbSize = sizeof TBBUTTONINFO;
 	tbi.dwMask = TBIF_STYLE;
 	tbi.fsStyle = TBSTYLE_SEP;
-			
+
 	SetButtonInfo(ID_TOOLBAR_COMBOPRESETS, &tbi);
-		
+
 	int nIndex = CommandToIndex(ID_TOOLBAR_COMBOPRESETS);
-	GetItemRect(nIndex, &rc); 
-		
+	GetItemRect(nIndex, &rc);
+
 	rc.left += 10;
-		
+
 	CRect labelRect = rc;
-		
+
 	CSize sz = getGUIFontSize();
-	CString s = _T("Preset:"); 
+	CString s = _T("Preset:");
 	labelRect.right = rc.left + sz.cx * s.GetLength();
 	labelRect.top = rc.top + (rc.bottom - rc.top - sz.cy) / 2;
-		
+
 	labelPresets.Create(this->GetParent(), labelRect, NULL, WS_CHILD | WS_VISIBLE, WS_EX_TRANSPARENT);
 	labelPresets.SetText(s);
-	labelPresets.SetParent(*this); 
+	labelPresets.SetParent(*this);
 	labelPresets.SetFont((HFONT)GetStockObject( DEFAULT_GUI_FONT ));
-		
+
 	rc.top = labelRect.top - 4;
 	rc.left += labelRect.Width();
 	rc.bottom = rc.top + 8 * sz.cy;
@@ -344,15 +331,15 @@ CNeatToolbar::CreatePresetsCombobox()
 	rc.right = rc.left + 150;
 
 	comboPresets.Create(this->GetParent(), rc, NULL, CBS_DROPDOWNLIST | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL, 0, IDC_COMBO_PRESETS);
-		
-	comboPresets.SetParent(*this); 
+
+	comboPresets.SetParent(*this);
 	comboPresets.SetFont((HFONT)GetStockObject( DEFAULT_GUI_FONT ));
 	RepositionCombobox();
 }
 
 
 //-----------------------------------------------------------------------------
-CMenuHandle 
+CMenuHandle
 CNeatToolbar::GetMenus()
 {
 	return menus.m_hMenu;
@@ -360,16 +347,16 @@ CNeatToolbar::GetMenus()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CNeatToolbar::Init()
-{		
+{
 	::SetWindowLong(m_hWnd, GWL_STYLE, ::GetWindowLong(m_hWnd, GWL_STYLE) | TBSTYLE_FLAT);
 	SetExtendedStyle(GetExtendedStyle() | TBSTYLE_EX_MIXEDBUTTONS | TBSTYLE_EX_DRAWDDARROWS | TBSTYLE_EX_DOUBLEBUFFER);
 
 	SetButtonStructSize(sizeof(TBBUTTON));
-		
+
 	LoadBitmaps();
-		
+
 	std::vector<TBBUTTON> buttons(sizeof(allButtons) / sizeof(allButtons[0]));
 	for (size_t i = 0; i < buttons.size(); i++)
 	{
@@ -385,7 +372,7 @@ CNeatToolbar::Init()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT 
+LRESULT
 CNeatToolbar::OnToolbarDropDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
     // Get the toolbar data

@@ -1,9 +1,9 @@
 //
-// Copyright © 2016–2019 Neat Decisions. All rights reserved.
+// Copyright © 2016–2020 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -13,23 +13,6 @@
 
 namespace neatmouse {
 namespace logic {
-
-//---------------------------------------------------------------------------------------------------------------------
-void COptionsHolder::ClearSettings()
-{
-	for (MouseParams::Ptr pm : options)
-	{
-		delete pm;
-	}
-	options.clear();
-}
-
-
-//---------------------------------------------------------------------------------------------------------------------
-COptionsHolder::~COptionsHolder()
-{
-	ClearSettings();
-}
 
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -75,10 +58,24 @@ void COptionsHolder::Load(const std::wstring & filePath)
 		break;
 	}
 
-	this->defaultSettingsFileName = mif.readStringValue(L"General", L"dsfn", L"");
+	const std::wstring defaultSettingsFileName = mif.readStringValue(L"General", L"dsfn", L"");
+	m_defaultSettingsName = mif.readStringValue(L"General", L"dsn", L"");
 	this->lang = mif.readUtf8Value(L"General", L"lang", language);
 
 	LoadOptions();
+
+	// backward-compatibility loop to favor settings name over file name
+	if (m_defaultSettingsName.empty() && !defaultSettingsFileName.empty())
+	{
+		for (const auto & kv : m_settings)
+		{
+			if (neatcommon::system::GetFileName(kv.second.FileName) == defaultSettingsFileName)
+			{
+				m_defaultSettingsName = kv.first;
+				break;
+			}
+		}
+	}
 }
 
 
@@ -94,7 +91,7 @@ void COptionsHolder::Save(const std::wstring & filePath)
 {
 	neatcommon::system::MyIniFile mif;
 
-	mif.writeStringValue(L"General", L"dsfn", defaultSettingsFileName);
+	mif.writeStringValue(L"General", L"dsn", m_defaultSettingsName);
 	mif.writeUtf8Value(L"General", L"lang", lang);
 
 	mif.save(filePath);
@@ -103,29 +100,40 @@ void COptionsHolder::Save(const std::wstring & filePath)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-std::wstring COptionsHolder::GetDefaultSettingsFileName() const
+std::wstring COptionsHolder::GetDefaultSettingsName() const
 {
-	return defaultSettingsFileName;
+	return m_defaultSettingsName;
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void COptionsHolder::SetDefaultSettingsPresetFileName(const std::wstring & value)
+void COptionsHolder::SetDefaultSettingsName(const std::wstring & value)
 {
-	defaultSettingsFileName = value;
-}
-
-std::size_t COptionsHolder::GetSettingsCount() const
-{
-	return options.size();
+	m_defaultSettingsName = value;
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
-MouseParams::Ptr COptionsHolder::GetSettings(std::size_t i)
+std::vector<std::wstring> COptionsHolder::GetAllSettingNames() const
 {
-	if (i >= options.size()) return MouseParams::Ptr(nullptr);
-	return options[i];
+	std::vector<std::wstring> result;
+	for (const auto & kv : m_settings) result.push_back(kv.first);
+	return result;
+}
+
+
+//---------------------------------------------------------------------------------------------------------------------
+MouseParams COptionsHolder::GetSettings(const std::wstring & name)
+{
+	const auto it = m_settings.find(name);
+	return (it == m_settings.end()) ? CreateNewSettings(name) : it->second;
+}
+
+
+//---------------------------------------------------------------------------------------------------------------------
+void COptionsHolder::SetSettings(const std::wstring& name, const MouseParams& params)
+{
+	m_settings[name] = params;
 }
 
 
@@ -160,13 +168,13 @@ void COptionsHolder::SetLanguageCode(const std::string & langCode)
 //---------------------------------------------------------------------------------------------------------------------
 void COptionsHolder::LoadOptions()
 {
-	ClearSettings();
+	m_settings.clear();
 
-	MouseParams::Ptr opts(new MouseParams(true));
-	opts->Load(optionsFolder + L"\\default");
-	opts->Name = L"(Default)";
-	opts->Save(optionsFolder + L"\\default");
-	options.push_back(opts);
+	MouseParams opts(true);
+	opts.Load(optionsFolder + L"\\default");
+	opts.Name = L"(Default)";
+	opts.Save(optionsFolder + L"\\default");
+	m_settings.emplace(opts.Name, opts);
 
 	WIN32_FIND_DATA fd;
 	HANDLE hFind = FindFirstFile((optionsFolder + L"\\*.nmp").c_str(), &fd);
@@ -178,9 +186,9 @@ void COptionsHolder::LoadOptions()
 		do
 		{
 			std::wstring fn = optionsFolder + L"\\" + fd.cFileName;
-			MouseParams::Ptr optsItem(new MouseParams());
-			optsItem->Load(fn);
-			options.push_back(optsItem);
+			MouseParams optsItem;
+			optsItem.Load(fn);
+			m_settings.emplace(optsItem.Name, optsItem);
 		} while (FindNextFile(hFind, &fd));
 
 		FindClose(hFind);
@@ -189,19 +197,19 @@ void COptionsHolder::LoadOptions()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-MouseParams::Ptr COptionsHolder::CreateNewSettings(const std::wstring & proposedName)
+MouseParams COptionsHolder::CreateNewSettings(const std::wstring & proposedName)
 {
-	MouseParams::Ptr mouseParams(new MouseParams());
+	MouseParams mouseParams;
 
 	std::wstring name = proposedName;
 	int n = 0;
 
-	while (std::any_of(options.begin(), options.end(), [&name](MouseParams::Ptr & params) { return params->Name == name; }))
+	while (m_settings.count(name) > 0)
 	{
 		name = proposedName + _T(" (") + std::to_wstring(++n) + _T(")");
 	}
 
-	mouseParams->Name = name;
+	mouseParams.Name = name;
 
 	std::wstring fname;
 	std::wstring badChars(L":\\/*?|<>");
@@ -224,24 +232,21 @@ MouseParams::Ptr COptionsHolder::CreateNewSettings(const std::wstring & proposed
 		finalName = optionsFolder + L"\\" + fname + L" (" + std::to_wstring(i++) + L").nmp";
 	}
 
-	mouseParams->Save(finalName);
+	mouseParams.Save(finalName);
 
-	options.push_back(mouseParams);
+	m_settings.emplace(mouseParams.Name, mouseParams);
 	return mouseParams;
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void COptionsHolder::DeleteSettings(MouseParams::Ptr * mouseParams)
+void COptionsHolder::DeleteSettings(const std::wstring & name)
 {
-	if ((*mouseParams)->IsPreset()) return;
-	std::vector<MouseParams::Ptr>::iterator it;
-	while ((it = std::find(options.begin(), options.end(), *mouseParams)) != options.end())
-		options.erase(it);
-
-	DeleteFile((*mouseParams)->FileName.c_str());
-	delete *mouseParams;
-	*mouseParams = 0;
+	auto it = m_settings.find(name);
+	if (it == m_settings.end()) return;
+	if (it->second.IsPreset()) return;
+	DeleteFile(it->second.FileName.c_str());
+	m_settings.erase(it);
 }
 
 }}

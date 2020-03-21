@@ -82,11 +82,11 @@ CNeatMouseWtlView::PreTranslateMessage(MSG* pMsg)
 					vk = -vk;
 				}
 
-				if (logic::MainSingleton::Instance().GetMouseParams()->BindingExists(vk)) break;
+				if (logic::MainSingleton::Instance().GetMouseParams().BindingExists(vk)) break;
 
 				if (pMsg->hwnd == GetDlgItem(IDC_EDIT_HOTKEY))
 				{
-					if (!logic::MainSingleton::Instance().GetMouseParams()->UseHotkey())
+					if (!logic::MainSingleton::Instance().GetMouseParams().UseHotkey())
 					{
 						ASSERT(false);
 						break;
@@ -94,19 +94,19 @@ CNeatMouseWtlView::PreTranslateMessage(MSG* pMsg)
 
 					UINT mods = 0;
 					if (logic::KeyboardUtils::IsKeyDown(VK_CONTROL) &&
-					    !logic::MainSingleton::Instance().GetMouseParams()->isModifierTaken(MOD_CONTROL))
+					    !logic::MainSingleton::Instance().GetMouseParams().isModifierTaken(MOD_CONTROL))
 					{
 						mods |= MOD_CONTROL;
 					}
 
 					if (logic::KeyboardUtils::IsKeyDown(VK_MENU) &&
-					    !logic::MainSingleton::Instance().GetMouseParams()->isModifierTaken(MOD_ALT))
+					    !logic::MainSingleton::Instance().GetMouseParams().isModifierTaken(MOD_ALT))
 					{
 						mods |= MOD_ALT;
 					}
 
 					if (logic::KeyboardUtils::IsKeyDown(VK_SHIFT) &&
-					    !logic::MainSingleton::Instance().GetMouseParams()->isModifierTaken(MOD_SHIFT))
+					    !logic::MainSingleton::Instance().GetMouseParams().isModifierTaken(MOD_SHIFT))
 					{
 						mods |= MOD_SHIFT;
 					}
@@ -115,17 +115,21 @@ CNeatMouseWtlView::PreTranslateMessage(MSG* pMsg)
 
 					if (EnableHotkey(mods, pMsg->wParam))
 					{
-						logic::MainSingleton::Instance().GetMouseParams()->VKHotkey = pMsg->wParam;
-						logic::MainSingleton::Instance().GetMouseParams()->modHotkey = mods;
+						auto mouseParams = logic::MainSingleton::Instance().GetMouseParams();
+						mouseParams.VKHotkey = pMsg->wParam;
+						mouseParams.modHotkey = mods;
+						logic::MainSingleton::Instance().UpdateMouseParams(mouseParams);
 						::SetWindowText(GetDlgItem(IDC_EDIT_HOTKEY), GetHotkeyName(mods, pMsg->wParam));
 					} else
 					{
 						if (!EnableHotkey(
-								logic::MainSingleton::Instance().GetMouseParams()->modHotkey,
-								logic::MainSingleton::Instance().GetMouseParams()->VKHotkey))
+								logic::MainSingleton::Instance().GetMouseParams().modHotkey,
+								logic::MainSingleton::Instance().GetMouseParams().VKHotkey))
 						{
-							logic::MainSingleton::Instance().GetMouseParams()->modHotkey = 0;
-							logic::MainSingleton::Instance().GetMouseParams()->VKHotkey = 0;
+							auto mouseParams = logic::MainSingleton::Instance().GetMouseParams();
+							mouseParams.modHotkey = 0;
+							mouseParams.VKHotkey = 0;
+							logic::MainSingleton::Instance().UpdateMouseParams(mouseParams);
 							::SetWindowText(GetDlgItem(IDC_EDIT_HOTKEY), L"");
 							ASSERT(false);
 						}
@@ -171,48 +175,50 @@ CNeatMouseWtlView::PreTranslateMessage(MSG* pMsg)
 				{
 					std::wstring res = logic::KeyboardUtils::GetKeyName(vk, scanCode);
 					::SetWindowText(pMsg->hwnd, res.c_str());
+					auto mouseParams = logic::MainSingleton::Instance().GetMouseParams();
 					switch (id)
 					{
 					case IDC_EDIT_BTN_LEFT:
-						logic::MainSingleton::Instance().GetMouseParams()->VKPressLB = vk;
+						mouseParams.VKPressLB = vk;
 						break;
 					case IDC_EDIT_BTN_RIGHT:
-						logic::MainSingleton::Instance().GetMouseParams()->VKPressRB = vk;
+						mouseParams.VKPressRB = vk;
 						break;
 					case IDC_EDIT_BTN_MIDDLE:
-						logic::MainSingleton::Instance().GetMouseParams()->VKPressMB = vk;
+						mouseParams.VKPressMB = vk;
 						break;
 					case IDC_EDIT_UP:
-						logic::MainSingleton::Instance().GetMouseParams()->VKMoveUp = vk;
+						mouseParams.VKMoveUp = vk;
 						break;
 					case IDC_EDIT_DOWN:
-						logic::MainSingleton::Instance().GetMouseParams()->VKMoveDown = vk;
+						mouseParams.VKMoveDown = vk;
 						break;
 					case IDC_EDIT_LEFT:
-						logic::MainSingleton::Instance().GetMouseParams()->VKMoveLeft = vk;
+						mouseParams.VKMoveLeft = vk;
 						break;
 					case IDC_EDIT_RIGHT:
-						logic::MainSingleton::Instance().GetMouseParams()->VKMoveRight = vk;
+						mouseParams.VKMoveRight = vk;
 						break;
 					case IDC_EDIT_SCROLL_UP:
-						logic::MainSingleton::Instance().GetMouseParams()->VKWheelUp = vk;
+						mouseParams.VKWheelUp = vk;
 						break;
 					case IDC_EDIT_SCROLL_DOWN:
-						logic::MainSingleton::Instance().GetMouseParams()->VKWheelDown = vk;
+						mouseParams.VKWheelDown = vk;
 						break;
 					case IDC_EDIT_LEFTUP:
-						logic::MainSingleton::Instance().GetMouseParams()->VKMoveLeftUp = vk;
+						mouseParams.VKMoveLeftUp = vk;
 						break;
 					case IDC_EDIT_RIGHTUP:
-						logic::MainSingleton::Instance().GetMouseParams()->VKMoveRightUp = vk;
+						mouseParams.VKMoveRightUp = vk;
 						break;
 					case IDC_EDIT_LEFTDOWN:
-						logic::MainSingleton::Instance().GetMouseParams()->VKMoveLeftDown = vk;
+						mouseParams.VKMoveLeftDown = vk;
 						break;
 					case IDC_EDIT_RIGHTDOWN:
-						logic::MainSingleton::Instance().GetMouseParams()->VKMoveRightDown = vk;
+						mouseParams.VKMoveRightDown = vk;
 						break;
 					}
+					logic::MainSingleton::Instance().UpdateMouseParams(mouseParams);
 
 					UpdateToolbarButtons();
 					return TRUE;
@@ -277,7 +283,9 @@ void
 CNeatMouseWtlView::OnMinimizeOnStartupCheck(UINT /*uCode*/, int /*nID*/, HWND /*hwndCtrl*/)
 {
 	CButton checkBox(GetDlgItem(IDC_CHECK_MINIMIZE));
-	logic::MainSingleton::Instance().GetMouseParams()->minimizeOnStartup = checkBox.GetCheck() == BST_CHECKED;
+	auto mouseParams = logic::MainSingleton::Instance().GetMouseParams();
+	mouseParams.minimizeOnStartup = (checkBox.GetCheck() == BST_CHECKED);
+	logic::MainSingleton::Instance().UpdateMouseParams(mouseParams);
 	checkBox.Detach();
 	UpdateToolbarButtons();
 }
@@ -288,7 +296,9 @@ void
 CNeatMouseWtlView::OnActivateOnStartupCheck(UINT /*uCode*/, int /*nID*/, HWND /*hwndCtrl*/)
 {
 	CButton checkBox(GetDlgItem(IDC_CHECK_AUTOACTIVATE));
-	logic::MainSingleton::Instance().GetMouseParams()->activateOnStartup = checkBox.GetCheck() == BST_CHECKED;
+	auto mouseParams = logic::MainSingleton::Instance().GetMouseParams();
+	mouseParams.activateOnStartup = (checkBox.GetCheck() == BST_CHECKED);
+	logic::MainSingleton::Instance().UpdateMouseParams(mouseParams);
 	checkBox.Detach();
 	UpdateToolbarButtons();
 }
@@ -299,7 +309,9 @@ void
 CNeatMouseWtlView::OnCursorCheck(UINT /*uCode*/, int /*nID*/, HWND /*hwndCtrl*/)
 {
 	CButton checkBox(GetDlgItem(IDC_CHECK_CURSOR));
-	logic::MainSingleton::Instance().GetMouseParams()->changeCursor = checkBox.GetCheck() == BST_CHECKED;
+	auto mouseParams = logic::MainSingleton::Instance().GetMouseParams();
+	mouseParams.changeCursor = (checkBox.GetCheck() == BST_CHECKED);
+	logic::MainSingleton::Instance().UpdateMouseParams(mouseParams);
 	checkBox.Detach();
 	UpdateToolbarButtons();
 	logic::MainSingleton::Instance().UpdateCursor();
@@ -311,7 +323,9 @@ void
 CNeatMouseWtlView::OnShowNotificationsCheck(UINT /*uCode*/, int /*nID*/, HWND /*hwndCtrl*/)
 {
 	CButton checkBox(GetDlgItem(IDC_CHECK_NOTIFICATIONS));
-	logic::MainSingleton::Instance().GetMouseParams()->showNotifications = checkBox.GetCheck() == BST_CHECKED;
+	auto mouseParams = logic::MainSingleton::Instance().GetMouseParams();
+	mouseParams.showNotifications = (checkBox.GetCheck() == BST_CHECKED);
+	logic::MainSingleton::Instance().UpdateMouseParams(mouseParams);
 	checkBox.Detach();
 	UpdateToolbarButtons();
 }
@@ -322,8 +336,10 @@ void
 CNeatMouseWtlView::OnDelHotkeyClick(UINT /*uCode*/, int /*nID*/, HWND /*hwndCtrl*/)
 {
 	::SetWindowText(GetDlgItem(IDC_EDIT_HOTKEY), L"");
-	logic::MainSingleton::Instance().GetMouseParams()->VKHotkey = 0;
-	logic::MainSingleton::Instance().GetMouseParams()->modHotkey = 0;
+	auto mouseParams = logic::MainSingleton::Instance().GetMouseParams();
+	mouseParams.VKHotkey = 0;
+	mouseParams.modHotkey = 0;
+	logic::MainSingleton::Instance().UpdateMouseParams(mouseParams);
 	DisableHotkey();
 	SynchronizeCombos();
 	UpdateToolbarButtons();
@@ -334,65 +350,66 @@ CNeatMouseWtlView::OnDelHotkeyClick(UINT /*uCode*/, int /*nID*/, HWND /*hwndCtrl
 void
 CNeatMouseWtlView::OnDelBtnClick(UINT /*uCode*/, int nID, HWND /*hwndCtrl*/)
 {
+	auto mouseParams = logic::MainSingleton::Instance().GetMouseParams();
 	switch (nID)
 	{
 	case IDC_BTN_DEL1:
 		::SetWindowText(GetDlgItem(IDC_EDIT_BTN_LEFT), L"");
-		logic::MainSingleton::Instance().GetMouseParams()->VKPressLB = 0;
+		mouseParams.VKPressLB = 0;
 		break;
 	case IDC_BTN_DEL2:
 		::SetWindowText(GetDlgItem(IDC_EDIT_BTN_RIGHT), L"");
-		logic::MainSingleton::Instance().GetMouseParams()->VKPressRB = 0;
+		mouseParams.VKPressRB = 0;
 		break;
 	case IDC_BTN_DEL3:
 		::SetWindowText(GetDlgItem(IDC_EDIT_BTN_MIDDLE), L"");
-		logic::MainSingleton::Instance().GetMouseParams()->VKPressMB = 0;
+		mouseParams.VKPressMB = 0;
 		break;
 	case IDC_BTN_DEL4:
 		::SetWindowText(GetDlgItem(IDC_EDIT_SCROLL_UP), L"");
-		logic::MainSingleton::Instance().GetMouseParams()->VKWheelUp = 0;
+		mouseParams.VKWheelUp = 0;
 		break;
 	case IDC_BTN_DEL5:
 		::SetWindowText(GetDlgItem(IDC_EDIT_SCROLL_DOWN), L"");
-		logic::MainSingleton::Instance().GetMouseParams()->VKWheelDown = 0;
+		mouseParams.VKWheelDown = 0;
 		break;
 	case IDC_BTN_DEL6:
 		::SetWindowText(GetDlgItem(IDC_EDIT_UP), L"");
-		logic::MainSingleton::Instance().GetMouseParams()->VKMoveUp = 0;
+		mouseParams.VKMoveUp = 0;
 		break;
 	case IDC_BTN_DEL7:
 		::SetWindowText(GetDlgItem(IDC_EDIT_DOWN), L"");
-		logic::MainSingleton::Instance().GetMouseParams()->VKMoveDown = 0;
+		mouseParams.VKMoveDown = 0;
 		break;
 	case IDC_BTN_DEL8:
 		::SetWindowText(GetDlgItem(IDC_EDIT_LEFT), L"");
-		logic::MainSingleton::Instance().GetMouseParams()->VKMoveLeft = 0;
+		mouseParams.VKMoveLeft = 0;
 		break;
 	case IDC_BTN_DEL9:
 		::SetWindowText(GetDlgItem(IDC_EDIT_RIGHT), L"");
-		logic::MainSingleton::Instance().GetMouseParams()->VKMoveRight = 0;
+		mouseParams.VKMoveRight = 0;
 		break;
 	case IDC_BTN_DEL10:
 		::SetWindowText(GetDlgItem(IDC_EDIT_LEFTUP), L"");
-		logic::MainSingleton::Instance().GetMouseParams()->VKMoveLeftUp = 0;
+		mouseParams.VKMoveLeftUp = 0;
 		break;
 	case IDC_BTN_DEL11:
 		::SetWindowText(GetDlgItem(IDC_EDIT_RIGHTUP), L"");
-		logic::MainSingleton::Instance().GetMouseParams()->VKMoveRightUp = 0;
+		mouseParams.VKMoveRightUp = 0;
 		break;
 	case IDC_BTN_DEL12:
 		::SetWindowText(GetDlgItem(IDC_EDIT_LEFTDOWN), L"");
-		logic::MainSingleton::Instance().GetMouseParams()->VKMoveLeftDown = 0;
+		mouseParams.VKMoveLeftDown = 0;
 		break;
 	case IDC_BTN_DEL13:
 		::SetWindowText(GetDlgItem(IDC_EDIT_RIGHTDOWN), L"");
-		logic::MainSingleton::Instance().GetMouseParams()->VKMoveRightDown = 0;
+		mouseParams.VKMoveRightDown = 0;
 		break;
 	default:
 		// do not update button states
 		return;
 	}
-
+	logic::MainSingleton::Instance().UpdateMouseParams(mouseParams);
 	UpdateToolbarButtons();
 }
 
@@ -418,6 +435,7 @@ CNeatMouseWtlView::EnableHotkey(UINT mods, UINT vk)
 void
 CNeatMouseWtlView::OnComboSelChange(UINT /*uCode*/, int nID, HWND hwndCtrl)
 {
+	auto mouseParams = logic::MainSingleton::Instance().GetMouseParams();
 	switch (nID)
 	{
 	case IDC_COMBO_ACTIVATION:
@@ -426,18 +444,18 @@ CNeatMouseWtlView::OnComboSelChange(UINT /*uCode*/, int nID, HWND hwndCtrl)
 			CComboBox cb(hwndCtrl);
 			int n = cb.GetCurSel();
 			ASSERT(n >= 0);
-			if (n >= 0) logic::MainSingleton::Instance().GetMouseParams()->VKEnabler = cb.GetItemData(n);
+			if (n >= 0) mouseParams.VKEnabler = cb.GetItemData(n);
 
-			if (logic::MainSingleton::Instance().GetMouseParams()->UseHotkey())
+			if (mouseParams.UseHotkey())
 			{
 				::ShowWindow(GetDlgItem(IDC_EDIT_HOTKEY), SW_SHOW);
 				m_btnDelHotkey.ShowWindow(SW_SHOW);
 
-				if (logic::MainSingleton::Instance().GetMouseParams()->isModifierTaken(logic::MainSingleton::Instance().GetMouseParams()->modHotkey) ||
-					 !EnableHotkey(logic::MainSingleton::Instance().GetMouseParams()->modHotkey, logic::MainSingleton::Instance().GetMouseParams()->VKHotkey))
+				if (mouseParams.isModifierTaken(mouseParams.modHotkey) ||
+					 !EnableHotkey(mouseParams.modHotkey, mouseParams.VKHotkey))
 				{
-					logic::MainSingleton::Instance().GetMouseParams()->modHotkey = 0;
-					logic::MainSingleton::Instance().GetMouseParams()->VKHotkey = 0;
+					mouseParams.modHotkey = 0;
+					mouseParams.VKHotkey = 0;
 					::SetWindowText(GetDlgItem(IDC_EDIT_HOTKEY), L"");
 				}
 			} else
@@ -455,7 +473,7 @@ CNeatMouseWtlView::OnComboSelChange(UINT /*uCode*/, int nID, HWND hwndCtrl)
 			CComboBox cb(hwndCtrl);
 			int n = cb.GetCurSel();
 			ASSERT(n >= 0);
-			if (n >= 0) logic::MainSingleton::Instance().GetMouseParams()->VKAccelerated = cb.GetItemData(n);
+			if (n >= 0) mouseParams.VKAccelerated = cb.GetItemData(n);
 			cb.Detach();
 		}
 		SynchronizeCombos();
@@ -466,7 +484,7 @@ CNeatMouseWtlView::OnComboSelChange(UINT /*uCode*/, int nID, HWND hwndCtrl)
 			CComboBox cb(hwndCtrl);
 			int n = cb.GetCurSel();
 			ASSERT(n >= 0);
-			if (n >= 0) logic::MainSingleton::Instance().GetMouseParams()->VKActivationMod = cb.GetItemData(n);
+			if (n >= 0) mouseParams.VKActivationMod = cb.GetItemData(n);
 			cb.Detach();
 		}
 		SynchronizeCombos();
@@ -476,7 +494,7 @@ CNeatMouseWtlView::OnComboSelChange(UINT /*uCode*/, int nID, HWND hwndCtrl)
 			CComboBox cb(hwndCtrl);
 			int n = cb.GetCurSel();
 			ASSERT(n >= 0);
-			if (n >= 0) logic::MainSingleton::Instance().GetMouseParams()->VKStickyKey = cb.GetItemData(n);
+			if (n >= 0) mouseParams.VKStickyKey = cb.GetItemData(n);
 			cb.Detach();
 		}
 		SynchronizeCombos();
@@ -485,6 +503,7 @@ CNeatMouseWtlView::OnComboSelChange(UINT /*uCode*/, int nID, HWND hwndCtrl)
 		return;
 	}
 
+	logic::MainSingleton::Instance().UpdateMouseParams(mouseParams);
 	UpdateToolbarButtons();
 }
 
@@ -501,13 +520,14 @@ CNeatMouseWtlView::OnEditChange(UINT /*code*/, UINT id, HWND hwnd, BOOL & bHandl
 	int n = ::GetWindowTextLength(hwnd);
 	::GetWindowText(hwnd, s.GetBuffer(n), n + 1);
 
+	auto mouseParams = logic::MainSingleton::Instance().GetMouseParams();
 	switch (id)
 	{
 	case IDC_EDIT_SPEED:
-		logic::MainSingleton::Instance().GetMouseParams()->delta = neatcommon::system::from_string_def(s.GetBuffer(0), 20);
+		mouseParams.delta = neatcommon::system::from_string_def(s.GetBuffer(0), 20);
 		break;
 	case IDC_EDIT_ALT_SPEED:
-		logic::MainSingleton::Instance().GetMouseParams()->adelta = neatcommon::system::from_string_def(s.GetBuffer(0), 1);
+		mouseParams.adelta = neatcommon::system::from_string_def(s.GetBuffer(0), 1);
 		break;
 	}
 
@@ -551,37 +571,37 @@ CNeatMouseWtlView::CheckIfChangesSaved()
 void
 CNeatMouseWtlView::PopulateControls()
 {
-	const logic::MouseParams::Ptr mp = logic::MainSingleton::Instance().GetMouseParams();
+	const logic::MouseParams & mouseParams = logic::MainSingleton::Instance().GetMouseParams();
 
-	std::wstring s = std::to_wstring(mp->delta);
+	std::wstring s = std::to_wstring(mouseParams.delta);
 
 	GetDlgItem(IDC_EDIT_SPEED).SetWindowText(s.c_str());
-	s = std::to_wstring(mp->adelta);
+	s = std::to_wstring(mouseParams.adelta);
 	GetDlgItem(IDC_EDIT_ALT_SPEED).SetWindowText(s.c_str());
 
-	GetDlgItem(IDC_EDIT_BTN_LEFT).SetWindowText(logic::KeyboardUtils::GetKeyName(mp->VKPressLB, 0).c_str());
-	GetDlgItem(IDC_EDIT_BTN_RIGHT).SetWindowText(logic::KeyboardUtils::GetKeyName(mp->VKPressRB, 0).c_str());
-	GetDlgItem(IDC_EDIT_BTN_MIDDLE).SetWindowText(logic::KeyboardUtils::GetKeyName(mp->VKPressMB, 0).c_str());
+	GetDlgItem(IDC_EDIT_BTN_LEFT).SetWindowText(logic::KeyboardUtils::GetKeyName(mouseParams.VKPressLB, 0).c_str());
+	GetDlgItem(IDC_EDIT_BTN_RIGHT).SetWindowText(logic::KeyboardUtils::GetKeyName(mouseParams.VKPressRB, 0).c_str());
+	GetDlgItem(IDC_EDIT_BTN_MIDDLE).SetWindowText(logic::KeyboardUtils::GetKeyName(mouseParams.VKPressMB, 0).c_str());
 
-	GetDlgItem(IDC_EDIT_UP).SetWindowText(logic::KeyboardUtils::GetKeyName(mp->VKMoveUp, 0).c_str());
-	GetDlgItem(IDC_EDIT_DOWN).SetWindowText(logic::KeyboardUtils::GetKeyName(mp->VKMoveDown, 0).c_str());
-	GetDlgItem(IDC_EDIT_LEFT).SetWindowText(logic::KeyboardUtils::GetKeyName(mp->VKMoveLeft, 0).c_str());
-	GetDlgItem(IDC_EDIT_RIGHT).SetWindowText(logic::KeyboardUtils::GetKeyName(mp->VKMoveRight, 0).c_str());
+	GetDlgItem(IDC_EDIT_UP).SetWindowText(logic::KeyboardUtils::GetKeyName(mouseParams.VKMoveUp, 0).c_str());
+	GetDlgItem(IDC_EDIT_DOWN).SetWindowText(logic::KeyboardUtils::GetKeyName(mouseParams.VKMoveDown, 0).c_str());
+	GetDlgItem(IDC_EDIT_LEFT).SetWindowText(logic::KeyboardUtils::GetKeyName(mouseParams.VKMoveLeft, 0).c_str());
+	GetDlgItem(IDC_EDIT_RIGHT).SetWindowText(logic::KeyboardUtils::GetKeyName(mouseParams.VKMoveRight, 0).c_str());
 
-	GetDlgItem(IDC_EDIT_LEFTUP).SetWindowText(logic::KeyboardUtils::GetKeyName(mp->VKMoveLeftUp, 0).c_str());
-	GetDlgItem(IDC_EDIT_RIGHTUP).SetWindowText(logic::KeyboardUtils::GetKeyName(mp->VKMoveRightUp, 0).c_str());
-	GetDlgItem(IDC_EDIT_LEFTDOWN).SetWindowText(logic::KeyboardUtils::GetKeyName(mp->VKMoveLeftDown, 0).c_str());
-	GetDlgItem(IDC_EDIT_RIGHTDOWN).SetWindowText(logic::KeyboardUtils::GetKeyName(mp->VKMoveRightDown, 0).c_str());
+	GetDlgItem(IDC_EDIT_LEFTUP).SetWindowText(logic::KeyboardUtils::GetKeyName(mouseParams.VKMoveLeftUp, 0).c_str());
+	GetDlgItem(IDC_EDIT_RIGHTUP).SetWindowText(logic::KeyboardUtils::GetKeyName(mouseParams.VKMoveRightUp, 0).c_str());
+	GetDlgItem(IDC_EDIT_LEFTDOWN).SetWindowText(logic::KeyboardUtils::GetKeyName(mouseParams.VKMoveLeftDown, 0).c_str());
+	GetDlgItem(IDC_EDIT_RIGHTDOWN).SetWindowText(logic::KeyboardUtils::GetKeyName(mouseParams.VKMoveRightDown, 0).c_str());
 
-	GetDlgItem(IDC_EDIT_SCROLL_UP).SetWindowText(logic::KeyboardUtils::GetKeyName(mp->VKWheelUp, 0).c_str());
-	GetDlgItem(IDC_EDIT_SCROLL_DOWN).SetWindowText(logic::KeyboardUtils::GetKeyName(mp->VKWheelDown, 0).c_str());
+	GetDlgItem(IDC_EDIT_SCROLL_UP).SetWindowText(logic::KeyboardUtils::GetKeyName(mouseParams.VKWheelUp, 0).c_str());
+	GetDlgItem(IDC_EDIT_SCROLL_DOWN).SetWindowText(logic::KeyboardUtils::GetKeyName(mouseParams.VKWheelDown, 0).c_str());
 
-	GetDlgItem(IDC_EDIT_HOTKEY).SetWindowText(GetHotkeyName(mp->modHotkey, mp->VKHotkey));
+	GetDlgItem(IDC_EDIT_HOTKEY).SetWindowText(GetHotkeyName(mouseParams.modHotkey, mouseParams.VKHotkey));
 
 	CComboBox cbEnabler(GetDlgItem(IDC_COMBO_ACTIVATION));
 	for (int i = 0; i < cbEnabler.GetCount(); i++)
 	{
-		if (static_cast<logic::KeyboardUtils::VirtualKey_t>(cbEnabler.GetItemData(i)) == mp->VKEnabler)
+		if (static_cast<logic::KeyboardUtils::VirtualKey_t>(cbEnabler.GetItemData(i)) == mouseParams.VKEnabler)
 		{
 			cbEnabler.SetCurSel(i);
 			break;
@@ -592,7 +612,7 @@ CNeatMouseWtlView::PopulateControls()
 	CComboBox cbAlt(GetDlgItem(IDC_COMBO_ALT_MOD));
 	for (int i = 0; i < cbAlt.GetCount(); i++)
 	{
-		if (static_cast<logic::KeyboardUtils::VirtualKey_t>(cbAlt.GetItemData(i)) == mp->VKAccelerated)
+		if (static_cast<logic::KeyboardUtils::VirtualKey_t>(cbAlt.GetItemData(i)) == mouseParams.VKAccelerated)
 		{
 			cbAlt.SetCurSel(i);
 			break;
@@ -603,7 +623,7 @@ CNeatMouseWtlView::PopulateControls()
 	CComboBox cbUnbind(GetDlgItem(IDC_COMBO_UNBIND));
 	for (int i = 0; i < cbUnbind.GetCount(); i++)
 	{
-		if (static_cast<logic::KeyboardUtils::VirtualKey_t>(cbUnbind.GetItemData(i)) == mp->VKActivationMod)
+		if (static_cast<logic::KeyboardUtils::VirtualKey_t>(cbUnbind.GetItemData(i)) == mouseParams.VKActivationMod)
 		{
 			cbUnbind.SetCurSel(i);
 			break;
@@ -614,7 +634,7 @@ CNeatMouseWtlView::PopulateControls()
 	CComboBox cbStickyKey(GetDlgItem(IDC_COMBO_STICKYKEYS));
 	for (int i = 0; i < cbStickyKey.GetCount(); i++)
 	{
-		if (static_cast<logic::KeyboardUtils::VirtualKey_t>(cbStickyKey.GetItemData(i)) == mp->VKStickyKey)
+		if (static_cast<logic::KeyboardUtils::VirtualKey_t>(cbStickyKey.GetItemData(i)) == mouseParams.VKStickyKey)
 		{
 			cbStickyKey.SetCurSel(i);
 			break;
@@ -622,19 +642,19 @@ CNeatMouseWtlView::PopulateControls()
 	}
 
 	CButton checkBox(GetDlgItem(IDC_CHECK_MINIMIZE));
-	checkBox.SetCheck(mp->minimizeOnStartup ? BST_CHECKED : BST_UNCHECKED);
+	checkBox.SetCheck(mouseParams.minimizeOnStartup ? BST_CHECKED : BST_UNCHECKED);
 	checkBox.Detach();
 
 	checkBox.Attach(GetDlgItem(IDC_CHECK_AUTOACTIVATE));
-	checkBox.SetCheck(mp->activateOnStartup ? BST_CHECKED : BST_UNCHECKED);
+	checkBox.SetCheck(mouseParams.activateOnStartup ? BST_CHECKED : BST_UNCHECKED);
 	checkBox.Detach();
 
 	checkBox.Attach(GetDlgItem(IDC_CHECK_CURSOR));
-	checkBox.SetCheck(mp->changeCursor ? BST_CHECKED : BST_UNCHECKED);
+	checkBox.SetCheck(mouseParams.changeCursor ? BST_CHECKED : BST_UNCHECKED);
 	checkBox.Detach();
 
 	checkBox.Attach(GetDlgItem(IDC_CHECK_NOTIFICATIONS));
-	checkBox.SetCheck(mp->showNotifications ? BST_CHECKED : BST_UNCHECKED);
+	checkBox.SetCheck(mouseParams.showNotifications ? BST_CHECKED : BST_UNCHECKED);
 	checkBox.Detach();
 
 	SynchronizeCombos();
@@ -708,20 +728,21 @@ CNeatMouseWtlView::SynchronizeCombos()
 		kDefaultValue, VK_LCONTROL, VK_LMENU, VK_LSHIFT, VK_RCONTROL, VK_RMENU, VK_RSHIFT };
 
 	// list of the comboboxes to process, with their values retrieved from the settings
+	auto mouseParams = logic::MainSingleton::Instance().GetMouseParams();
 	using ComboboxDescriptor_t = std::vector< std::pair<CComboBox, DWORD> >;
 	ComboboxDescriptor_t comboBoxes = {
-		std::make_pair( CComboBox(GetDlgItem(IDC_COMBO_ALT_MOD)), logic::MainSingleton::Instance().GetMouseParams()->VKAccelerated),
-		std::make_pair( CComboBox(GetDlgItem(IDC_COMBO_UNBIND)), logic::MainSingleton::Instance().GetMouseParams()->VKActivationMod),
-		std::make_pair( CComboBox(GetDlgItem(IDC_COMBO_STICKYKEYS)), logic::MainSingleton::Instance().GetMouseParams()->VKStickyKey),
+		std::make_pair( CComboBox(GetDlgItem(IDC_COMBO_ALT_MOD)), mouseParams.VKAccelerated),
+		std::make_pair( CComboBox(GetDlgItem(IDC_COMBO_UNBIND)), mouseParams.VKActivationMod),
+		std::make_pair( CComboBox(GetDlgItem(IDC_COMBO_STICKYKEYS)), mouseParams.VKStickyKey),
 	};
 
 	// set of the keys taken so far
 	std::set<DWORD> takenKeys;
 
 	// if hotkey is enabled, mark modifiers which it compises as taken
-	if (logic::MainSingleton::Instance().GetMouseParams()->UseHotkey())
+	if (mouseParams.UseHotkey())
 	{
-		const DWORD hotkeyModifiers = logic::MainSingleton::Instance().GetMouseParams()->modHotkey;
+		const DWORD hotkeyModifiers = mouseParams.modHotkey;
 		if (hotkeyModifiers & MOD_CONTROL)
 		{
 			takenKeys.insert(VK_LCONTROL);
@@ -776,9 +797,10 @@ CNeatMouseWtlView::SynchronizeCombos()
 	}
 
 	// since the values in the comboboxes might have been changed, propagate them back to the settings
-	logic::MainSingleton::Instance().GetMouseParams()->VKAccelerated = comboBoxes[0].second;
-	logic::MainSingleton::Instance().GetMouseParams()->VKActivationMod = comboBoxes[1].second;
-	logic::MainSingleton::Instance().GetMouseParams()->VKStickyKey = comboBoxes[2].second;
+	mouseParams.VKAccelerated = comboBoxes[0].second;
+	mouseParams.VKActivationMod = comboBoxes[1].second;
+	mouseParams.VKStickyKey = comboBoxes[2].second;
+	logic::MainSingleton::Instance().UpdateMouseParams(mouseParams);
 
 	// enable or disable the Alternative Speed value input box depending on the selection
 	// in the corresponding combobox
@@ -978,7 +1000,7 @@ CNeatMouseWtlView::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 	PopulateControls();
 
-	if (logic::MainSingleton::Instance().GetMouseParams()->activateOnStartup)
+	if (logic::MainSingleton::Instance().GetMouseParams().activateOnStartup)
 	{
 		logic::MainSingleton::Instance().GetMouseActioner().activateEmulation(true);
 		logic::MainSingleton::Instance().UpdateCursor();

@@ -1,9 +1,9 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2020 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -20,7 +20,7 @@
 #include "neatcommon/ui/CustomizedControls.h"
 #include "neatcommon/ui/InputBox.h"
 
-namespace neatmouse { 
+namespace neatmouse {
 
 //---------------------------------------------------------------------------------------------------------------------
 CMainFrame::CMainFrame() : cbPresetsSelectionIndex(0), isVisible(true)
@@ -28,26 +28,26 @@ CMainFrame::CMainFrame() : cbPresetsSelectionIndex(0), isVisible(true)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-BOOL 
+BOOL
 CMainFrame::PreTranslateMessage(MSG* pMsg)
 {
 	if(CFrameWindowImpl<CMainFrame>::PreTranslateMessage(pMsg))
 		return TRUE;
-		
+
 	return m_view.PreTranslateMessage(pMsg);
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CMainFrame::OnClose()
 {
-	SetMsgHandled(m_view.CheckIfChangesSaved() == IDCANCEL);		
+	SetMsgHandled(m_view.CheckIfChangesSaved() == IDCANCEL);
 }
 
- 
+
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CMainFrame::OnSysCommand(UINT nID, CPoint /*point*/)
 {
 	if (nID == SC_MINIMIZE)
@@ -63,7 +63,7 @@ CMainFrame::OnSysCommand(UINT nID, CPoint /*point*/)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CMainFrame::RedrawToolbar()
 {
 	tb.RedrawMe();
@@ -71,7 +71,7 @@ CMainFrame::RedrawToolbar()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CMainFrame::localize()
 {
 	m_view.localize();
@@ -81,7 +81,7 @@ CMainFrame::localize()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CMainFrame::OnLanguageMenuItem(UINT /*uCode*/, int nID, HWND /*hwndCtrl*/)
 {
 	for (const neatcommon::system::LocaleUiDescriptor & aLocale : logic::MainSingleton::Instance().GetLocales())
@@ -102,12 +102,12 @@ CMainFrame::OnLanguageMenuItem(UINT /*uCode*/, int nID, HWND /*hwndCtrl*/)
 	SetMsgHandled(FALSE);
 }
 
-	
+
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CMainFrame::OnComboPresetsSelChange(UINT /*uCode*/, int /*nID*/, HWND /*hwndCtrl*/)
 {
-	int n = tb.comboPresets.GetCurSel();	
+	int n = tb.comboPresets.GetCurSel();
 	if (cbPresetsSelectionIndex != n)
 	{
 		if (m_view.CheckIfChangesSaved() == IDCANCEL)
@@ -128,7 +128,7 @@ CMainFrame::OnComboPresetsSelChange(UINT /*uCode*/, int /*nID*/, HWND /*hwndCtrl
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CMainFrame::OnDrawItem(UINT /*id*/, LPDRAWITEMSTRUCT lpdis)
 {
 	if (!lpdis) return;
@@ -164,7 +164,7 @@ CMainFrame::OnBnClickedButtonPresetSave(UINT /*wNotifyCode*/, int /*wID*/, HWND 
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT 
+LRESULT
 CMainFrame::OnBnClickedButtonPresetAdd(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/)
 {
 	if (m_view.CheckIfChangesSaved() == IDCANCEL)
@@ -175,7 +175,7 @@ CMainFrame::OnBnClickedButtonPresetAdd(UINT /*wNotifyCode*/, int /*wID*/, HWND /
 
 	neatcommon::ui::CInputBox ibox(_("toolbar.presets.add-preset-caption"), _("toolbar.presets.add-preset-prompt"),
 		_("common.btn-ok"), _("common.btn-cancel"));
-	if (ibox.DoModal()) 
+	if (ibox.DoModal())
 	{
 		logic::MainSingleton::Instance().SetMouseParams(logic::MainSingleton::Instance().GetOptionsHolder().CreateNewSettings(ibox.getText().GetBuffer(0)));
 		tb.AddSettings(logic::MainSingleton::Instance().GetMouseParams());
@@ -187,7 +187,7 @@ CMainFrame::OnBnClickedButtonPresetAdd(UINT /*wNotifyCode*/, int /*wID*/, HWND /
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT 
+LRESULT
 CMainFrame::OnBnClickedButtonPresetDelete(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/)
 {
 	if (tb.DeleteCurrentSettings())
@@ -200,7 +200,7 @@ CMainFrame::OnBnClickedButtonPresetDelete(UINT /*wNotifyCode*/, int /*wID*/, HWN
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CMainFrame::OnMeasureItem(UINT /*id*/, LPMEASUREITEMSTRUCT lpmis)
 {
 	if (!lpmis) return;
@@ -210,7 +210,7 @@ CMainFrame::OnMeasureItem(UINT /*id*/, LPMEASUREITEMSTRUCT lpmis)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT 
+LRESULT
 CMainFrame::OnCreate(LPCREATESTRUCT /*lpcs*/)
 {
 	CenterWindow(GetParent());
@@ -228,11 +228,11 @@ CMainFrame::OnCreate(LPCREATESTRUCT /*lpcs*/)
 		SetWindowText(s);
 	}
 
-	HWND hWnd = ::CreateWindowEx(0, TOOLBARCLASSNAME, NULL, 
-		WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TBSTYLE_TOOLTIPS | TBSTYLE_LIST | CCS_ADJUSTABLE | TBSTYLE_FLAT, 
+	HWND hWnd = ::CreateWindowEx(0, TOOLBARCLASSNAME, NULL,
+		WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TBSTYLE_TOOLTIPS | TBSTYLE_LIST | CCS_ADJUSTABLE | TBSTYLE_FLAT,
 		0, 0, 100, 100, m_hWnd, 0, ModuleHelper::GetModuleInstance(), 0);
 	tb.SubclassWindow(hWnd);
-		
+
 	// remove old menu
 	SetMenu(NULL);
 
@@ -267,7 +267,7 @@ CMainFrame::OnCreate(LPCREATESTRUCT /*lpcs*/)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CMainFrame::ToggleVisible()
 {
 	if (!isVisible)
@@ -283,24 +283,24 @@ CMainFrame::ToggleVisible()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CMainFrame::TrackTrayMenu()
 {
 	POINT pt;
 	GetCursorPos(&pt);
-	
+
 	CMenuHandle menu = tb.GetMenus().GetSubMenu(1);
 
 	MENUITEMINFO iii;
 
 	iii.cbSize = sizeof(MENUITEMINFO);
 	iii.fMask = MIIM_STRING;
-	
+
 	iii.dwTypeData = const_cast<LPWSTR>(_("notify.restore"));
 	iii.cch = (UINT)wcslen( iii.dwTypeData );
 	SetMenuItemInfo(menu, 0, TRUE, &iii);
 
-	iii.dwTypeData = logic::MainSingleton::Instance().GetMouseActioner().isEmulationActivated() 
+	iii.dwTypeData = logic::MainSingleton::Instance().GetMouseActioner().isEmulationActivated()
 		? const_cast<LPWSTR>(_("notify.disable"))
 		: const_cast<LPWSTR>(_("notify.enable"));
 	iii.cch = (UINT)wcslen( iii.dwTypeData );
@@ -315,7 +315,7 @@ CMainFrame::TrackTrayMenu()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT 
+LRESULT
 CMainFrame::OnTrayBtnClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
 	switch (lParam)
@@ -335,7 +335,7 @@ CMainFrame::OnTrayBtnClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT 
+LRESULT
 CMainFrame::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	// unregister message filtering and idle updates
@@ -348,7 +348,7 @@ CMainFrame::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL&
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT 
+LRESULT
 CMainFrame::OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	PostMessage(WM_CLOSE);
@@ -357,7 +357,7 @@ CMainFrame::OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOO
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT 
+LRESULT
 CMainFrame::OnTrayShow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	ShowWindow(SW_RESTORE);
@@ -367,7 +367,7 @@ CMainFrame::OnTrayShow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOO
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT 
+LRESULT
 CMainFrame::OnTrayToggleEmulation(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	logic::MainSingleton::Instance().GetMouseActioner().activateEmulation(
@@ -377,7 +377,7 @@ CMainFrame::OnTrayToggleEmulation(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT 
+LRESULT
 CMainFrame::OnAppAbout(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/)
 {
 	CAboutDlg dlg;
@@ -387,7 +387,7 @@ CMainFrame::OnAppAbout(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 CMainFrame::resizeByContent()
 {
 	CRect r;

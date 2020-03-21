@@ -1,9 +1,9 @@
 //
-// Copyright © 2016–2019 Neat Decisions. All rights reserved.
+// Copyright © 2016–2020 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -40,7 +40,7 @@ MouseActioner::~MouseActioner(void)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-bool 
+bool
 MouseActioner::checkModifierButtonDown(int vk, int modifier, bool isKeyUp, bool isNumlockSpecial, bool & oValue)
 {
 	if (abs(vk) == modifier)
@@ -103,7 +103,7 @@ MouseActioner::preprocessKey(const KBDLLHOOKSTRUCT & event)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-bool 
+bool
 MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 {
 	// ignore injected events
@@ -114,16 +114,16 @@ MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 	}
 
 	// if we're processing "Key Up" event and the key is our enabler (one of the locks), reset everything and return
-	if (isKeyUp && 
-	    (static_cast<logic::KeyboardUtils::VirtualKey_t>(event.vkCode) == MainSingleton::Instance().GetMouseParams()->VKEnabler))
+	if (isKeyUp &&
+	    (static_cast<logic::KeyboardUtils::VirtualKey_t>(event.vkCode) == _mouseParams.VKEnabler))
 	{
-		_isEmulationActivated = (GetKeyState(MainSingleton::Instance().GetMouseParams()->VKEnabler) & 1);
+		_isEmulationActivated = (GetKeyState(_mouseParams.VKEnabler) & 1);
 		MainSingleton::Instance().NotifyEnabling(_isEmulationActivated);
 		if (!_isEmulationActivated) reset();
 		return false;
 	}
 
-	// if emulation is not activated, reset and return 
+	// if emulation is not activated, reset and return
 	if (!isEmulationActivated())
 	{
 		reset();
@@ -131,19 +131,18 @@ MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 	}
 
 	// retrieve an actual virtual key code of the key which is being processed
-	const MouseParams & mouseParams = *(MainSingleton::Instance().GetMouseParams());
 	const std::pair<KeyboardUtils::VirtualKey_t, bool> & aKeyPair = preprocessKey(event);
 	const KeyboardUtils::VirtualKey_t vk = aKeyPair.first;
 	const bool isNumlockSpecialHandling = aKeyPair.second;
 
 	// if Activation Modifier has been set up, check whether is is pressed
-	if (mouseParams.VKActivationMod != MouseParams::kVKNone)
+	if (_mouseParams.VKActivationMod != MouseParams::kVKNone)
 	{
-		// if Activation Modifier has been pressed and it is the button we're currently processing, return true 
-		// to block further event processing 
-		if (checkModifierButtonDown(vk, mouseParams.VKActivationMod, isKeyUp, isNumlockSpecialHandling, _isActivationButtonPressed))
+		// if Activation Modifier has been pressed and it is the button we're currently processing, return true
+		// to block further event processing
+		if (checkModifierButtonDown(vk, _mouseParams.VKActivationMod, isKeyUp, isNumlockSpecialHandling, _isActivationButtonPressed))
 		{
-			if (!_isActivationButtonPressed && (mouseParams.VKActivationMod != VK_RSHIFT) && ((mouseParams.VKActivationMod != VK_LSHIFT))) 
+			if (!_isActivationButtonPressed && (_mouseParams.VKActivationMod != VK_RSHIFT) && ((_mouseParams.VKActivationMod != VK_LSHIFT)))
 			{
 				reset();
 			}
@@ -152,9 +151,9 @@ MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 
 		// if Activation Modifier is a Shift and we're working with the numerical keyboard, isNumlockSpecialHandling will indicate
 		// that Shift is pressed - there is no other way of deducing it here since Windows send Shift's Key Up in this case
-		if (isNumlockSpecialHandling && 
-		    ( ( (mouseParams.VKActivationMod == VK_RSHIFT) && (_lastShift == kRight) ) || 
-		      ( (mouseParams.VKActivationMod == VK_LSHIFT) && (_lastShift == kLeft) ) ) )
+		if (isNumlockSpecialHandling &&
+		    ( ( (_mouseParams.VKActivationMod == VK_RSHIFT) && (_lastShift == kRight) ) ||
+		      ( (_mouseParams.VKActivationMod == VK_LSHIFT) && (_lastShift == kLeft) ) ) )
 		{
 			_isActivationButtonPressed = true;
 		}
@@ -173,15 +172,15 @@ MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 	}
 
 	// update the status of Alternative Speed Modifier; if we're currently processing its event, nothing more to do - exit
-	if (checkModifierButtonDown(vk, mouseParams.VKAccelerated, isKeyUp, isNumlockSpecialHandling, _isAlternativeSpeedButtonPressed))
+	if (checkModifierButtonDown(vk, _mouseParams.VKAccelerated, isKeyUp, isNumlockSpecialHandling, _isAlternativeSpeedButtonPressed))
 	{
 		return false;
 	}
 
 	// updade the status of Sticky Key Modifier and check if anything else should be done
-	if (checkModifierButtonDown(vk, mouseParams.VKStickyKey, isKeyUp, isNumlockSpecialHandling, _isStickyButtonPressed))
+	if (checkModifierButtonDown(vk, _mouseParams.VKStickyKey, isKeyUp, isNumlockSpecialHandling, _isStickyButtonPressed))
 	{
-		// Special processing of numerical keyboard and Shift modifiers: 
+		// Special processing of numerical keyboard and Shift modifiers:
 		// When a Shift key is pressed together with a key from a numerical keyboard, a Key Down even for Shift is sent twice.
 		// Se want to skip the first keydown event so that the Sticky Key mode isn't reset immediately
 		if (_isStickyButtonPressed && _ignoreNextStickyKeyDown)
@@ -206,7 +205,7 @@ MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 		// if checkModifierButtonDown() returned false, and both _isStickyButtonPressed and isNumlockSpecialHandling are true,
 		// this means that we're processing an event from the numerical keyboard with a Shift pressed; we want to ignore the
 		// next Shift Key Down event since it will be fake one generated by Windows
-		if (isNumlockSpecialHandling && _isStickyButtonPressed && (mouseParams.VKStickyKey == VK_RSHIFT || mouseParams.VKStickyKey == VK_LSHIFT))
+		if (isNumlockSpecialHandling && _isStickyButtonPressed && (_mouseParams.VKStickyKey == VK_RSHIFT || _mouseParams.VKStickyKey == VK_LSHIFT))
 		{
 			_ignoreNextStickyKeyDown = true;
 		}
@@ -216,14 +215,14 @@ MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 	const bool result = isKeyUp ? processKeyUp(vk) : processKeyDown(vk);
 
 	// figure out the movement vector
-	LONG _d = _isAlternativeSpeedButtonPressed ? mouseParams.adelta : mouseParams.delta;
-	LONG dx =
-		((_keyboardStatus.isLeftPressed || _keyboardStatus.isLeftUpPressed || _keyboardStatus.isLeftDownPressed) ? -_d : 0) +
-		((_keyboardStatus.isRightPressed || _keyboardStatus.isRightUpPressed || _keyboardStatus.isRightDownPressed) ? _d : 0);
+	const LONG d = _isAlternativeSpeedButtonPressed ? _mouseParams.adelta : _mouseParams.delta;
+	const LONG dx =
+		((_keyboardStatus.isLeftPressed || _keyboardStatus.isLeftUpPressed || _keyboardStatus.isLeftDownPressed) ? - d : 0) +
+		((_keyboardStatus.isRightPressed || _keyboardStatus.isRightUpPressed || _keyboardStatus.isRightDownPressed) ? d : 0);
 
-	LONG dy =
-		((_keyboardStatus.isUpPressed || _keyboardStatus.isLeftUpPressed || _keyboardStatus.isRightUpPressed) ? -_d : 0) +
-		((_keyboardStatus.isDownPressed || _keyboardStatus.isLeftDownPressed || _keyboardStatus.isRightDownPressed) ? _d : 0);
+	const LONG dy =
+		((_keyboardStatus.isUpPressed || _keyboardStatus.isLeftUpPressed || _keyboardStatus.isRightUpPressed) ? - d : 0) +
+		((_keyboardStatus.isDownPressed || _keyboardStatus.isLeftDownPressed || _keyboardStatus.isRightDownPressed) ? d : 0);
 
 	// if at least one of the keys was already pressed, stop ramp-up cursor mover
 	if ((_keyboardStatus.isLeftPressed && oldStatus.isLeftPressed) ||
@@ -238,7 +237,7 @@ MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 		_rampUpCursorMover.stopMove();
 	}
 
-	// if at least one key changed its status to Pressed right now, invoke ramp-up cursor mover 
+	// if at least one key changed its status to Pressed right now, invoke ramp-up cursor mover
 	// to avoid keyboard repeat delay
 	if ((_keyboardStatus.isLeftPressed && !oldStatus.isLeftPressed) ||
 	    (_keyboardStatus.isRightPressed && !oldStatus.isRightPressed) ||
@@ -260,54 +259,52 @@ MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-bool 
+bool
 MouseActioner::processKeyUp(KeyboardUtils::VirtualKey_t vk)
 {
-	const MouseParams & mouseParams = *(MainSingleton::Instance().GetMouseParams());
-
-	if (vk == mouseParams.VKMoveRight)
+	if (vk == _mouseParams.VKMoveRight)
 	{
 		_rampUpCursorMover.stopMove();
 		_keyboardStatus.isRightPressed = false;
 	} else
-	if (vk == mouseParams.VKMoveLeft)
+	if (vk == _mouseParams.VKMoveLeft)
 	{
 		_rampUpCursorMover.stopMove();
 		_keyboardStatus.isLeftPressed = false;
 	} else
-	if (vk == mouseParams.VKMoveUp)
+	if (vk == _mouseParams.VKMoveUp)
 	{
 		_rampUpCursorMover.stopMove();
 		_keyboardStatus.isUpPressed = false;
 	} else
-	if (vk == mouseParams.VKMoveDown)
+	if (vk == _mouseParams.VKMoveDown)
 	{
 		_rampUpCursorMover.stopMove();
 		_keyboardStatus.isDownPressed = false;
 	} else
-	if (vk == mouseParams.VKMoveLeftDown)
+	if (vk == _mouseParams.VKMoveLeftDown)
 	{
 		_rampUpCursorMover.stopMove();
 		_keyboardStatus.isLeftDownPressed = false;
 	} else
-	if (vk == mouseParams.VKMoveRightDown)
+	if (vk == _mouseParams.VKMoveRightDown)
 	{
 		_rampUpCursorMover.stopMove();
 		_keyboardStatus.isRightDownPressed = false;
-	}
-	if (vk == mouseParams.VKMoveLeftUp)
+	} else
+	if (vk == _mouseParams.VKMoveLeftUp)
 	{
 		_rampUpCursorMover.stopMove();
 		_keyboardStatus.isLeftUpPressed = false;
 	} else
-	if (vk == mouseParams.VKMoveRightUp)
+	if (vk == _mouseParams.VKMoveRightUp)
 	{
 		_rampUpCursorMover.stopMove();
 		_keyboardStatus.isRightUpPressed = false;
 	}
 	else
 	// left button up -------------------------------------------------------
-	if ( (_stickyButton != NMB_Left) && (mouseParams.VKPressLB == vk) )
+	if ( (_stickyButton != NMB_Left) && (_mouseParams.VKPressLB == vk) )
 	{
 		if (_keyboardStatus.isLeftBtnPressed)
 		{
@@ -316,7 +313,7 @@ MouseActioner::processKeyUp(KeyboardUtils::VirtualKey_t vk)
 		}
 	} else
 	// right button up ------------------------------------------------------
-	if ( (_stickyButton != NMB_Right) && (mouseParams.VKPressRB == vk) )
+	if ( (_stickyButton != NMB_Right) && (_mouseParams.VKPressRB == vk) )
 	{
 		if (_keyboardStatus.isRightBtnPressed)
 		{
@@ -325,7 +322,7 @@ MouseActioner::processKeyUp(KeyboardUtils::VirtualKey_t vk)
 		}
 	} else
 	// middle button up -----------------------------------------------------
-	if ( (_stickyButton != NMB_Middle) && (mouseParams.VKPressMB == vk) )
+	if ( (_stickyButton != NMB_Middle) && (_mouseParams.VKPressMB == vk) )
 	{
 		if (_keyboardStatus.isMiddleBtnPressed)
 		{
@@ -336,21 +333,19 @@ MouseActioner::processKeyUp(KeyboardUtils::VirtualKey_t vk)
 	{
 		return false;
 	}
-	
+
 	return true;
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
-bool 
+bool
 MouseActioner::processKeyDown(KeyboardUtils::VirtualKey_t vk)
 {
-	const MouseParams & mouseParams = *(MainSingleton::Instance().GetMouseParams());
-	
 	const bool isStickyModifierOn = _isStickyButtonPressed;
 
 	// left button down -----------------------------------------------------
-	if (mouseParams.VKPressLB == vk)
+	if (_mouseParams.VKPressLB == vk)
 	{
 		if (_stickyButton == NMB_Left)
 		{
@@ -367,7 +362,7 @@ MouseActioner::processKeyDown(KeyboardUtils::VirtualKey_t vk)
 		}
 	} else
 	// right button down -----------------------------------------------------
-	if (mouseParams.VKPressRB == vk)
+	if (_mouseParams.VKPressRB == vk)
 	{
 		if (_stickyButton == NMB_Right)
 		{
@@ -384,7 +379,7 @@ MouseActioner::processKeyDown(KeyboardUtils::VirtualKey_t vk)
 		}
 	} else
 	// middle button down ---------------------------------------------------
-	if (mouseParams.VKPressMB == vk)
+	if (_mouseParams.VKPressMB == vk)
 	{
 		if (_stickyButton == NMB_Middle)
 		{
@@ -401,53 +396,53 @@ MouseActioner::processKeyDown(KeyboardUtils::VirtualKey_t vk)
 		}
 	} else
 	// up -------------------------------------------------------------------
-	if (mouseParams.VKMoveUp == vk)
+	if (_mouseParams.VKMoveUp == vk)
 	{
 		_keyboardStatus.isUpPressed = true;
 	} else
 	// down -----------------------------------------------------------------
-	if (mouseParams.VKMoveDown == vk)
+	if (_mouseParams.VKMoveDown == vk)
 	{
 		_keyboardStatus.isDownPressed = true;
-	} else	
+	} else
 	// left -----------------------------------------------------------------
-	if (mouseParams.VKMoveLeft == vk)
+	if (_mouseParams.VKMoveLeft == vk)
 	{
 		_keyboardStatus.isLeftPressed = true;
-	} else		
+	} else
 	// right ----------------------------------------------------------------
-	if (mouseParams.VKMoveRight == vk)
+	if (_mouseParams.VKMoveRight == vk)
 	{
 		_keyboardStatus.isRightPressed = true;
 	} else
 	// left down ------------------------------------------------------------
-	if (mouseParams.VKMoveLeftDown == vk)
+	if (_mouseParams.VKMoveLeftDown == vk)
 	{
 		_keyboardStatus.isLeftDownPressed = true;
 	} else
 	// right down -----------------------------------------------------------
-	if (mouseParams.VKMoveRightDown == vk)
+	if (_mouseParams.VKMoveRightDown == vk)
 	{
 		_keyboardStatus.isRightDownPressed = true;
 	} else
 	// left up --------------------------------------------------------------
-	if (mouseParams.VKMoveLeftUp == vk)
+	if (_mouseParams.VKMoveLeftUp == vk)
 	{
 		_keyboardStatus.isLeftUpPressed = true;
 	} else
 	// right up -------------------------------------------------------------
-	if (mouseParams.VKMoveRightUp == vk)
+	if (_mouseParams.VKMoveRightUp == vk)
 	{
 		_keyboardStatus.isRightUpPressed = true;
 	}
 	else
 	// wheel up -------------------------------------------------------------
-	if (mouseParams.VKWheelUp == vk)
+	if (_mouseParams.VKWheelUp == vk)
 	{
 		MouseUtils::MouseWheel(false);
 	} else
 	// wheel down -----------------------------------------------------------
-	if (mouseParams.VKWheelDown == vk)
+	if (_mouseParams.VKWheelDown == vk)
 	{
 		MouseUtils::MouseWheel(true);
 	} else
@@ -460,28 +455,27 @@ MouseActioner::processKeyDown(KeyboardUtils::VirtualKey_t vk)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 MouseActioner::activateEmulation(bool activate)
 {
-	const MouseParams & mouseParams = *(MainSingleton::Instance().GetMouseParams());
-	if (mouseParams.UseHotkey())
+	if (_mouseParams.UseHotkey())
 	{
 		_isEmulationActivated = activate;
 	} else
 	{
 		if (activate)
 		{
-			if (!(GetKeyState(mouseParams.VKEnabler) & 1))
+			if (!(GetKeyState(_mouseParams.VKEnabler) & 1))
 			{
-				keybd_event(static_cast<BYTE>(mouseParams.VKEnabler), static_cast<BYTE>(KeyboardUtils::VirtualKeyToScanCode(mouseParams.VKEnabler)), KEYEVENTF_EXTENDEDKEY, 0);
-				keybd_event(static_cast<BYTE>(mouseParams.VKEnabler), static_cast<BYTE>(KeyboardUtils::VirtualKeyToScanCode(mouseParams.VKEnabler)), KEYEVENTF_EXTENDEDKEY |  KEYEVENTF_KEYUP, 0);
+				keybd_event(static_cast<BYTE>(_mouseParams.VKEnabler), static_cast<BYTE>(KeyboardUtils::VirtualKeyToScanCode(_mouseParams.VKEnabler)), KEYEVENTF_EXTENDEDKEY, 0);
+				keybd_event(static_cast<BYTE>(_mouseParams.VKEnabler), static_cast<BYTE>(KeyboardUtils::VirtualKeyToScanCode(_mouseParams.VKEnabler)), KEYEVENTF_EXTENDEDKEY |  KEYEVENTF_KEYUP, 0);
 			}
 		} else
 		{
-			if (GetKeyState(mouseParams.VKEnabler) & 1)
+			if (GetKeyState(_mouseParams.VKEnabler) & 1)
 			{
-				keybd_event(static_cast<BYTE>(mouseParams.VKEnabler), static_cast<BYTE>(KeyboardUtils::VirtualKeyToScanCode(mouseParams.VKEnabler)), KEYEVENTF_EXTENDEDKEY, 0);
-				keybd_event(static_cast<BYTE>(mouseParams.VKEnabler), static_cast<BYTE>(KeyboardUtils::VirtualKeyToScanCode(mouseParams.VKEnabler)), KEYEVENTF_EXTENDEDKEY |  KEYEVENTF_KEYUP, 0);
+				keybd_event(static_cast<BYTE>(_mouseParams.VKEnabler), static_cast<BYTE>(KeyboardUtils::VirtualKeyToScanCode(_mouseParams.VKEnabler)), KEYEVENTF_EXTENDEDKEY, 0);
+				keybd_event(static_cast<BYTE>(_mouseParams.VKEnabler), static_cast<BYTE>(KeyboardUtils::VirtualKeyToScanCode(_mouseParams.VKEnabler)), KEYEVENTF_EXTENDEDKEY |  KEYEVENTF_KEYUP, 0);
 			}
 		}
 	}
@@ -496,19 +490,18 @@ MouseActioner::activateEmulation(bool activate)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-bool 
+bool
 MouseActioner::isEmulationActivated()
 {
-	const MouseParams & mouseParams = *(MainSingleton::Instance().GetMouseParams());
-	if (mouseParams.UseHotkey())
+	if (_mouseParams.UseHotkey())
 		return _isEmulationActivated;
 	else
-		return (GetKeyState(mouseParams.VKEnabler) & 1);
+		return (GetKeyState(_mouseParams.VKEnabler) & 1);
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 MouseActioner::resetStickyButton()
 {
 	switch (_stickyButton)
@@ -517,15 +510,15 @@ MouseActioner::resetStickyButton()
 		break;
 	case NMB_Left:
 		_stickyButton = NMB_None;
-		processKeyUp(MainSingleton::Instance().GetMouseParams()->VKPressLB);
+		processKeyUp(_mouseParams.VKPressLB);
 		break;
 	case NMB_Middle:
 		_stickyButton = NMB_None;
-		processKeyUp(MainSingleton::Instance().GetMouseParams()->VKPressMB);
+		processKeyUp(_mouseParams.VKPressMB);
 		break;
 	case NMB_Right:
 		_stickyButton = NMB_None;
-		processKeyUp(MainSingleton::Instance().GetMouseParams()->VKPressRB);
+		processKeyUp(_mouseParams.VKPressRB);
 		break;
 	}
 	_stickyButton = NMB_None;
@@ -533,7 +526,7 @@ MouseActioner::resetStickyButton()
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void 
+void
 MouseActioner::reset()
 {
 	resetStickyButton();
@@ -543,6 +536,13 @@ MouseActioner::reset()
 	_isActivationButtonPressed = false;
 	_isAlternativeSpeedButtonPressed = false;
 	_ignoreNextStickyKeyDown = false;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void
+MouseActioner::setMouseParams(const MouseParams& mouseParams)
+{
+	_mouseParams = mouseParams;
 }
 
 }}

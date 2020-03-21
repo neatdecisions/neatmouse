@@ -37,7 +37,7 @@ MainSingleton::NotifyEnabling(bool enabled)
 {
 	if (!emulationNotifier) return;
 
-	if (GetMouseParams()->showNotifications)
+	if (GetMouseParams().showNotifications)
 	{
 		emulationNotifier->Notify(enabled);
 	}
@@ -83,10 +83,7 @@ MainSingleton::GetFallbackLocale() const
 //---------------------------------------------------------------------------------------------------------------------
 MainSingleton::~MainSingleton()
 {
-	if (GetMouseParams() != nullptr)
-	{
-		optionsHolder.SetDefaultSettingsPresetFileName(neatcommon::system::GetFileName(GetMouseParams()->FileName));
-	}
+	optionsHolder.SetDefaultSettingsName(GetMouseParams().Name);
 	optionsHolder.Save();
 
 	if (mutex) CloseHandle(mutex);
@@ -137,21 +134,7 @@ MainSingleton::Init(const std::vector<neatcommon::system::LocaleUiDescriptor> & 
 		optionsHolder.Load(paramsPath);
 	}
 
-	for (size_t i = 0; i < optionsHolder.GetSettingsCount(); i++)
-	{
-		if (neatcommon::system::GetFileName(optionsHolder.GetSettings(i)->FileName) == optionsHolder.GetDefaultSettingsFileName())
-		{
-			SetMouseParams(optionsHolder.GetSettings(i));
-		}
-	}
-
-	if ((mouseParams == nullptr) && (optionsHolder.GetSettingsCount() > 0))
-	{
-		SetMouseParams(optionsHolder.GetSettings(0));
-	}
-
-	assert(mouseParams != nullptr);
-
+	SetMouseParams(optionsHolder.GetSettings(optionsHolder.GetDefaultSettingsName()));
 	selectLocale(optionsHolder.GetLanguageCode());
 
 	SetLastError(0);
@@ -165,10 +148,19 @@ MainSingleton::Init(const std::vector<neatcommon::system::LocaleUiDescriptor> & 
 
 
 //---------------------------------------------------------------------------------------------------------------------
-MouseParams::Ptr
+MouseParams
 MainSingleton::GetMouseParams()
 {
-	return mouseParams;
+	return m_mouseParams;
+}
+
+
+//---------------------------------------------------------------------------------------------------------------------
+void
+MainSingleton::UpdateMouseParams(const MouseParams& params)
+{
+	m_mouseParams = params;
+	mouseActioner.setMouseParams(m_mouseParams);
 }
 
 
@@ -176,8 +168,7 @@ MainSingleton::GetMouseParams()
 bool
 MainSingleton::WereParametersChanged()
 {
-	ASSERT(mouseParams);
-	return !initialMouseParams.IsEqual(mouseParams);
+	return !m_initialMouseParams.IsEqual(m_mouseParams);
 }
 
 
@@ -185,8 +176,10 @@ MainSingleton::WereParametersChanged()
 void
 MainSingleton::AcceptMouseParams()
 {
-	initialMouseParams = *mouseParams;
-	mouseParams->Save();
+	m_initialMouseParams = m_mouseParams;
+	optionsHolder.SetSettings(m_mouseParams.Name, m_mouseParams);
+	m_mouseParams.Save();
+	mouseActioner.setMouseParams(m_mouseParams);
 }
 
 
@@ -194,25 +187,17 @@ MainSingleton::AcceptMouseParams()
 void
 MainSingleton::RevertMouseParams()
 {
-	ASSERT(mouseParams);
-	*mouseParams = initialMouseParams;
+	m_mouseParams = m_initialMouseParams;
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
 void
-MainSingleton::SetMouseParams(MouseParams::Ptr value)
+MainSingleton::SetMouseParams(const MouseParams & value)
 {
-	mouseParams = value;
-	initialMouseParams = *mouseParams;
-}
-
-
-//---------------------------------------------------------------------------------------------------------------------
-const MouseParams * const
-MainSingleton::GetInitialMouseParams() const
-{
-	return &initialMouseParams;
+	m_mouseParams = value;
+	m_initialMouseParams = m_mouseParams;
+	mouseActioner.setMouseParams(m_mouseParams);
 }
 
 
@@ -228,7 +213,10 @@ MainSingleton::SetEmulationNotifier(const IEmulationNotifier::Ptr & notifier)
 void
 MainSingleton::UpdateCursor()
 {
-	if (emulationNotifier) emulationNotifier->RefreshOverlay(GetMouseActioner().isEmulationActivated() && GetMouseParams()->changeCursor);
+	if (emulationNotifier)
+	{
+		emulationNotifier->RefreshOverlay(GetMouseActioner().isEmulationActivated() && GetMouseParams().changeCursor);
+	}
 }
 
 }}

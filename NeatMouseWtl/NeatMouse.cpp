@@ -85,7 +85,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	nd.hIcon = LoadIcon(_Module.m_hInst, MAKEINTRESOURCE(IDI_MAUSEMUL));
 	nd.uFlags = NIF_TIP | NIF_ICON | NIF_MESSAGE;
 
-	if (neatmouse::logic::MainSingleton::Instance().GetMouseParams()->minimizeOnStartup)
+	if (neatmouse::logic::MainSingleton::Instance().GetMouseParams().minimizeOnStartup)
 	{
 		wndMain.ToggleVisible();
 		nd.uFlags |= NIF_INFO;

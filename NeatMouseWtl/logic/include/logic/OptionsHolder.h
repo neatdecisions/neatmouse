@@ -1,9 +1,9 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2020 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -17,17 +17,16 @@ namespace logic {
 class COptionsHolder
 {
 public:
-	~COptionsHolder();
 	void Load(const std::wstring & filePath);
 	void Save();
 	void Save(const std::wstring & filePath);
-	std::wstring GetDefaultSettingsFileName() const;
-	void SetDefaultSettingsPresetFileName(const std::wstring & value);
-	std::size_t GetSettingsCount() const;
-	MouseParams::Ptr GetSettings(std::size_t i);
-
-	MouseParams::Ptr CreateNewSettings(const std::wstring & proposedName);
-	void DeleteSettings(MouseParams::Ptr * mouseParams);
+	std::wstring GetDefaultSettingsName() const;
+	void SetDefaultSettingsName(const std::wstring & value);
+	std::vector<std::wstring> GetAllSettingNames() const;
+	MouseParams GetSettings(const std::wstring & name);
+	void SetSettings(const std::wstring & name, const MouseParams & params);
+	MouseParams CreateNewSettings(const std::wstring & proposedName);
+	void DeleteSettings(const std::wstring & name);
 
 	void SetOptionsFolder(const std::wstring & path);
 	const std::wstring & GetOptionsFolder() const;
@@ -37,12 +36,11 @@ public:
 
 protected:
 	std::string lang;
-	std::wstring defaultSettingsFileName;
+	std::wstring m_defaultSettingsName;
 	std::wstring optionsFolder;
-	std::vector<MouseParams::Ptr> options;
+	std::map<std::wstring, MouseParams> m_settings;
 	void LoadOptions();
 	std::wstring mFileName;
-	void ClearSettings();
 };
 
 }}

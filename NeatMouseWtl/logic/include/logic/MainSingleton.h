@@ -1,9 +1,9 @@
 //
-// Copyright © 2016–2019 Neat Decisions. All rights reserved.
+// Copyright © 2016–2020 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -30,14 +30,14 @@ public:
 	MouseActioner & GetMouseActioner() { return mouseActioner; }
 
 	bool selectLocale(const std::string & langCode);
-	
+
 	unsigned short Init(const std::vector<neatcommon::system::LocaleUiDescriptor> & iLocales);
-	MouseParams::Ptr GetMouseParams();
+	MouseParams GetMouseParams();
+	void UpdateMouseParams(const MouseParams & params);
 	bool WereParametersChanged();
 	void AcceptMouseParams();
 	void RevertMouseParams();
-	void SetMouseParams(MouseParams::Ptr value);
-	const MouseParams * const GetInitialMouseParams() const;
+	void SetMouseParams(const MouseParams & value);
 
 	void NotifyEnabling(bool enabled);
 	void UpdateCursor();
@@ -50,8 +50,8 @@ private:
 	MouseActioner mouseActioner;
 	HWND hwndMainWindow = NULL;
 	COptionsHolder optionsHolder;
-	MouseParams::Ptr mouseParams = nullptr;
-	MouseParams initialMouseParams;
+	MouseParams m_mouseParams;
+	MouseParams m_initialMouseParams;
 	std::wstring paramsPath;
 	std::vector<neatcommon::system::LocaleUiDescriptor> locales;
 	neatcommon::system::CLocalizer localizer;
