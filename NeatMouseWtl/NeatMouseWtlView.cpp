@@ -466,7 +466,6 @@ CNeatMouseWtlView::OnComboSelChange(UINT /*uCode*/, int nID, HWND hwndCtrl)
 			}
 			cb.Detach();
 		}
-		SynchronizeCombos();
 		break;
 	case IDC_COMBO_ALT_MOD:
 		{
@@ -476,7 +475,6 @@ CNeatMouseWtlView::OnComboSelChange(UINT /*uCode*/, int nID, HWND hwndCtrl)
 			if (n >= 0) mouseParams.VKAccelerated = cb.GetItemData(n);
 			cb.Detach();
 		}
-		SynchronizeCombos();
 		break;
 	case IDC_COMBO_UNBIND:
 		{
@@ -487,7 +485,6 @@ CNeatMouseWtlView::OnComboSelChange(UINT /*uCode*/, int nID, HWND hwndCtrl)
 			if (n >= 0) mouseParams.VKActivationMod = cb.GetItemData(n);
 			cb.Detach();
 		}
-		SynchronizeCombos();
 		break;
 	case IDC_COMBO_STICKYKEYS:
 		{
@@ -497,13 +494,13 @@ CNeatMouseWtlView::OnComboSelChange(UINT /*uCode*/, int nID, HWND hwndCtrl)
 			if (n >= 0) mouseParams.VKStickyKey = cb.GetItemData(n);
 			cb.Detach();
 		}
-		SynchronizeCombos();
 		break;
 	default:
 		return;
 	}
 
 	logic::MainSingleton::Instance().UpdateMouseParams(mouseParams);
+	SynchronizeCombos();
 	UpdateToolbarButtons();
 }
 
