@@ -32,7 +32,16 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 	if ((nCode < 0) || (wParam != WM_MOUSEMOVE)) CallNextHookEx(mouseHook, nCode, wParam, lParam);
 
 	POINT pt;
-	GetCursorPos(&pt);
+	const PMOUSEHOOKSTRUCT pMouseStruct = reinterpret_cast<PMOUSEHOOKSTRUCT>(lParam);
+	if (pMouseStruct != NULL)
+	{
+		pt = pMouseStruct->pt;
+	}
+	else
+	{
+		// should never happen...
+		GetCursorPos(&pt);
+	}
 
 	const int dx = GetSystemMetrics(SM_CXCURSOR) / 2;
 	const int dy = GetSystemMetrics(SM_CYCURSOR) / 2;
