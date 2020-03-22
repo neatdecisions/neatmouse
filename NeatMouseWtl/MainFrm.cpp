@@ -372,7 +372,7 @@ CMainFrame::OnTrayToggleEmulation(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 {
 	logic::MainSingleton::Instance().GetMouseActioner().activateEmulation(
 		!logic::MainSingleton::Instance().GetMouseActioner().isEmulationActivated() );
-	logic::MainSingleton::Instance().UpdateCursor();
+	logic::MainSingleton::Instance().TriggerOverlay();
 	return 0;
 }
 

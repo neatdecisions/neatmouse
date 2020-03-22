@@ -29,6 +29,8 @@ MouseActioner::MouseActioner() :
 	_isAlternativeSpeedButtonPressed(false),
 	_ignoreNextStickyKeyDown(false)
 {
+	// to ensure that overlay icon moves together with cursor when ramp-up movement is triggered
+	_rampUpCursorMover.setMoveCallback([](){ MainSingleton::Instance().UpdateOverlay(); });
 }
 
 
@@ -252,7 +254,11 @@ MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 	}
 	else
 	{
-		if ((dx != 0) || (dy != 0)) MouseUtils::MouseMove(dx, dy);
+		if ((dx != 0) || (dy != 0))
+		{
+			MouseUtils::MouseMove(dx, dy);
+			MainSingleton::Instance().UpdateOverlay();
+		}
 	}
 	return result;
 }

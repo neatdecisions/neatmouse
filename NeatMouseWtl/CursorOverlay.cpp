@@ -23,30 +23,31 @@ namespace {
 	HANDLE threadHandle = NULL;
 	HBITMAP overlayBitmap = NULL;
 	constexpr LPWSTR OVERLAY_WINDOW_NAME = L"NeatOverlay";
+	constexpr auto WM_NEATMOUSE_OVERLAY_REDRAW = WM_USER + 1;
+
+	void RedrawOverlay()
+	{
+		POINT pt;
+		GetCursorPos(&pt);
+
+		const int dx = GetSystemMetrics(SM_CXCURSOR) / 2;
+		const int dy = GetSystemMetrics(SM_CYCURSOR) / 2;
+
+		SetWindowPos(overlayHwnd, HWND_TOPMOST, pt.x + dx, pt.y + dy, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE);
+	}
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
 LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
-	if ((nCode < 0) || (wParam != WM_MOUSEMOVE)) CallNextHookEx(mouseHook, nCode, wParam, lParam);
-
-	POINT pt;
-	const PMOUSEHOOKSTRUCT pMouseStruct = reinterpret_cast<PMOUSEHOOKSTRUCT>(lParam);
-	if (pMouseStruct != NULL)
+	if ((nCode == HC_ACTION) && (wParam == WM_MOUSEMOVE))
 	{
-		pt = pMouseStruct->pt;
+		// avoid using MSLLHOOKSTRUCT here - it provides cursor coordinates in "per-monitor-aware screen coordinates",
+		// which makes overlay position wrong on multi-monitor screens with different DPI
+		// (as long as NeatMouse declares to be "DPI unaware")
+		PostRedrawOverlay();
 	}
-	else
-	{
-		// should never happen...
-		GetCursorPos(&pt);
-	}
-
-	const int dx = GetSystemMetrics(SM_CXCURSOR) / 2;
-	const int dy = GetSystemMetrics(SM_CYCURSOR) / 2;
-
-	SetWindowPos(overlayHwnd, HWND_TOPMOST, pt.x + dx, pt.y + dy, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE);
 	return CallNextHookEx(mouseHook, nCode, wParam, lParam);
 }
 
@@ -96,6 +97,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		UnhookWindowsHookEx(mouseHook);
 		mouseHook = NULL;
 		PostQuitMessage(0);
+		break;
+	case WM_NEATMOUSE_OVERLAY_REDRAW:
+		RedrawOverlay();
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
@@ -195,6 +199,13 @@ void DisableIconOverlay()
 
 	overlayHwnd = NULL;
 	threadHandle = 0;
+}
+
+
+//---------------------------------------------------------------------------------------------------------------------
+void PostRedrawOverlay()
+{
+	PostMessage(overlayHwnd, WM_NEATMOUSE_OVERLAY_REDRAW, 0, 0);
 }
 
 } // namespace neatmouse

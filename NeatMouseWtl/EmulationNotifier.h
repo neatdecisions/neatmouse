@@ -17,7 +17,8 @@ struct EmulationNotifier : logic::IEmulationNotifier
 {
 	explicit EmulationNotifier(HWND mainWindow);
 	void Notify(bool enabled) override;
-	void RefreshOverlay(bool enabled) override;
+	void TriggerOverlay(bool enabled) override;
+	void UpdateOverlay() override;
 
 private:
 	HWND hwndMainWindow = NULL;

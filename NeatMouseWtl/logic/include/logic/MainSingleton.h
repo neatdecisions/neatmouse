@@ -40,7 +40,8 @@ public:
 	void SetMouseParams(const MouseParams & value);
 
 	void NotifyEnabling(bool enabled);
-	void UpdateCursor();
+	void TriggerOverlay();
+	void UpdateOverlay();
 	void SetEmulationNotifier(const IEmulationNotifier::Ptr & notifier);
 
 	const std::vector<neatcommon::system::LocaleUiDescriptor> & GetLocales() const;

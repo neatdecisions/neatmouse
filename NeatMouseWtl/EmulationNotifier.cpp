@@ -1,9 +1,9 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2020 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -44,15 +44,23 @@ void EmulationNotifier::Notify(bool enabled)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void EmulationNotifier::RefreshOverlay(bool enabled)
+void EmulationNotifier::TriggerOverlay(bool enabled)
 {
 	if (enabled)
-	{		
+	{
 		EnableIconOverlay();
 	} else
 	{
 		DisableIconOverlay();
 	}
 }
+
+
+//---------------------------------------------------------------------------------------------------------------------
+void EmulationNotifier::UpdateOverlay()
+{
+	PostRedrawOverlay();
+}
+
 
 } // namespace neatmouse

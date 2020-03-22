@@ -42,7 +42,7 @@ MainSingleton::NotifyEnabling(bool enabled)
 		emulationNotifier->Notify(enabled);
 	}
 
-	UpdateCursor();
+	TriggerOverlay();
 }
 
 
@@ -141,7 +141,7 @@ MainSingleton::Init(const std::vector<neatcommon::system::LocaleUiDescriptor> & 
 	mutex = CreateMutex(NULL, FALSE, _T("NeatMouse"));
 	if (GetLastError() == ERROR_ALREADY_EXISTS || GetLastError() == ERROR_ACCESS_DENIED) return 1;
 
-	UpdateCursor();
+	TriggerOverlay();
 
 	return 0;
 }
@@ -211,12 +211,20 @@ MainSingleton::SetEmulationNotifier(const IEmulationNotifier::Ptr & notifier)
 
 //---------------------------------------------------------------------------------------------------------------------
 void
-MainSingleton::UpdateCursor()
+MainSingleton::TriggerOverlay()
 {
 	if (emulationNotifier)
 	{
-		emulationNotifier->RefreshOverlay(GetMouseActioner().isEmulationActivated() && GetMouseParams().changeCursor);
+		emulationNotifier->TriggerOverlay(GetMouseActioner().isEmulationActivated() && GetMouseParams().changeCursor);
 	}
+}
+
+
+//---------------------------------------------------------------------------------------------------------------------
+void
+MainSingleton::UpdateOverlay()
+{
+	if (emulationNotifier) emulationNotifier->UpdateOverlay();
 }
 
 }}

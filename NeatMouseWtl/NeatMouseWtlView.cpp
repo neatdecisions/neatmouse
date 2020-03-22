@@ -314,7 +314,7 @@ CNeatMouseWtlView::OnCursorCheck(UINT /*uCode*/, int /*nID*/, HWND /*hwndCtrl*/)
 	logic::MainSingleton::Instance().UpdateMouseParams(mouseParams);
 	checkBox.Detach();
 	UpdateToolbarButtons();
-	logic::MainSingleton::Instance().UpdateCursor();
+	logic::MainSingleton::Instance().TriggerOverlay();
 }
 
 
@@ -1000,7 +1000,7 @@ CNeatMouseWtlView::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	if (logic::MainSingleton::Instance().GetMouseParams().activateOnStartup)
 	{
 		logic::MainSingleton::Instance().GetMouseActioner().activateEmulation(true);
-		logic::MainSingleton::Instance().UpdateCursor();
+		logic::MainSingleton::Instance().TriggerOverlay();
 	}
 	return 0;
 }

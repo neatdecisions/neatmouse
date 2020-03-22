@@ -69,8 +69,8 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		ATLTRACE(_T("Main window creation failed!\n"));
 		return 0;
 	}
-	neatmouse::logic::MainSingleton::Instance().SetEmulationNotifier(std::make_shared<neatmouse::EmulationNotifier>(neatmouse::EmulationNotifier(wndMain)));
-	neatmouse::logic::MainSingleton::Instance().UpdateCursor();
+	neatmouse::logic::MainSingleton::Instance().SetEmulationNotifier(std::make_shared<neatmouse::EmulationNotifier>(wndMain));
+	neatmouse::logic::MainSingleton::Instance().TriggerOverlay();
 
 	wndMain.SetIcon(LoadIcon(_Module.m_hInst, MAKEINTRESOURCE(IDI_MAUSEMUL)));
 
