@@ -135,13 +135,6 @@ bool MouseParams::UseHotkey() const
 
 
 //---------------------------------------------------------------------------------------------------------------------
-bool MouseParams::IsPreset() const
-{
-	return isPreset;
-}
-
-
-//---------------------------------------------------------------------------------------------------------------------
 bool MouseParams::IsEqual(const MouseParams & mouseParams) const
 {
 	if (delta != mouseParams.delta) return false;
@@ -183,9 +176,7 @@ MouseParams::MouseParams(const std::wstring& name) : m_name(name)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-MouseParams::MouseParams(bool iIsPreset) :
-	m_name(iIsPreset ? _T("(Default)") : _T("[Untitled]")),
-	isPreset(iIsPreset)
+MouseParams::MouseParams() : m_name(_T("[Untitled]"))
 {
 }
 

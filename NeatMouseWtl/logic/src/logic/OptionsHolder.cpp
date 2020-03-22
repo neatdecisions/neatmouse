@@ -76,6 +76,11 @@ void COptionsHolder::Load(const std::wstring & filePath)
 			}
 		}
 	}
+
+	if (m_defaultSettingsName.empty() && !m_settings.empty())
+	{
+		m_defaultSettingsName = m_settings.begin()->first;
+	}
 }
 
 
@@ -170,11 +175,6 @@ void COptionsHolder::LoadOptions()
 {
 	m_settings.clear();
 
-	MouseParams opts(true);
-	opts.Load(m_optionsFolder + L"\\default");
-	opts.Save(m_optionsFolder + L"\\default");
-	m_settings.emplace(opts.GetName(), opts);
-
 	WIN32_FIND_DATA fd;
 	HANDLE hFind = FindFirstFile((m_optionsFolder + L"\\*.nmp").c_str(), &fd);
 
@@ -191,6 +191,21 @@ void COptionsHolder::LoadOptions()
 		} while (FindNextFile(hFind, &fd));
 
 		FindClose(hFind);
+	}
+
+	const std::wstring defaultSettingsPath = m_optionsFolder + L"\\default";
+	if (neatcommon::system::FileExists(defaultSettingsPath))
+	{
+		MouseParams opts;
+		opts.Load(defaultSettingsPath);
+		m_settings.emplace(opts.GetName(), opts);
+	}
+
+	if (m_settings.empty())
+	{
+		MouseParams opts(L"(Default)");
+		opts.Save(defaultSettingsPath);
+		m_settings.emplace(opts.GetName(), opts);
 	}
 }
 
@@ -242,7 +257,6 @@ void COptionsHolder::DeleteSettings(const std::wstring & name)
 {
 	auto it = m_settings.find(name);
 	if (it == m_settings.end()) return;
-	if (it->second.IsPreset()) return;
 	DeleteFile(it->second.GetFilePath().c_str());
 	m_settings.erase(it);
 }

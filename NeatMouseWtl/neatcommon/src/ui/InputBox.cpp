@@ -1,9 +1,9 @@
 //
-// Copyright © 2016 Neat Decisions. All rights reserved.
+// Copyright © 2016–2020 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -16,16 +16,16 @@ namespace ui {
 
 //---------------------------------------------------------------------------------------------------------------------
 CInputBox::CInputBox(
-	const CString & caption, const CString & prompt, 
+	const CString & caption, const CString & prompt,
 	const CString & ok, const CString & cancel) :
 	m_caption(caption), m_prompt(prompt), m_ok(ok), m_cancel(cancel)
 {}
 
-	
+
 //---------------------------------------------------------------------------------------------------------------------
-CString CInputBox::getText() const 
-{ 
-	return _text; 
+CString CInputBox::getText() const
+{
+	return _text;
 }
 
 
@@ -41,8 +41,8 @@ LRESULT CInputBox::OnButtonOk(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 
 //---------------------------------------------------------------------------------------------------------------------
 LRESULT CInputBox::OnButtonCancel(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{ 
-	return EndDialog(FALSE); 
+{
+	return EndDialog(FALSE);
 }
 
 
@@ -63,5 +63,14 @@ LRESULT CInputBox::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	GetDlgItem(ID_EDIT).SetFocus();
 	return bHandled = FALSE;
 }
+
+
+//---------------------------------------------------------------------------------------------------------------------
+LRESULT CInputBox::OnEditTextChange(WORD, WORD wID, HWND)
+{
+	GetDlgItem(IDOK).EnableWindow(GetDlgItem(ID_EDIT).GetWindowTextLength() > 0 ? TRUE : FALSE);
+	return TRUE;
+}
+
 
 }}

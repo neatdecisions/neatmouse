@@ -20,7 +20,7 @@ namespace logic {
 struct MouseParams
 {
 public:
-	explicit MouseParams(bool iIsPreset = false);
+	MouseParams();
 	explicit MouseParams(const std::wstring & name);
 
 	LONG delta  = 20;
@@ -57,7 +57,6 @@ public:
 	std::wstring GetName() const;
 	std::wstring GetFilePath() const;
 	bool UseHotkey() const;
-	bool IsPreset() const;
 	bool IsEqual(const MouseParams & mouseParams) const;
 
 	bool BindingExists(int keyCode);
@@ -70,7 +69,6 @@ public:
 private:
 	std::wstring m_name;
 	std::wstring m_filePath;
-	bool isPreset = false;
 };
 
 }}

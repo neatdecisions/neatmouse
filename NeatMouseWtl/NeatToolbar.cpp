@@ -72,7 +72,7 @@ void
 CNeatToolbar::UpdateButtonStates()
 {
 	EnableButton(ID_TOOLBAR_SAVEPRESET, logic::MainSingleton::Instance().WereParametersChanged());
-	EnableButton(ID_TOOLBAR_REMOVEPRESET, !logic::MainSingleton::Instance().GetMouseParams().IsPreset());
+	EnableButton(ID_TOOLBAR_REMOVEPRESET, comboPresets.GetCount() > 1);
 }
 
 
@@ -223,8 +223,8 @@ CNeatToolbar::GetCurrentSettings()
 bool
 CNeatToolbar::DeleteCurrentSettings()
 {
+	if (comboPresets.GetCount() <= 1) return false;
 	const logic::MouseParams & currentSettings = GetCurrentSettings();
-	if (currentSettings.IsPreset()) return false;
 
 	int n = comboPresets.GetCurSel();
 	if (n < 0) return false;
