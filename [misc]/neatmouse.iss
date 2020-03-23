@@ -1,28 +1,24 @@
-; Copyright © 2016 Neat Decisions.
+; Copyright © 2016–2020 Neat Decisions.
 ; Copying and distribution of this file, with or without modification,
 ; are permitted in any medium without royalty provided the copyright
 ; notice and this notice are preserved.  This file is offered as-is,
 ; without any warranty.
 ;
-; NeatMouse InnoSetup installation script
+
+#define PadStr(str s, int n) \
+  Len(s) >= n ? s : "0" + PadStr(s, n - 1)
+
+#define GenerateVersionSuffix(str fn) \
+  ParseVersion(fn, Local[0], Local[1], Local[2], Local[3]), \
+  Str(Local[0]) + "." + PadStr(Str(Local[1]), 2) + "." + PadStr(Str(Local[3] | Local[2] << 16), 3)
+
 
 #define ApplicationName 'NeatMouse'
 #define ApplicationFileNameWithoutExtension 'neatmouse'
 #define ApplicationFileName ApplicationFileNameWithoutExtension +'.exe'
 
 #define ExeName '..\NeatMouseWtl\Release\' + ApplicationFileName
-#define AppVersionNo GetFileVersion(ExeName)
-#define AppMajorVersionIdx Pos(".", AppVersionNo)
-
-#define AppVersionNo1 Copy(AppVersionNo, 1, AppMajorVersionIdx -1)
-#define AppMinorVersionTemp Copy(AppVersionNo, AppMajorVersionIdx +1)
-
-#define AppMajorVersionIdx Pos(".", AppMinorVersionTemp)
-#define AppVersionNo2 '0' + Copy(AppMinorVersionTemp, 1, AppMajorVersionIdx-1)
-#define AppVersionNo2 Copy(AppVersionNo2, Len(AppVersionNo2) - 1, 2)                                                                   
-
-#define ApplicationVersion AppVersionNo1 + '.' + AppVersionNo2
-
+#define ApplicationVersion GenerateVersionSuffix(ExeName)
 
 
 [Setup]
@@ -69,7 +65,7 @@ Name: "{group}\Uninstall {#ApplicationName}"; Filename: "{uninstallexe}"; Compon
 Name: "{commondesktop}\{#ApplicationName}"; Filename: "{app}\{#ApplicationFileName}"; Tasks: desktopicon\common; Components: normal
 Name: "{userdesktop}\{#ApplicationName}"; Filename: "{app}\{#ApplicationFileName}"; Tasks: desktopicon\user; Components: normal
 
-[Registry]                                                                                          
+[Registry]
 Root: HKCU; Subkey: "Software\NeatDecisions"; Flags: uninsdeletekeyifempty; Components: normal
 Root: HKCU; Subkey: "Software\NeatDecisions\{#ApplicationName}"; Flags: uninsdeletekey; Components: normal
 Root: HKLM; Subkey: "Software\NeatDecisions"; Flags: uninsdeletekeyifempty; Components: normal
@@ -99,7 +95,7 @@ function ShellExecute(hwnd: HWND; lpOperation: string; lpFile: string;
   lpParameters: string; lpDirectory: string; nShowCmd: Integer): HINSTANCE;
   external 'ShellExecute{#AW}@shell32.dll stdcall';
 
-// skip 
+// skip
 function ShouldSkipPage(PageID: Integer): Boolean;
 begin
   if PageID = wpSelectComponents then
@@ -121,7 +117,7 @@ end;
 
 function CmdLineParamExists(const Value: string): Boolean;
 var
-  I: Integer;  
+  I: Integer;
 begin
   Result := False;
   for I := 1 to ParamCount do
@@ -172,19 +168,19 @@ begin
       end else
       begin
         WizardForm.DirEdit.Text := GetDefaultInstallPath('');
-        WizardForm.ComponentsList.Checked[0] := True;  
+        WizardForm.ComponentsList.Checked[0] := True;
       end;
     end;
   end;
 end;
 
-                 
+
 procedure InitializeWizard;
 begin
   if  GetWindowsVersion < $06000000 then
   begin
     Elevated := True;
-    PagesSkipped := True; 
+    PagesSkipped := True;
   end else
   begin
     Elevated := CmdLineParamExists('/ELEVATE');
@@ -193,9 +189,9 @@ begin
 
 
   { Create the pages }
-  
+
   InstallationTypePage := CreateInputOptionPage(wpWelcome,
-    'Installation mode', 
+    'Installation mode',
     'Please select the type of installation you wish to peform.',
     'Most users should choose "Normal Installation". However, if you need to install NeatMouse to be portable, please select that option.',
     True, False);
