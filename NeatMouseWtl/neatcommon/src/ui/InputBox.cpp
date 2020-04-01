@@ -66,7 +66,7 @@ LRESULT CInputBox::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 
 //---------------------------------------------------------------------------------------------------------------------
-LRESULT CInputBox::OnEditTextChange(WORD, WORD wID, HWND)
+LRESULT CInputBox::OnEditTextChange(WORD, WORD, HWND)
 {
 	GetDlgItem(IDOK).EnableWindow(GetDlgItem(ID_EDIT).GetWindowTextLength() > 0 ? TRUE : FALSE);
 	return TRUE;
