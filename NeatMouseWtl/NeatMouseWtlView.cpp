@@ -527,7 +527,7 @@ CNeatMouseWtlView::OnEditChange(UINT /*code*/, UINT id, HWND hwnd, BOOL & bHandl
 		mouseParams.adelta = neatcommon::system::from_string_def(s.GetBuffer(0), 1);
 		break;
 	}
-
+	logic::MainSingleton::Instance().UpdateMouseParams(mouseParams);
 	UpdateToolbarButtons();
 
 	return 0;
