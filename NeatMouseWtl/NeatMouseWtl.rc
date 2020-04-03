@@ -25,25 +25,25 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // LANG
 //
 
-IDR_LANG_CHINESESIMPLIFIED        LANG          "res\\langs\\Chinese Simplified.lng"
+IDR_LANG_CHINESESIMPLIFIED LANG                    "res\\langs\\Chinese Simplified.lng"
 
-IDR_LANG_ENGLISH                  LANG          "res\\langs\\English.lng"
+IDR_LANG_ENGLISH        LANG                    "res\\langs\\English.lng"
 
-IDR_LANG_FRENCH                   LANG          "res\\langs\\French.lng"
+IDR_LANG_FRENCH         LANG                    "res\\langs\\French.lng"
 
-IDR_LANG_GERMAN                   LANG          "res\\langs\\German.lng"
+IDR_LANG_GERMAN         LANG                    "res\\langs\\German.lng"
 
-IDR_LANG_ITALIAN                  LANG          "res\\langs\\Italian.lng"
+IDR_LANG_ITALIAN        LANG                    "res\\langs\\Italian.lng"
 
-IDR_LANG_POLISH                   LANG          "res\\langs\\Polish.lng"
+IDR_LANG_POLISH         LANG                    "res\\langs\\Polish.lng"
 
-IDR_LANG_UKRAINIAN                LANG          "res\\langs\\Ukrainian.lng"
+IDR_LANG_UKRAINIAN      LANG                    "res\\langs\\Ukrainian.lng"
 
-IDR_LANG_GREEK                    LANG          "res\\langs\\Greek.lng"
+IDR_LANG_GREEK          LANG                    "res\\langs\\Greek.lng"
 
-IDR_LANG_ROMANIAN                 LANG          "res\\langs\\Romanian.lng"
+IDR_LANG_ROMANIAN       LANG                    "res\\langs\\Romanian.lng"
 
-IDR_LANG_RUSSIAN                  LANG          "res\\langs\\Russian.lng"
+IDR_LANG_RUSSIAN        LANG                    "res\\langs\\Russian.lng"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -150,18 +150,18 @@ IDI_CROSSB              ICON                    "res\\ico\\cross-small-bright.ic
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE
+2 TEXTINCLUDE 
 BEGIN
     "#include ""atlres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE
+3 TEXTINCLUDE 
 BEGIN
     "\0"
 END
@@ -178,7 +178,7 @@ IDR_MAINFRAME MENU
 BEGIN
     POPUP "Language"
     BEGIN
-        MENUITEM "简体中文",                     ID_LANGUAGE_CN
+        MENUITEM "简体中文",                        ID_LANGUAGE_CN
         MENUITEM "Deutsch",                     ID_LANGUAGE_DE
         MENUITEM "Ελληνικά",                    ID_LANGUAGE_GR
         MENUITEM "English",                     ID_LANGUAGE_EN
@@ -333,7 +333,7 @@ BEGIN
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
     "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL
     "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL
-    VK_F6,          ID_NEXT_PANE,           VIRTKEY
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY 
     VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT
 END
 
@@ -344,8 +344,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,5,0,4
- PRODUCTVERSION 1,5,0,4
+ FILEVERSION 1,5,0,5
+ PRODUCTVERSION 1,5,0,5
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -362,12 +362,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Neat Decisions"
             VALUE "FileDescription", "NeatMouse - neat mouse emulator"
-            VALUE "FileVersion", "1.5.0.4"
+            VALUE "FileVersion", "1.5.0.5"
             VALUE "InternalName", "NeatMouse"
             VALUE "LegalCopyright", "Copyright 2020"
             VALUE "OriginalFilename", "NeatMouse.exe"
             VALUE "ProductName", "NeatMouse"
-            VALUE "ProductVersion", "1.5.0.4"
+            VALUE "ProductVersion", "1.5.0.5"
         END
     END
     BLOCK "VarFileInfo"
