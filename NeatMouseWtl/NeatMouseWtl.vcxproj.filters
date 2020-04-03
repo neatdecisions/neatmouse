@@ -348,6 +348,9 @@
     <None Include="res\png\main\rocket-fly.png">
       <Filter>Resource Files\png</Filter>
     </None>
+    <None Include="res\langs\Chinese Simplified.lng">
+      <Filter>Resource Files\lang</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\png\main\plug-connect.png">
@@ -360,6 +363,9 @@
       <Filter>Resource Files\png</Filter>
     </Image>
     <Image Include="res\png\GitHub-Mark-16px.png">
+      <Filter>Resource Files\png</Filter>
+    </Image>
+    <Image Include="res\png\lang\cn.png">
       <Filter>Resource Files\png</Filter>
     </Image>
   </ItemGroup>

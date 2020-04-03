@@ -24,9 +24,12 @@ void COptionsHolder::Load(const std::wstring & filePath)
 
 	std::string language = "en";
 
-	LANGID langId = GetUserDefaultUILanguage() & 0x00FF;
+	const LANGID langId = GetUserDefaultUILanguage() & 0x00FF;
 	switch (langId)
 	{
+	case LANG_CHINESE:
+		language = "cn";
+		break;
 	case LANG_FRENCH:
 		language = "fr";
 		break;

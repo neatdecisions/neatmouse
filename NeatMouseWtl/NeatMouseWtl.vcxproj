@@ -198,6 +198,7 @@
     <None Include="res\ico\cross-small-bright.ico" />
     <None Include="res\ico\cross-small.ico" />
     <None Include="res\ico\mouse.ico" />
+    <None Include="res\langs\Chinese Simplified.lng" />
     <None Include="res\langs\English.lng" />
     <None Include="res\langs\French.lng" />
     <None Include="res\langs\German.lng" />
@@ -249,6 +250,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\png\GitHub-Mark-16px.png" />
+    <Image Include="res\png\lang\cn.png" />
     <Image Include="res\png\main\plug-connect.png" />
     <Image Include="res\png\main\plug-disconnect.png" />
     <Image Include="res\png\open-source.png" />

@@ -41,15 +41,16 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	// prepare supported translations
 	const std::vector<neatcommon::system::LocaleUiDescriptor> locales
 	{
-		neatcommon::system::LocaleUiDescriptor("en", IDR_LANG_ENGLISH, IDB_PNG_LANG_EN, ID_LANGUAGE_EN),
-		neatcommon::system::LocaleUiDescriptor("de", IDR_LANG_GERMAN, IDB_PNG_LANG_DE, ID_LANGUAGE_DE),
-		neatcommon::system::LocaleUiDescriptor("fr", IDR_LANG_FRENCH, IDB_PNG_LANG_FR, ID_LANGUAGE_FR),
-		neatcommon::system::LocaleUiDescriptor("it", IDR_LANG_ITALIAN, IDB_PNG_LANG_IT, ID_LANGUAGE_IT),
-		neatcommon::system::LocaleUiDescriptor("pl", IDR_LANG_POLISH, IDB_PNG_LANG_PL, ID_LANGUAGE_PL),
-		neatcommon::system::LocaleUiDescriptor("ua", IDR_LANG_UKRAINIAN, IDB_PNG_LANG_UA, ID_LANGUAGE_UA),
-		neatcommon::system::LocaleUiDescriptor("gr", IDR_LANG_GREEK, IDB_PNG_LANG_GR, ID_LANGUAGE_GR),
-		neatcommon::system::LocaleUiDescriptor("ro", IDR_LANG_ROMANIAN, IDB_PNG_LANG_RO, ID_LANGUAGE_RO),
-		neatcommon::system::LocaleUiDescriptor("ru", IDR_LANG_RUSSIAN, IDB_PNG_LANG_RU, ID_LANGUAGE_RU)
+		{ "cn", IDR_LANG_CHINESESIMPLIFIED, IDB_PNG_LANG_CN, ID_LANGUAGE_CN },
+		{ "en", IDR_LANG_ENGLISH,           IDB_PNG_LANG_EN, ID_LANGUAGE_EN },
+		{ "de", IDR_LANG_GERMAN,            IDB_PNG_LANG_DE, ID_LANGUAGE_DE },
+		{ "fr", IDR_LANG_FRENCH,            IDB_PNG_LANG_FR, ID_LANGUAGE_FR },
+		{ "it", IDR_LANG_ITALIAN,           IDB_PNG_LANG_IT, ID_LANGUAGE_IT },
+		{ "pl", IDR_LANG_POLISH,            IDB_PNG_LANG_PL, ID_LANGUAGE_PL },
+		{ "ua", IDR_LANG_UKRAINIAN,         IDB_PNG_LANG_UA, ID_LANGUAGE_UA },
+		{ "gr", IDR_LANG_GREEK,             IDB_PNG_LANG_GR, ID_LANGUAGE_GR },
+		{ "ro", IDR_LANG_ROMANIAN,          IDB_PNG_LANG_RO, ID_LANGUAGE_RO },
+		{ "ru", IDR_LANG_RUSSIAN,           IDB_PNG_LANG_RU, ID_LANGUAGE_RU }
 	};
 
 	// check whether a copy of NeatMouse is already running
