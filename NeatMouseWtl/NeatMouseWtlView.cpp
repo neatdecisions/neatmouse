@@ -926,6 +926,8 @@ CNeatMouseWtlView::localize()
 	wnd.Attach(GetDlgItem(IDC_EDIT_ALT_SPEED));
 	wnd.SetWindowPos(HWND_BOTTOM, layoutRect.right + 7, layoutRect.top - 1, 0, 0, SWP_NOSIZE);
 	wnd.Detach();
+
+	SynchronizeCombos();
 }
 
 
