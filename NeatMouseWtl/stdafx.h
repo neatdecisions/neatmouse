@@ -15,6 +15,7 @@
 #define _WIN32_WINNT  0x0501
 #define _WIN32_IE     0x0600
 #define _RICHEDIT_VER 0x0300
+#define OEMRESOURCE
 
 #define ID_TOOLBAR_START            10000
 
@@ -33,9 +34,6 @@
 #define ID_COMBO_PRESETS            ID_TOOLBAR_START + 100
 
 #define NEAT_TRAY_CALLBACK          WM_USER + 1000
-
-#define LINK_SITE   L"https://neatdecisions.com"
-#define LINK_GITHUB L"https://github.com/neatdecisions/neatmouse"
 
 #include <atlbase.h>
 #include <atlapp.h>

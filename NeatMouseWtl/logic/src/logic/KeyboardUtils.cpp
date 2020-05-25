@@ -1,9 +1,9 @@
 //
-// Copyright © 2016–2019 Neat Decisions. All rights reserved.
+// Copyright © 2016–2020 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -235,10 +235,10 @@ std::wstring KeyboardUtils::GetKeyName(VirtualKey_t vk, ScanCode_t sc)
 		if (it != kVirtualKeyToNameMap.end()) return it->second;
 	}
 
-	const size_t buf_size = 100;
-	wchar_t buf[buf_size];
-	if ( GetKeyNameText(sc << 16, buf, buf_size) ) return std::wstring(buf);
-	
+	constexpr size_t kBufSize = 100;
+	wchar_t buf[kBufSize];
+	if ( GetKeyNameText(sc << 16, buf, kBufSize) ) return std::wstring(buf);
+
 	return kDefaultName;
 }
 
@@ -261,7 +261,7 @@ void KeyboardUtils::KeyPress(VirtualKey_t vk, bool doUp)
 //---------------------------------------------------------------------------------------------------------------------
 KeyboardUtils::VirtualKey_t KeyboardUtils::TransformNumpadWithShift(VirtualKey_t vk, ScanCode_t sc)
 {
-	bool isNumLockOn = (GetAsyncKeyState(VK_NUMLOCK) & 1) || (GetKeyState(VK_NUMLOCK) & 1);	
+	bool isNumLockOn = (GetAsyncKeyState(VK_NUMLOCK) & 1) || (GetKeyState(VK_NUMLOCK) & 1);
 
 	// map: { scan code -> pair: 1) numpad's VK with NumLock off, 2) numpad's VK with NumLock on }
 	static const std::map<ScanCode_t, std::pair<VirtualKey_t, VirtualKey_t> > numpadKeyMap =
@@ -318,7 +318,7 @@ unsigned long KeyboardUtils::GetKeyboardInitialDelay()
 //---------------------------------------------------------------------------------------------------------------------
 unsigned long KeyboardUtils::GetKeyboardRepeatPeriod()
 {
-	// retrieve the keyboard repeat - speed setting which is a value in the range 
+	// retrieve the keyboard repeat - speed setting which is a value in the range
 	// from 0 (approximately 2.5 repetitions per second) through 31 (approximately 30 repetitions per second),
 	// and deduce the repeat period from this value
 	DWORD result = 0;

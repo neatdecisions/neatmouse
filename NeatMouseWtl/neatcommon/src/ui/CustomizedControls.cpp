@@ -20,7 +20,7 @@ volatile int CGdiPlusInitializer::m_GdiPlusPresent = -1;
 //---------------------------------------------------------------------------------------------------------------------
 void SetMenuItemBitmapCallbackMode(CMenuHandle hmenu, UINT id, CBitmapHandle bitmap, BOOL byPosition)
 {
-	MENUITEMINFO mii;
+	MENUITEMINFO mii{};
 	mii.cbSize = sizeof(mii);
 	mii.fMask = MIIM_BITMAP;
 	if (neatcommon::system::IsWindowsVistaOrLater())
@@ -39,8 +39,7 @@ void DrawBitmapAdvanced(HDC pDC, CBitmapHandle bitmap, int x, int y, int w, int 
 
 	if (isDisabled)
 	{
-		BITMAPINFO bmi;
-		ZeroMemory(&bmi, sizeof(BITMAPINFO));
+		BITMAPINFO bmi{};
 		bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 		bmi.bmiHeader.biWidth = w;
 		bmi.bmiHeader.biHeight = h;
@@ -245,15 +244,6 @@ CImageManager::GetBitmapFromPng(UINT id)
 //=====================================================================================================================
 // MenuBitmapsManager
 //=====================================================================================================================
-
-//---------------------------------------------------------------------------------------------------------------------
-CMenuBitmapsManager::~CMenuBitmapsManager()
-{
-	for (auto & kv : icons)
-	{
-		if (!kv.second.IsNull()) kv.second.DeleteObject();
-	}
-}
 
 
 //---------------------------------------------------------------------------------------------------------------------

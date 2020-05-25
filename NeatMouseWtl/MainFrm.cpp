@@ -22,19 +22,14 @@
 
 namespace neatmouse {
 
-//---------------------------------------------------------------------------------------------------------------------
-CMainFrame::CMainFrame() : cbPresetsSelectionIndex(0), isVisible(true)
-{}
-
 
 //---------------------------------------------------------------------------------------------------------------------
 BOOL
 CMainFrame::PreTranslateMessage(MSG* pMsg)
 {
-	if(CFrameWindowImpl<CMainFrame>::PreTranslateMessage(pMsg))
-		return TRUE;
-
-	return m_view.PreTranslateMessage(pMsg);
+	return (CFrameWindowImpl<CMainFrame>::PreTranslateMessage(pMsg))
+		? TRUE
+		: m_view.PreTranslateMessage(pMsg);
 }
 
 
@@ -286,28 +281,28 @@ CMainFrame::ToggleVisible()
 void
 CMainFrame::TrackTrayMenu()
 {
-	POINT pt;
+	POINT pt{};
 	GetCursorPos(&pt);
 
 	CMenuHandle menu = tb.GetMenus().GetSubMenu(1);
 
-	MENUITEMINFO iii;
+	MENUITEMINFO iii{};
 
 	iii.cbSize = sizeof(MENUITEMINFO);
 	iii.fMask = MIIM_STRING;
 
 	iii.dwTypeData = const_cast<LPWSTR>(_("notify.restore"));
-	iii.cch = (UINT)wcslen( iii.dwTypeData );
+	iii.cch = static_cast<UINT>(wcslen(iii.dwTypeData));
 	SetMenuItemInfo(menu, 0, TRUE, &iii);
 
 	iii.dwTypeData = logic::MainSingleton::Instance().GetMouseActioner().isEmulationActivated()
 		? const_cast<LPWSTR>(_("notify.disable"))
 		: const_cast<LPWSTR>(_("notify.enable"));
-	iii.cch = (UINT)wcslen( iii.dwTypeData );
+	iii.cch = static_cast<UINT>(wcslen(iii.dwTypeData));
 	SetMenuItemInfo(menu, 1, TRUE, &iii);
 
 	iii.dwTypeData = const_cast<LPWSTR>(_("notify.exit"));
-	iii.cch = (UINT)wcslen( iii.dwTypeData );
+	iii.cch = static_cast<UINT>(wcslen(iii.dwTypeData));
 	SetMenuItemInfo(menu, 2, TRUE, &iii);
 
 	TrackPopupMenu(menu, 0, pt.x, pt.y, 0, m_hWnd, 0);

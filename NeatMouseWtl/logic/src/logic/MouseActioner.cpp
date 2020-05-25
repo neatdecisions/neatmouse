@@ -20,14 +20,7 @@ namespace neatmouse {
 namespace logic {
 
 //---------------------------------------------------------------------------------------------------------------------
-MouseActioner::MouseActioner() :
-	_lastShift(kUnknown),
-	_isEmulationActivated(false),
-	_stickyButton(NMB_None),
-	_isStickyButtonPressed(false),
-	_isActivationButtonPressed(false),
-	_isAlternativeSpeedButtonPressed(false),
-	_ignoreNextStickyKeyDown(false)
+MouseActioner::MouseActioner()
 {
 	// to ensure that overlay icon moves together with cursor when ramp-up movement is triggered
 	_rampUpCursorMover.setMoveCallback([](){ MainSingleton::Instance().UpdateOverlay(); });
@@ -54,8 +47,8 @@ MouseActioner::checkModifierButtonDown(int vk, int modifier, bool isKeyUp, bool 
 	{
 		if (isNumlockSpecial && ((modifier == VK_LSHIFT) || (modifier == VK_RSHIFT)))
 		{
-			oValue = (( (_lastShift == kLeft) && (modifier == VK_LSHIFT)) ||
-			          ( (_lastShift == kRight) && (modifier == VK_RSHIFT)));
+			oValue = (( (_lastShift == LastShift_t::kLeft) && (modifier == VK_LSHIFT)) ||
+			          ( (_lastShift == LastShift_t::kRight) && (modifier == VK_RSHIFT)));
 		}
 	}
 	return false;
@@ -86,9 +79,13 @@ MouseActioner::preprocessKey(const KBDLLHOOKSTRUCT & event)
 	}
 
 	if (abs(vk) == VK_LSHIFT)
-		_lastShift = kLeft;
+	{
+		_lastShift = LastShift_t::kLeft;
+	}
 	else if (abs(vk) == VK_RSHIFT)
-		_lastShift = kRight;
+	{
+		_lastShift = LastShift_t::kRight;
+	}
 
 	bool isNumlockSpecialHandling = false;
 
@@ -154,8 +151,8 @@ MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 		// if Activation Modifier is a Shift and we're working with the numerical keyboard, isNumlockSpecialHandling will indicate
 		// that Shift is pressed - there is no other way of deducing it here since Windows send Shift's Key Up in this case
 		if (isNumlockSpecialHandling &&
-		    ( ( (_mouseParams.VKActivationMod == VK_RSHIFT) && (_lastShift == kRight) ) ||
-		      ( (_mouseParams.VKActivationMod == VK_LSHIFT) && (_lastShift == kLeft) ) ) )
+		    ( ( (_mouseParams.VKActivationMod == VK_RSHIFT) && (_lastShift == LastShift_t::kRight) ) ||
+		      ( (_mouseParams.VKActivationMod == VK_LSHIFT) && (_lastShift == LastShift_t::kLeft) ) ) )
 		{
 			_isActivationButtonPressed = true;
 		}
@@ -538,7 +535,7 @@ MouseActioner::reset()
 	resetStickyButton();
 	_rampUpCursorMover.stopMove();
 	_keyboardStatus = KeyboardButtonsStatus();
-	_lastShift = kUnknown;
+	_lastShift = LastShift_t::kUnknown;
 	_isActivationButtonPressed = false;
 	_isAlternativeSpeedButtonPressed = false;
 	_ignoreNextStickyKeyDown = false;

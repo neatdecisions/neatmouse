@@ -72,18 +72,18 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	}
 	neatmouse::logic::MainSingleton::Instance().SetEmulationNotifier(std::make_shared<neatmouse::EmulationNotifier>(wndMain));
 	neatmouse::logic::MainSingleton::Instance().TriggerOverlay();
+	const CIcon icon = AtlLoadIconImage(IDI_MAUSEMUL);
 
-	wndMain.SetIcon(LoadIcon(_Module.m_hInst, MAKEINTRESOURCE(IDI_MAUSEMUL)));
+	wndMain.SetIcon(icon);
 
 	WCHAR a[64] = L"NeatMouse";
-	NOTIFYICONDATA nd;
-	ZeroMemory(&nd, sizeof(nd));
+	NOTIFYICONDATA nd{};
 	nd.cbSize = sizeof(NOTIFYICONDATA);
 	nd.hWnd = wndMain;
 	wcscpy_s(nd.szTip, wcslen(a) + 1, a);
 	nd.uCallbackMessage = NEAT_TRAY_CALLBACK;
 	nd.uID = 10;
-	nd.hIcon = LoadIcon(_Module.m_hInst, MAKEINTRESOURCE(IDI_MAUSEMUL));
+	nd.hIcon = icon;
 	nd.uFlags = NIF_TIP | NIF_ICON | NIF_MESSAGE;
 
 	if (neatmouse::logic::MainSingleton::Instance().GetMouseParams().minimizeOnStartup)

@@ -23,23 +23,22 @@ EmulationNotifier::EmulationNotifier(HWND mainWindow) : hwndMainWindow(mainWindo
 //---------------------------------------------------------------------------------------------------------------------
 void EmulationNotifier::Notify(bool enabled)
 {
-		NOTIFYICONDATA nd;
-		memset(&nd, '\0', sizeof(nd));
-		nd.cbSize = sizeof(NOTIFYICONDATA);
-		nd.hWnd = hwndMainWindow;
-		nd.uID = 10;
-		nd.uFlags = NIF_INFO;
-		nd.dwInfoFlags = NIIF_INFO;
-		if (enabled)
-		{
-			wcscpy_s(nd.szInfo, 255, _("notify.balloon-enabled"));
-		}	else
-		{
-			wcscpy_s(nd.szInfo, 255, _("notify.balloon-disabled"));
-		}
-		wcscpy_s(nd.szInfoTitle, 63, L"NeatMouse");
+	NOTIFYICONDATA nd{};
+	nd.cbSize = sizeof(NOTIFYICONDATA);
+	nd.hWnd = hwndMainWindow;
+	nd.uID = 10;
+	nd.uFlags = NIF_INFO;
+	nd.dwInfoFlags = NIIF_INFO;
+	if (enabled)
+	{
+		wcscpy_s(nd.szInfo, 255, _("notify.balloon-enabled"));
+	}	else
+	{
+		wcscpy_s(nd.szInfo, 255, _("notify.balloon-disabled"));
+	}
+	wcscpy_s(nd.szInfoTitle, 63, L"NeatMouse");
 
-		Shell_NotifyIcon(NIM_MODIFY, &nd);
+	Shell_NotifyIcon(NIM_MODIFY, &nd);
 }
 
 

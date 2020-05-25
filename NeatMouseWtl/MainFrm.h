@@ -17,39 +17,6 @@ namespace neatmouse {
 class CMainFrame : public CFrameWindowImpl<CMainFrame>,
                    public CMessageFilter
 {
-protected:
-	neatcommon::ui::CMenuBitmapsManager menuBitmapsManager;
-	CNeatMouseWtlView m_view;
-	CNeatToolbar tb;
-
-	int cbPresetsSelectionIndex;
-	bool isVisible;
-
-	void OnClose();
-	void OnSysCommand(UINT nID, CPoint point);
-	void OnLanguageMenuItem(UINT uCode, int nID, HWND hwndCtrl);
-	void OnComboPresetsSelChange(UINT uCode, int nID, HWND hwndCtrl);
-	void OnDrawItem(UINT id, LPDRAWITEMSTRUCT lpdis);
-	void OnMeasureItem(UINT id, LPMEASUREITEMSTRUCT lpmis);
-
-	LRESULT OnCreate(LPCREATESTRUCT lpcs);
-	LRESULT OnBnClickedButtonPresetSave(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/);
-	LRESULT OnBnClickedButtonPresetAdd(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/);
-	LRESULT OnBnClickedButtonPresetDelete(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/);
-	LRESULT OnBnClickedButtonAdvancedView(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/);
-	LRESULT OnAppAbout(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/);
-
-	LRESULT OnTrayBtnClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-
-	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnTrayShow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnTrayToggleEmulation(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
-	void RedrawToolbar();
-	void localize();
-	void TrackTrayMenu();
-
 	BEGIN_MSG_MAP(CMainFrame)
 		MSG_WM_CREATE(OnCreate)
 		MSG_WM_CLOSE(OnClose)
@@ -78,8 +45,7 @@ protected:
 			SetMsgHandled(TRUE);
 			OnLanguageMenuItem((UINT)HIWORD(wParam), (int)LOWORD(wParam), (HWND)lParam);
 			lResult = 0;
-			if(IsMsgHandled())
-				return TRUE;
+			if(IsMsgHandled()) return TRUE;
 		}
 
 		CHAIN_MSG_MAP_MEMBER(tb)
@@ -91,12 +57,42 @@ public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
-	CMainFrame();
-
 	void ToggleVisible();
 
 private:
+	void OnClose();
+	void OnSysCommand(UINT nID, CPoint point);
+	void OnLanguageMenuItem(UINT uCode, int nID, HWND hwndCtrl);
+	void OnComboPresetsSelChange(UINT uCode, int nID, HWND hwndCtrl);
+	void OnDrawItem(UINT id, LPDRAWITEMSTRUCT lpdis);
+	void OnMeasureItem(UINT id, LPMEASUREITEMSTRUCT lpmis);
+
+	LRESULT OnCreate(LPCREATESTRUCT lpcs);
+	LRESULT OnBnClickedButtonPresetSave(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/);
+	LRESULT OnBnClickedButtonPresetAdd(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/);
+	LRESULT OnBnClickedButtonPresetDelete(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/);
+	LRESULT OnBnClickedButtonAdvancedView(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/);
+	LRESULT OnAppAbout(UINT /*wNotifyCode*/, int /*wID*/, HWND /*hWndCtl*/);
+
+	LRESULT OnTrayBtnClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
+
+	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnTrayShow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnTrayToggleEmulation(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+	void RedrawToolbar();
+	void localize();
+	void TrackTrayMenu();
+
 	void resizeByContent();
+
+	neatcommon::ui::CMenuBitmapsManager menuBitmapsManager;
+	CNeatMouseWtlView m_view;
+	CNeatToolbar tb;
+
+	int cbPresetsSelectionIndex = 0;
+	bool isVisible = true;
 };
 
 } // namespace neatmouse

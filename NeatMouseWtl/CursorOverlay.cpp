@@ -113,7 +113,7 @@ void InitOverlay(HINSTANCE hinst)
 {
 	overlayInstance = hinst;
 
-	WNDCLASSEX wcex;
+	WNDCLASSEX wcex{};
 
 	wcex.cbSize = sizeof(WNDCLASSEX);
 
@@ -123,8 +123,8 @@ void InitOverlay(HINSTANCE hinst)
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = overlayInstance;
 	wcex.hIcon = NULL;
-	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.hCursor = AtlLoadSysCursorImage(OCR_NORMAL, LR_SHARED | LR_DEFAULTSIZE);
+	wcex.hbrBackground = NULL;
 	wcex.lpszMenuName = NULL;
 	wcex.lpszClassName = OVERLAY_WINDOW_NAME;
 	wcex.hIconSm = NULL;

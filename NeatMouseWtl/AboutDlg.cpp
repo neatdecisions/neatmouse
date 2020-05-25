@@ -9,7 +9,6 @@
 
 #include "stdafx.h"
 #include "resource.h"
-
 #include "AboutDlg.h"
 
 #include "logic/MainSingleton.h"
@@ -18,7 +17,9 @@
 
 namespace neatmouse {
 
-constexpr TCHAR * kRegistryStartupValueName = _T("NeatMouse");
+namespace {
+	constexpr TCHAR * kRegistryStartupValueName = _T("NeatMouse");
+}
 
 
 //=====================================================================================================================
@@ -89,19 +90,18 @@ CAboutDlg::OnInitDialog(HWND, LRESULT)
 	programVersion.Attach(GetDlgItem(IDC_STATIC_VERSION));
 	programVersion.SetWindowText(s);
 
-
 	ykLink.SetHyperLinkExtendedStyle(HLINK_UNDERLINEHOVER);
 	ykLink.SubclassWindow(GetDlgItem(IDC_STATIC_YK));
-	ykLink.SetHyperLink(_T("http://p.yusukekamiyamane.com"));
+	ykLink.SetHyperLink(L"https://p.yusukekamiyamane.com");
 
 	visitLink.SetHyperLinkExtendedStyle(HLINK_UNDERLINEHOVER);
 	visitLink.SubclassWindow(GetDlgItem(IDC_STATIC_VISIT));
-	visitLink.SetHyperLink(CString(LINK_SITE));
+	visitLink.SetHyperLink(L"https://neatdecisions.com");
 
 	link.SetHyperLinkExtendedStyle(HLINK_UNDERLINEHOVER);
 	link.SubclassWindow(GetDlgItem(IDC_STATIC_UPDATE));
 
-	link.SetHyperLink(CString(LINK_GITHUB));
+	link.SetHyperLink(L"https://github.com/neatdecisions/neatmouse");
 	link.SetLabel(_("about.github"));
 
 	someIcons.Attach(GetDlgItem(IDC_STATIC_SOMEICONS));
@@ -137,7 +137,7 @@ CAboutDlg::OnRunAtStartup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, 
 LRESULT
 CAboutDlg::OnSetCursor(CWindow /*wndTopLevel*/, UINT /*nHitTest*/, UINT /*message*/)
 {
-	SetCursor(::LoadCursor(NULL, IDC_ARROW));
+	SetCursor(AtlLoadSysCursorImage(OCR_NORMAL, LR_SHARED | LR_DEFAULTSIZE));
 	SetMsgHandled(TRUE);
 	return TRUE;
 }

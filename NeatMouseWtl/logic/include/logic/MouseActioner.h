@@ -111,21 +111,21 @@ private:
 	KeyboardButtonsStatus _keyboardStatus;
 	MouseParams _mouseParams;
 
-	enum LastShift_t
+	enum class LastShift_t
 	{
 		kUnknown,
 		kLeft,
 		kRight
 	};
 
-	LastShift_t _lastShift;
-	bool _isEmulationActivated;
-	NeatMouseButton _stickyButton;
+	LastShift_t _lastShift = LastShift_t::kUnknown;
+	bool _isEmulationActivated = false;
+	NeatMouseButton _stickyButton = NMB_None;
 
-	bool _isStickyButtonPressed;
-	bool _isActivationButtonPressed;
-	bool _isAlternativeSpeedButtonPressed;
-	bool _ignoreNextStickyKeyDown;
+	bool _isStickyButtonPressed = false;
+	bool _isActivationButtonPressed = false;
+	bool _isAlternativeSpeedButtonPressed = false;
+	bool _ignoreNextStickyKeyDown = false;
 };
 
 }}

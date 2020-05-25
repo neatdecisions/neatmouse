@@ -13,23 +13,27 @@
 #include "resource.h"
 #include "logic/MainSingleton.h"
 #include "neatcommon/system/Helpers.h"
+#include <array>
 
 namespace neatmouse {
 
-const TBBUTTON allButtons[] =
-{
-	{ -1, ID_TOOLBAR_COMBOPRESETS, TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0 },
-	{ 0, ID_TOOLBAR_ADDPRESET, TBSTATE_ENABLED, BTNS_BUTTON, {0}, 0, (INT_PTR)L"Add preset" },
-	{ 1, ID_TOOLBAR_REMOVEPRESET, TBSTATE_ENABLED, BTNS_BUTTON, {0}, 0, (INT_PTR)L"Remove preset" },
-	{ 2, ID_TOOLBAR_SAVEPRESET, TBSTATE_ENABLED, BTNS_BUTTON, {0}, 0, (INT_PTR)L"Save preset" },
-	{ -1, ID_TOOLBAR_SEP2, TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
-	{ 3, ID_TOOLBAR_ADVANCEDVIEW, TBSTATE_ENABLED, BTNS_CHECK, {0}, 0, (INT_PTR)L"Advanced view" },
+namespace {
+	const std::array<TBBUTTON, 9> kAllButtons =
+	{{
+		{ -1, ID_TOOLBAR_COMBOPRESETS, TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0 },
+		{ 0, ID_TOOLBAR_ADDPRESET, TBSTATE_ENABLED, BTNS_BUTTON, {0}, 0, (INT_PTR)L"Add preset" },
+		{ 1, ID_TOOLBAR_REMOVEPRESET, TBSTATE_ENABLED, BTNS_BUTTON, {0}, 0, (INT_PTR)L"Remove preset" },
+		{ 2, ID_TOOLBAR_SAVEPRESET, TBSTATE_ENABLED, BTNS_BUTTON, {0}, 0, (INT_PTR)L"Save preset" },
+		{ -1, ID_TOOLBAR_SEP2, TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
+		{ 3, ID_TOOLBAR_ADVANCEDVIEW, TBSTATE_ENABLED, BTNS_CHECK, {0}, 0, (INT_PTR)L"Advanced view" },
 
-	{ -1, ID_TOOLBAR_SEP1, TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
+		{ -1, ID_TOOLBAR_SEP1, TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0},
 
-	{ 4, ID_TOOLBAR_LANGUAGE, TBSTATE_ENABLED, BTNS_WHOLEDROPDOWN | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)L"Language" },
-	{ 5, ID_TOOLBAR_HELP, TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)L"Help" }
-};
+		{ 4, ID_TOOLBAR_LANGUAGE, TBSTATE_ENABLED, BTNS_WHOLEDROPDOWN | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)L"Language" },
+		{ 5, ID_TOOLBAR_HELP, TBSTATE_ENABLED, BTNS_BUTTON | BTNS_AUTOSIZE, {0}, 0, (INT_PTR)L"Help" }
+	}};
+}
+
 
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -41,13 +45,13 @@ CNeatToolbar::LoadBitmaps()
 	AddBitmap(1, SafeLoadPng(IDB_PNG_DISK));
 	AddBitmap(1, SafeLoadPng(IDB_PNG_EQUALIZER));
 
-	const neatcommon::system::LocaleUiDescriptor & aFallbackLocale = logic::MainSingleton::Instance().GetFallbackLocale();
-	langs[aFallbackLocale.code] = AddBitmap(1, SafeLoadPng(aFallbackLocale.iconId));
+	const neatcommon::system::LocaleUiDescriptor & fallbackLocale = logic::MainSingleton::Instance().GetFallbackLocale();
+	m_langs[fallbackLocale.code] = AddBitmap(1, SafeLoadPng(fallbackLocale.iconId));
 
 	AddBitmap(1, SafeLoadPng(IDB_PNG_QUESTION));
-	for (const neatcommon::system::LocaleUiDescriptor & aLocale : logic::MainSingleton::Instance().GetLocales())
+	for (const neatcommon::system::LocaleUiDescriptor & locale : logic::MainSingleton::Instance().GetLocales())
 	{
-		langs[aLocale.code] = AddBitmap(1, SafeLoadPng(aLocale.iconId));
+		m_langs[locale.code] = AddBitmap(1, SafeLoadPng(locale.iconId));
 	}
 }
 
@@ -80,8 +84,8 @@ CNeatToolbar::UpdateButtonStates()
 void
 CNeatToolbar::ChangeLanguageMenu(const std::string & langCode)
 {
-	std::map<std::string, int>::const_iterator it = langs.find(langCode);
-	if (it != langs.end())
+	std::map<std::string, int>::const_iterator it = m_langs.find(langCode);
+	if (it != m_langs.end())
 	{
 		ChangeBitmap(ID_TOOLBAR_LANGUAGE, it->second);
 	}
@@ -117,7 +121,7 @@ CNeatToolbar::localize()
 	SetToolbarButtonText(ID_TOOLBAR_REMOVEPRESET, _("toolbar.delete-preset"));
 	SetToolbarButtonText(ID_TOOLBAR_SAVEPRESET, _("toolbar.save-preset"));
 	SetToolbarButtonText(ID_TOOLBAR_ADVANCEDVIEW, _("toolbar.advanced-view"));
-	labelPresets.SetText(_("toolbar.lbl-preset"));
+	m_labelPresets.SetText(_("toolbar.lbl-preset"));
 
 	SetToolbarButtonText(ID_TOOLBAR_LANGUAGE, _("toolbar.language"));
 	SetToolbarButtonText(ID_TOOLBAR_HELP, _("toolbar.about"));
@@ -158,19 +162,6 @@ CNeatToolbar::SubclassWindow(HWND hWnd)
 	}
 
 	return bRet;
-}
-
-
-//---------------------------------------------------------------------------------------------------------------------
-CSize
-CNeatToolbar::getGUIFontSize()
-{
-	CClientDC dc(m_hWnd);
-	dc.SelectFont((HFONT) GetStockObject( DEFAULT_GUI_FONT ));
-	TEXTMETRIC tm;
-	dc.GetTextMetrics( &tm );
-
-	return CSize( tm.tmAveCharWidth, tm.tmHeight + tm.tmExternalLeading);
 }
 
 
@@ -267,16 +258,16 @@ CNeatToolbar::FillSettings()
 void
 CNeatToolbar::RepositionCombobox()
 {
-	int nIndex = CommandToIndex(ID_TOOLBAR_COMBOPRESETS);
+	const int nIndex = CommandToIndex(ID_TOOLBAR_COMBOPRESETS);
 	CRect rc, labelRect, comboRect;
 	GetItemRect(nIndex, &rc);
 
-	labelPresets.GetWindowRect(labelRect);
-	labelPresets.GetParent().ScreenToClient(labelRect);
+	m_labelPresets.GetWindowRect(labelRect);
+	m_labelPresets.GetParent().ScreenToClient(labelRect);
 
 	labelRect.MoveToX(rc.left + 10);
 
-	labelPresets.MoveWindow(labelRect.left, labelRect.top, labelRect.Width(), labelRect.Height());
+	m_labelPresets.MoveWindow(labelRect.left, labelRect.top, labelRect.Width(), labelRect.Height());
 
 	comboPresets.GetWindowRect(comboRect);
 	comboPresets.GetParent().ScreenToClient(comboRect);
@@ -299,31 +290,31 @@ CNeatToolbar::RepositionCombobox()
 void
 CNeatToolbar::CreatePresetsCombobox()
 {
-	TBBUTTONINFO tbi;
-	RECT rc;
+	TBBUTTONINFO tbi{};
+	CRect rc;
 
-	tbi.cbSize = sizeof TBBUTTONINFO;
+	tbi.cbSize = sizeof(TBBUTTONINFO);
 	tbi.dwMask = TBIF_STYLE;
 	tbi.fsStyle = TBSTYLE_SEP;
 
 	SetButtonInfo(ID_TOOLBAR_COMBOPRESETS, &tbi);
 
-	int nIndex = CommandToIndex(ID_TOOLBAR_COMBOPRESETS);
+	const int nIndex = CommandToIndex(ID_TOOLBAR_COMBOPRESETS);
 	GetItemRect(nIndex, &rc);
 
 	rc.left += 10;
 
 	CRect labelRect = rc;
 
-	CSize sz = getGUIFontSize();
-	CString s = _T("Preset:");
-	labelRect.right = rc.left + sz.cx * s.GetLength();
-	labelRect.top = rc.top + (rc.bottom - rc.top - sz.cy) / 2;
+	const CString s = _T("Preset:");
+	CSize sz;
+	CClientDC(m_hWnd).GetTextExtent(s, s.GetLength(), &sz);
+	labelRect.right = rc.left + sz.cx;
+	labelRect.top = 1 + rc.top + max(rc.Height() - sz.cy, 0) / 2;
 
-	labelPresets.Create(this->GetParent(), labelRect, NULL, WS_CHILD | WS_VISIBLE, WS_EX_TRANSPARENT);
-	labelPresets.SetText(s);
-	labelPresets.SetParent(*this);
-	labelPresets.SetFont((HFONT)GetStockObject( DEFAULT_GUI_FONT ));
+	m_labelPresets.Create(GetParent(), labelRect, NULL, WS_CHILD | WS_VISIBLE, WS_EX_TRANSPARENT);
+	m_labelPresets.SetText(s);
+	m_labelPresets.SetParent(*this);
 
 	rc.top = labelRect.top - 4;
 	rc.left += labelRect.Width();
@@ -331,10 +322,15 @@ CNeatToolbar::CreatePresetsCombobox()
 
 	rc.right = rc.left + 150;
 
-	comboPresets.Create(this->GetParent(), rc, NULL, CBS_DROPDOWNLIST | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL, 0, IDC_COMBO_PRESETS);
-
+	comboPresets.Create(GetParent(), rc, NULL, CBS_DROPDOWNLIST | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL, 0, IDC_COMBO_PRESETS);
 	comboPresets.SetParent(*this);
-	comboPresets.SetFont((HFONT)GetStockObject( DEFAULT_GUI_FONT ));
+
+	if (m_font)
+	{
+		m_labelPresets.SetFont(m_font);
+		comboPresets.SetFont(m_font);
+	}
+
 	RepositionCombobox();
 }
 
@@ -343,7 +339,7 @@ CNeatToolbar::CreatePresetsCombobox()
 CMenuHandle
 CNeatToolbar::GetMenus()
 {
-	return menus.m_hMenu;
+	return m_menus.m_hMenu;
 }
 
 
@@ -356,19 +352,19 @@ CNeatToolbar::Init()
 
 	SetButtonStructSize(sizeof(TBBUTTON));
 
-	LoadBitmaps();
-
-	std::vector<TBBUTTON> buttons(sizeof(allButtons) / sizeof(allButtons[0]));
-	for (size_t i = 0; i < buttons.size(); i++)
+	NONCLIENTMETRICS metrics{};
+	metrics.cbSize = sizeof(NONCLIENTMETRICS);
+	if (SystemParametersInfo(SPI_GETNONCLIENTMETRICS, metrics.cbSize, &metrics, 0))
 	{
-		buttons[i] = allButtons[i];
+		m_font.CreateFontIndirect(&metrics.lfMessageFont);
 	}
 
-	this->AddButtons(buttons.size(), &buttons[0]);
+	LoadBitmaps();
+	AddButtons(kAllButtons.size(), &kAllButtons[0]);
 	CreatePresetsCombobox();
 	FillSettings();
 
-	menus.LoadMenu( MAKEINTRESOURCE( IDR_MAINFRAME ) );
+	m_menus.LoadMenu( MAKEINTRESOURCE( IDR_MAINFRAME ) );
 }
 
 
@@ -376,21 +372,21 @@ CNeatToolbar::Init()
 LRESULT
 CNeatToolbar::OnToolbarDropDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
-    // Get the toolbar data
-  NMTOOLBAR* ptb = reinterpret_cast<NMTOOLBAR*>(pnmh);
+	// Get the toolbar data
+	NMTOOLBAR* ptb = reinterpret_cast<NMTOOLBAR*>(pnmh);
 
 	CRect rect;
-  GetItemRect(CommandToIndex(ptb->iItem), &rect);
-  // Create a point
-  CPoint pt(rect.left, rect.bottom);
+	GetItemRect(CommandToIndex(ptb->iItem), &rect);
+	// Create a point
+	CPoint pt(rect.left, rect.bottom);
 	MapWindowPoints(HWND_DESKTOP, &pt, 1);
-  // Load the menu
-  CMenu menu;
+	// Load the menu
+	CMenu menu;
 	switch (ptb->iItem)
 	{
 	case ID_TOOLBAR_LANGUAGE:
-		ASSERT(menus.GetSubMenu(0) != NULL);
-		::TrackPopupMenu(menus.GetSubMenu(0), TPM_RIGHTBUTTON | TPM_VERTICAL, pt.x, pt.y, 0, this->GetParent(), 0);
+		ASSERT(m_menus.GetSubMenu(0) != NULL);
+		::TrackPopupMenu(m_menus.GetSubMenu(0), TPM_RIGHTBUTTON | TPM_VERTICAL, pt.x, pt.y, 0, this->GetParent(), 0);
 		break;
 	}
 

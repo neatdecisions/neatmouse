@@ -1,9 +1,9 @@
 //
-// Copyright © 2016–2019 Neat Decisions. All rights reserved.
+// Copyright © 2016–2020 Neat Decisions. All rights reserved.
 //
 // This file is part of NeatMouse.
-// The use and distribution terms for this software are covered by the 
-// Microsoft Public License (http://opensource.org/licenses/MS-PL) 
+// The use and distribution terms for this software are covered by the
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
 // which can be found in the file LICENSE at the root folder.
 //
 
@@ -36,7 +36,7 @@ wstring2string(const std::wstring & wVal, std::string & outValue)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-bool 
+bool
 string2wstring(const std::string & value, std::wstring & outValue)
 {
 	int sz = MultiByteToWideChar(CP_CURRENT, 0, value.c_str(), value.size(), 0, 0);
@@ -72,13 +72,13 @@ wstring2utf8string(const std::wstring & value, std::string & outValue)
 
 
 //---------------------------------------------------------------------------------------------------------------------
-std::vector<std::string> 
+std::vector<std::string>
 SplitString(const std::string & s, const std::string & delimeter)
 {
 	std::vector<std::string> splits;
 	size_t prevPos = 0;
 	size_t pos = s.find(delimeter, 0);
-	
+
 	while (true)
 	{
 		if (pos == s.npos)
@@ -132,43 +132,42 @@ bool GetProductVersion(ProductInfo & info)
 		}
 	}
 	delete [] verData;
-	
+
 	return res;
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
-BOOL IsWindowsVistaOrLater() 
+BOOL IsWindowsVistaOrLater()
 {
-   OSVERSIONINFOEX osvi;
-   DWORDLONG dwlConditionMask = 0;
-   BYTE op = VER_GREATER_EQUAL;
+	OSVERSIONINFOEX osvi{};
+	DWORDLONG dwlConditionMask = 0;
+	BYTE op = VER_GREATER_EQUAL;
 
-   // Initialize the OSVERSIONINFOEX structure.
-   ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
-   osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-   osvi.dwMajorVersion = 6;
-   osvi.dwMinorVersion = 0;
-   osvi.wServicePackMajor = 2;
-   osvi.wServicePackMinor = 0;
+	// Initialize the OSVERSIONINFOEX structure.
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	osvi.dwMajorVersion = 6;
+	osvi.dwMinorVersion = 0;
+	osvi.wServicePackMajor = 2;
+	osvi.wServicePackMinor = 0;
 
-   // Initialize the condition mask.
-   VER_SET_CONDITION( dwlConditionMask, VER_MAJORVERSION, op );
-   VER_SET_CONDITION( dwlConditionMask, VER_MINORVERSION, op );
-   VER_SET_CONDITION( dwlConditionMask, VER_SERVICEPACKMAJOR, op );
-   VER_SET_CONDITION( dwlConditionMask, VER_SERVICEPACKMINOR, op );
+	// Initialize the condition mask.
+	VER_SET_CONDITION( dwlConditionMask, VER_MAJORVERSION, op );
+	VER_SET_CONDITION( dwlConditionMask, VER_MINORVERSION, op );
+	VER_SET_CONDITION( dwlConditionMask, VER_SERVICEPACKMAJOR, op );
+	VER_SET_CONDITION( dwlConditionMask, VER_SERVICEPACKMINOR, op );
 
-   // Perform the test.
-   return VerifyVersionInfo(
-      &osvi, 
-      VER_MAJORVERSION | VER_MINORVERSION | 
-      VER_SERVICEPACKMAJOR | VER_SERVICEPACKMINOR,
-      dwlConditionMask);
+	// Perform the test.
+	return VerifyVersionInfo(
+		&osvi,
+		VER_MAJORVERSION | VER_MINORVERSION |
+		VER_SERVICEPACKMAJOR | VER_SERVICEPACKMINOR,
+		dwlConditionMask);
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
-std::wstring 
+std::wstring
 GetFileName(const std::wstring & fileName)
 {
 	size_t pos = fileName.rfind(L'\\');
