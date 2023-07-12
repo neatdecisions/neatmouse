@@ -27,7 +27,7 @@ public:
 	void writeBoolValue(const std::wstring & section, const std::wstring & name, bool value);
 	void writeIntValue(const std::wstring & section, const std::wstring & name, int value);
 	void writeUIntValue(const std::wstring & section, const std::wstring & name, unsigned int value);
-	void writeIntVector(const std::wstring& section, const std::wstring& name, std::vector<int> value);
+	void writeIntVector(const std::wstring & section, const std::wstring & name, std::vector<int> value);
 
 	std::string readUtf8Value(const std::wstring & section, const std::wstring & name, const std::string & defaultValue = "");
 	std::wstring readStringValue(const std::wstring & section, const std::wstring & name, const std::wstring & defaultValue = L"");
