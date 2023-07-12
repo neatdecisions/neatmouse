@@ -25,6 +25,7 @@ public:
 
 	LONG delta  = 20;
 	LONG adelta = 1;
+	std::vector<int> accelerationCurve = { 10, 20, 30, 50, 70, 90 };
 
 	KeyboardUtils::VirtualKey_t VKEnabler         = VK_SCROLL;
 	KeyboardUtils::VirtualKey_t VKMoveUp          = VK_NUMPAD8;

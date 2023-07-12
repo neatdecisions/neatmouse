@@ -213,8 +213,12 @@ MouseActioner::processAction(const KBDLLHOOKSTRUCT & event, bool isKeyUp)
 	const KeyboardButtonsStatus oldStatus = _keyboardStatus;
 	const bool result = isKeyUp ? processKeyUp(vk) : processKeyDown(vk);
 
-	// figure out the movement vector
-	const LONG d = _isAlternativeSpeedButtonPressed ? _mouseParams.adelta : _mouseParams.delta;
+	// figure out the movement vector	
+	const LONG d = _isAlternativeSpeedButtonPressed
+		? _mouseParams.adelta 
+		: _keyboardStatus.moveStepCount < _mouseParams.accelerationCurve.size() 
+			? _mouseParams.accelerationCurve[_keyboardStatus.moveStepCount++] * _mouseParams.delta / 100 
+			: _mouseParams.delta;
 	const LONG dx =
 		((_keyboardStatus.isLeftPressed || _keyboardStatus.isLeftUpPressed || _keyboardStatus.isLeftDownPressed) ? - d : 0) +
 		((_keyboardStatus.isRightPressed || _keyboardStatus.isRightUpPressed || _keyboardStatus.isRightDownPressed) ? d : 0);
@@ -269,41 +273,49 @@ MouseActioner::processKeyUp(KeyboardUtils::VirtualKey_t vk)
 	{
 		_rampUpCursorMover.stopMove();
 		_keyboardStatus.isRightPressed = false;
+		_keyboardStatus.moveStepCount = 0;
 	} else
 	if (vk == _mouseParams.VKMoveLeft)
 	{
 		_rampUpCursorMover.stopMove();
 		_keyboardStatus.isLeftPressed = false;
+		_keyboardStatus.moveStepCount = 0;
 	} else
 	if (vk == _mouseParams.VKMoveUp)
 	{
 		_rampUpCursorMover.stopMove();
 		_keyboardStatus.isUpPressed = false;
+		_keyboardStatus.moveStepCount = 0;
 	} else
 	if (vk == _mouseParams.VKMoveDown)
 	{
 		_rampUpCursorMover.stopMove();
 		_keyboardStatus.isDownPressed = false;
+		_keyboardStatus.moveStepCount = 0;
 	} else
 	if (vk == _mouseParams.VKMoveLeftDown)
 	{
 		_rampUpCursorMover.stopMove();
 		_keyboardStatus.isLeftDownPressed = false;
+		_keyboardStatus.moveStepCount = 0;
 	} else
 	if (vk == _mouseParams.VKMoveRightDown)
 	{
 		_rampUpCursorMover.stopMove();
 		_keyboardStatus.isRightDownPressed = false;
+		_keyboardStatus.moveStepCount = 0;
 	} else
 	if (vk == _mouseParams.VKMoveLeftUp)
 	{
 		_rampUpCursorMover.stopMove();
 		_keyboardStatus.isLeftUpPressed = false;
+		_keyboardStatus.moveStepCount = 0;
 	} else
 	if (vk == _mouseParams.VKMoveRightUp)
 	{
 		_rampUpCursorMover.stopMove();
 		_keyboardStatus.isRightUpPressed = false;
+		_keyboardStatus.moveStepCount = 0;
 	}
 	else
 	// left button up -------------------------------------------------------

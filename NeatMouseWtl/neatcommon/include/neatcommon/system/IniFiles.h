@@ -27,12 +27,14 @@ public:
 	void writeBoolValue(const std::wstring & section, const std::wstring & name, bool value);
 	void writeIntValue(const std::wstring & section, const std::wstring & name, int value);
 	void writeUIntValue(const std::wstring & section, const std::wstring & name, unsigned int value);
+	void writeIntVector(const std::wstring& section, const std::wstring& name, std::vector<int> value);
 
 	std::string readUtf8Value(const std::wstring & section, const std::wstring & name, const std::string & defaultValue = "");
 	std::wstring readStringValue(const std::wstring & section, const std::wstring & name, const std::wstring & defaultValue = L"");
 	bool readBoolValue(const std::wstring & section, const std::wstring & name, bool defaultValue = false);
 	int readIntValue(const std::wstring & section, const std::wstring & name, int defaultValue = 0);
 	unsigned int readUIntValue(const std::wstring & section, const std::wstring & name, unsigned int defaultValue = 0);
+	std::vector<int> readIntVector(const std::wstring & section, const std::wstring & name, std::vector<int> defaultValue = { 100 });
 	
 	const IniValueMap & getSection(const std::wstring & section);
 	void enumerateSections(std::vector<std::wstring> & sections);

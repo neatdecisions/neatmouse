@@ -10,6 +10,8 @@
 #pragma once
 
 #include <sstream>
+#include<vector>
+#include <string>
 
 
 namespace neatcommon {
@@ -18,7 +20,6 @@ namespace system {
 bool wstring2string(const std::wstring & wVal, std::string & outValue);
 bool string2wstring(const std::string & value, std::wstring & outValue);
 bool wstring2utf8string(const std::wstring & value, std::string & outValue);
-
 
 //----------------------------------------------------------------------------
 template < class T >
@@ -36,6 +37,43 @@ inline T from_string_def( const std::wstring & s, T def )
 		return def;
 	}
 	return result;
+}
+
+
+//----------------------------------------------------------------------------
+template < class T >
+inline std::vector<T> vec_from_string_def(const std::wstring& s, std::vector<T> def)
+{
+	T value;
+	std::vector<T> result;
+	std::wstringstream ss(s);
+	try
+	{
+		while (ss >> value)
+		{
+			result.push_back(value);
+		}
+	}
+	catch (...)
+	{
+		return def;
+	}
+	return result;
+}
+
+
+//----------------------------------------------------------------------------
+template < class T >
+inline std::wstring vector2wstring(const std::vector<T>& v)
+{
+	std::wstringstream ss;
+	for (size_t i = 0; i < v.size(); ++i)
+	{
+		if (i != 0)
+			ss << " ";
+		ss << v[i];
+	}
+	return ss.str();
 }
 
 
