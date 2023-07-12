@@ -43,6 +43,7 @@ bool MouseParams::Save(const std::wstring & fileName)
 
 	mif.writeIntValue(L"General", L"Delta", this->delta);
 	mif.writeIntValue(L"General", L"ADelta", this->adelta);
+	mif.writeIntVector(L"General", L"AccelerationCurve", this->accelerationCurve);
 
 	mif.writeIntValue(L"General", L"VKEnabler", this->VKEnabler);
 	mif.writeIntValue(L"General", L"VKAccelerated", this->VKAccelerated);
@@ -90,6 +91,7 @@ bool MouseParams::Load(const std::wstring & fileName)
 
 	this->delta = mif.readIntValue(L"General", L"Delta", 20);
 	this->adelta = mif.readIntValue(L"General", L"ADelta", 1);
+	this->accelerationCurve = mif.readIntVector(L"General", L"AccelerationCurve", { 100 });
 
 	this->VKEnabler = mif.readIntValue(L"General", L"VKEnabler", VK_SCROLL);
 	this->VKAccelerated = mif.readIntValue(L"General", L"VKAccelerated", kVKNone);

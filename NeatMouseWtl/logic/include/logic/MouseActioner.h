@@ -32,6 +32,7 @@ struct KeyboardButtonsStatus
 	bool isRightBtnPressed = false;
 	bool isMiddleBtnPressed = false;
 	bool isUnbindBtnPressed = false;
+	volatile UINT moveStepCount = 0;
 };
 
 /**

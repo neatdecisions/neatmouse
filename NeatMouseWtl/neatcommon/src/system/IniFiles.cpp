@@ -13,6 +13,7 @@
 #include <fstream>
 
 #include "neatcommon/system/IniFiles.h"
+#include "neatcommon/system/Helpers.h"
 
 
 namespace neatcommon {
@@ -108,6 +109,13 @@ void MyIniFile::writeIntValue(const std::wstring & section, const std::wstring &
 
 
 //---------------------------------------------------------------------------------------------------------------------
+void MyIniFile::writeIntVector(const std::wstring & section, const std::wstring & name, std::vector<int> value)
+{
+	writeStringValue(section, name, vector2wstring(value));
+}
+
+
+//---------------------------------------------------------------------------------------------------------------------
 std::string
 MyIniFile::readUtf8Value(const std::wstring & section, const std::wstring & name, const std::string & defaultValue)
 {
@@ -151,6 +159,15 @@ MyIniFile::readUIntValue(const std::wstring & section, const std::wstring & name
 {
 	const std::wstring & sValue = readStringValue(section, name);
 	return from_string_def<unsigned int>(sValue, defaultValue);
+}
+
+
+//---------------------------------------------------------------------------------------------------------------------
+std::vector<int>
+MyIniFile::readIntVector(const std::wstring & section, const std::wstring & name, std::vector<int> defaultValue)
+{
+	const std::wstring & sValue = readStringValue(section, name);
+	return vec_from_string_def<int>(sValue, defaultValue);
 }
 
 
